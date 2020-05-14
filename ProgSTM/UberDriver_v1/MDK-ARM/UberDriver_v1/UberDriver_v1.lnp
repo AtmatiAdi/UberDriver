@@ -1,0 +1,27 @@
+--cpu Cortex-M3
+"uberdriver_v1\startup_stm32f103xb.o"
+"uberdriver_v1\stm32f1xx_hal_cortex.o"
+"uberdriver_v1\stm32f1xx_hal_tim.o"
+"uberdriver_v1\stm32f1xx_hal_spi.o"
+"uberdriver_v1\stm32f1xx_hal_flash.o"
+"uberdriver_v1\stm32f1xx_hal_adc_ex.o"
+"uberdriver_v1\stm32f1xx_hal_rcc_ex.o"
+"uberdriver_v1\stm32f1xx_hal_spi_ex.o"
+"uberdriver_v1\stm32f1xx_hal_rcc.o"
+"uberdriver_v1\stm32f1xx_hal_i2c.o"
+"uberdriver_v1\stm32f1xx_hal_dma.o"
+"uberdriver_v1\stm32f1xx_hal_tim_ex.o"
+"uberdriver_v1\stm32f1xx_hal_pwr.o"
+"uberdriver_v1\stm32f1xx_hal_flash_ex.o"
+"uberdriver_v1\stm32f1xx_hal.o"
+"uberdriver_v1\stm32f1xx_hal_adc.o"
+"uberdriver_v1\stm32f1xx_hal_gpio.o"
+"uberdriver_v1\stm32f1xx_hal_gpio_ex.o"
+"uberdriver_v1\system_stm32f1xx.o"
+"uberdriver_v1\main.o"
+"uberdriver_v1\stm32f1xx_hal_msp.o"
+"uberdriver_v1\stm32f1xx_it.o"
+--library_type=microlib --strict --scatter "UberDriver_v1\UberDriver_v1.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "UberDriver_v1.map" -o UberDriver_v1\UberDriver_v1.axf

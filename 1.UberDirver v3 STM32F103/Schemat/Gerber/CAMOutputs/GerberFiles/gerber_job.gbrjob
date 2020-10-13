@@ -1,0 +1,24 @@
+{
+    "Header": {
+        "Comment": "All values are metric (mm)",
+        "CreationDate": "2020-07-07T18:20:12Z",
+        "GenerationSoftware": {
+            "Application": "EAGLE",
+            "Vendor": "Autodesk",
+            "Version": "9.6.2"
+        },
+        "Part": "Single"
+    },
+    "Overall": {
+        "BoardThickness": 0.704,
+        "LayerNumber": 4,
+        "Name": {
+            "ProjectId": "Schematic"
+        },
+        "Owner": "Atmati Adi <atmati.adi@gmail.com>",
+        "Size": {
+            "X": 26.67,
+            "Y": 48.26
+        }
+    }
+}

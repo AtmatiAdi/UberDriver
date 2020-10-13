@@ -1,0 +1,25 @@
+#include "DRV8305.h"
+
+
+/*
+ * DRV8305.c
+ *
+ *  Created on: Sep 3, 2020
+ *      Author: atmat
+ */
+static SPI_HandleTypeDef DRV_spi;
+
+void DRV_Init(SPI_HandleTypeDef hspi){
+	//Copy SPI handle variable
+	memcpy(&DRV_spi, &hspi, sizeof(hspi));
+}
+
+void DRV_Read(uint16_t addr, uint8_t *buf){
+	uint8_t Addr[2] = {addr > 8, addr + 0x8000};	// Read command
+	HAL_SPI_TransmitReceive(&DRV_spi, Addr, buf, 2, 100);
+}
+
+void DRV_Write(uint16_t addr, uint16_t *buf){
+	uint8_t Addr[2] = {(addr > 8) + buf[0], addr + buf[1]};
+	HAL_SPI_TransmitReceive(&DRV_spi, Addr, buf, 2, 100);
+}

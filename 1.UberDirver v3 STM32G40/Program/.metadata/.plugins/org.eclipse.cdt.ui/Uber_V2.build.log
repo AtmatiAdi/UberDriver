@@ -1,0 +1,10 @@
+11:28:11 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+   8172	     20	   1860	  10052	   2744	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+
+11:28:11 Build Finished. 0 errors, 0 warnings. (took 193ms)
+

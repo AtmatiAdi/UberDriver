@@ -1,0 +1,68 @@
+/*
+ * DRV8305.h
+ *
+ *  Created on: Sep 3, 2020
+ *      Author: atmat
+ */
+
+#ifndef INC_DRV8305_H_
+#define INC_DRV8305_H_
+
+	#define XX					0x400	//
+	#define XX					0x200	//
+	#define XX					0x100	//
+	#define	XX					0x80	//
+	#define	XX 					0x40	//
+	#define	XX					0x20	//
+	#define	XX					0x10	//
+	#define	XX					0x8		//
+	#define	XX					0x4		//
+	#define	XX					0x2		//
+	#define	XX					0x1		//
+
+#define WARNINGS_&_WATCHDOG_RESET 	0x1
+	#define FAULT						0x400	// Fault indication
+	#define TEMP_FLAG4					0x100	// Temperature flag setting for approximately 175°C
+	#define	PVDD_UVFL					0x80	// PVDD undervoltage flag warning
+	#define	PVDD_OVFL 					0x40	// PVDD overvoltage flag warning
+	#define	VDS_STATUS					0x20	// Real time OR of all VDS overcurrent monitors
+	#define	VCHP_UVFL					0x10	// Charge pump undervoltage flag warning
+	#define	TEMP_FLAG1					0x8		// Temperature flag setting for approximately 105°C
+	#define	TEMP_FLAG2					0x4		// Temperature flag setting for approximately 125°C
+	#define	TEMP_FLAG3					0x2		// Temperature flag setting for approximately 135°C
+	#define	OTW							0x1		// Overtemperature warning
+#define OV_VDS_FAULTS				0x2
+	#define VDS_HA						0x400	// VDS overcurrent fault for high-side MOSFET A
+	#define VDS_LA						0x200	// VDS overcurrent fault for low-side MOSFET A
+	#define VDS_HB						0x100	// VDS overcurrent fault for high-side MOSFET B
+	#define	VDS_LB						0x80	// VDS overcurrent fault for low-side MOSFET B
+	#define	VDS_HC 						0x40	// VDS overcurrent fault for high-side MOSFET C
+	#define	VDS_LC						0x20	// VDS overcurrent fault for low-side MOSFET C
+	#define	SNS_C_OCP					0x4		// Sense C overcurrent fault
+	#define	SNS_B_OCP					0x2		// Sense B overcurrent fault
+	#define	SNS_A_OCP					0x1		// Sense A overcurrent fault
+#define IC_FAULTS					0x3
+	#define XX					0x400	//
+	#define XX					0x200	//
+	#define XX					0x100	//
+	#define	XX					0x80	//
+	#define	XX 					0x40	//
+	#define	XX					0x20	//
+	#define	XX					0x10	//
+	#define	XX					0x8		//
+	#define	XX					0x4		//
+	#define	XX					0x2		//
+	#define	XX					0x1		//
+#define VGS_FAULTS					0x4
+#define HS_GATE_DRIVE_CONTROL		0x5
+#define LS_GATE_DRIVE_CONTROL		0x6
+#define GATE_DRIVE_CONTROL			0x7
+#define IC_OPERATION				0x9
+#define SHUNT_AMPLIFIER_CONTROL		0xA
+#define VOLTAGE_REGULATOR_CONTROL	0xB
+#define VDS_SENSE_CONTROL			0xC
+
+int DRV_Read(byte addr);
+void DRV_Write(byte addr, int addr);
+
+#endif /* INC_DRV8305_H_ */

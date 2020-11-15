@@ -2676,6 +2676,53 @@ http://www.bccomponents.com/</description>
 <text x="-2.9" y="-4.3" size="0.8128" layer="27">&gt;VALUE</text>
 <smd name="GND" x="0" y="0" dx="3.7" dy="3.7" layer="1"/>
 </package>
+<package name="VFQFPN36">
+<description>36 contact QFN 0.5mm pin space</description>
+<wire x1="-3" y1="-3" x2="-3" y2="3" width="0.127" layer="21"/>
+<wire x1="-3" y1="3" x2="3" y2="3" width="0.127" layer="21"/>
+<wire x1="3" y1="3" x2="3" y2="-3" width="0.127" layer="21"/>
+<wire x1="3" y1="-3" x2="-3" y2="-3" width="0.127" layer="21"/>
+<circle x="-2" y="2" radius="0.2828" width="0.127" layer="21"/>
+<smd name="1" x="-2.7" y="2" dx="0.6" dy="0.23" layer="1"/>
+<smd name="2" x="-2.7" y="1.5" dx="0.6" dy="0.23" layer="1"/>
+<smd name="3" x="-2.7" y="1" dx="0.6" dy="0.23" layer="1"/>
+<smd name="4" x="-2.7" y="0.5" dx="0.6" dy="0.23" layer="1"/>
+<smd name="5" x="-2.7" y="0" dx="0.6" dy="0.23" layer="1"/>
+<smd name="6" x="-2.7" y="-0.5" dx="0.6" dy="0.23" layer="1"/>
+<smd name="7" x="-2.7" y="-1" dx="0.6" dy="0.23" layer="1"/>
+<smd name="8" x="-2.7" y="-1.5" dx="0.6" dy="0.23" layer="1"/>
+<smd name="9" x="-2.7" y="-2" dx="0.6" dy="0.23" layer="1"/>
+<smd name="10" x="-2" y="-2.7" dx="0.6" dy="0.23" layer="1" rot="R90"/>
+<smd name="11" x="-1.5" y="-2.7" dx="0.6" dy="0.23" layer="1" rot="R90"/>
+<smd name="12" x="-1" y="-2.7" dx="0.6" dy="0.23" layer="1" rot="R90"/>
+<smd name="13" x="-0.5" y="-2.7" dx="0.6" dy="0.23" layer="1" rot="R90"/>
+<smd name="14" x="0" y="-2.7" dx="0.6" dy="0.23" layer="1" rot="R90"/>
+<smd name="15" x="0.5" y="-2.7" dx="0.6" dy="0.23" layer="1" rot="R90"/>
+<smd name="16" x="1" y="-2.7" dx="0.6" dy="0.23" layer="1" rot="R90"/>
+<smd name="17" x="1.5" y="-2.7" dx="0.6" dy="0.23" layer="1" rot="R90"/>
+<smd name="18" x="2" y="-2.7" dx="0.6" dy="0.23" layer="1" rot="R90"/>
+<smd name="19" x="2.7" y="-2" dx="0.6" dy="0.23" layer="1" rot="R180"/>
+<smd name="20" x="2.7" y="-1.5" dx="0.6" dy="0.23" layer="1" rot="R180"/>
+<smd name="21" x="2.7" y="-1" dx="0.6" dy="0.23" layer="1" rot="R180"/>
+<smd name="22" x="2.7" y="-0.5" dx="0.6" dy="0.23" layer="1" rot="R180"/>
+<smd name="23" x="2.7" y="0" dx="0.6" dy="0.23" layer="1" rot="R180"/>
+<smd name="24" x="2.7" y="0.5" dx="0.6" dy="0.23" layer="1" rot="R180"/>
+<smd name="25" x="2.7" y="1" dx="0.6" dy="0.23" layer="1" rot="R180"/>
+<smd name="26" x="2.7" y="1.5" dx="0.6" dy="0.23" layer="1" rot="R180"/>
+<smd name="27" x="2.7" y="2" dx="0.6" dy="0.23" layer="1" rot="R180"/>
+<smd name="28" x="2" y="2.7" dx="0.6" dy="0.23" layer="1" rot="R270"/>
+<smd name="29" x="1.5" y="2.7" dx="0.6" dy="0.23" layer="1" rot="R270"/>
+<smd name="30" x="1" y="2.7" dx="0.6" dy="0.23" layer="1" rot="R270"/>
+<smd name="31" x="0.5" y="2.7" dx="0.6" dy="0.23" layer="1" rot="R270"/>
+<smd name="32" x="0" y="2.7" dx="0.6" dy="0.23" layer="1" rot="R270"/>
+<smd name="33" x="-0.5" y="2.7" dx="0.6" dy="0.23" layer="1" rot="R270"/>
+<smd name="34" x="-1" y="2.7" dx="0.6" dy="0.23" layer="1" rot="R270"/>
+<smd name="35" x="-1.5" y="2.7" dx="0.6" dy="0.23" layer="1" rot="R270"/>
+<smd name="36" x="-2" y="2.7" dx="0.6" dy="0.23" layer="1" rot="R270"/>
+<text x="-3" y="3" size="0.8128" layer="25">&gt;NAME</text>
+<text x="-3" y="-4" size="0.8128" layer="27">&gt;VALUE</text>
+<rectangle x1="-1.8" y1="-1.8" x2="1.8" y2="1.8" layer="1"/>
+</package>
 </packages>
 </library>
 <library name="led" urn="urn:adsk.eagle:library:259">
@@ -4713,6 +4760,64 @@ design rules under a new name.</description>
 <element name="JP5" library="adafruit" library_urn="urn:adsk.eagle:library:420" package="1X09-BIG" package3d_urn="urn:adsk.eagle:package:6240655/1" value="" x="31.0769" y="1.9812" smashed="yes" rot="R180">
 <attribute name="NAME" x="41.3131" y="0.1524" size="1.27" layer="25" ratio="10" rot="R180"/>
 <attribute name="VALUE" x="41.2369" y="5.1562" size="1.27" layer="27" rot="R180"/>
+</element>
+<element name="U$3" library="CSD_Mosfet" package="Q5B" value="CSD17573Q5B" x="79.62265" y="32.55645" smashed="yes" rot="R270"/>
+<element name="U$4" library="CSD_Mosfet" package="Q5B" value="CSD17573Q5B" x="79.64805" y="26.09215" smashed="yes" rot="R270"/>
+<element name="U$5" library="CSD_Mosfet" package="Q5B" value="CSD17573Q5B" x="85.0011" y="32.37865" smashed="yes" rot="R270"/>
+<element name="U$6" library="CSD_Mosfet" package="Q5B" value="CSD17573Q5B" x="85.07095" y="26.00325" smashed="yes" rot="R270"/>
+<element name="U$7" library="CSD_Mosfet" package="Q5B" value="CSD17573Q5B" x="90.29065" y="32.65805" smashed="yes" rot="R270"/>
+<element name="U$8" library="CSD_Mosfet" package="Q5B" value="CSD17573Q5B" x="90.5637" y="26.035" smashed="yes" rot="R270"/>
+<element name="0003" library="resistor" library_urn="urn:adsk.eagle:library:348" package="R2512" package3d_urn="urn:adsk.eagle:package:26070/1" value="5mohm" x="78.1431" y="25.99055" smashed="yes" rot="MR270">
+<attribute name="NAME" x="76.2381" y="28.53055" size="1.27" layer="26" rot="MR270"/>
+<attribute name="VALUE" x="81.3181" y="28.53055" size="1.27" layer="28" rot="MR270"/>
+</element>
+<element name="0004" library="resistor" library_urn="urn:adsk.eagle:library:348" package="R2512" package3d_urn="urn:adsk.eagle:package:26070/1" value="5mohm" x="90.7796" y="25.8826" smashed="yes" rot="MR270">
+<attribute name="NAME" x="88.8746" y="28.4226" size="1.27" layer="26" rot="MR270"/>
+<attribute name="VALUE" x="93.9546" y="28.4226" size="1.27" layer="28" rot="MR270"/>
+</element>
+<element name="0005" library="resistor" library_urn="urn:adsk.eagle:library:348" package="R2512" package3d_urn="urn:adsk.eagle:package:26070/1" value="5mohm" x="103.79075" y="26.06675" smashed="yes" rot="R90">
+<attribute name="NAME" x="101.88575" y="23.52675" size="1.27" layer="25" rot="R90"/>
+<attribute name="VALUE" x="106.96575" y="23.52675" size="1.27" layer="27" rot="R90"/>
+</element>
+<element name="U$9" library="Molex_2" package="PLUG_20_0.4_5024302012" value="PLUG_20_0.4_5024302012" x="89.41435" y="19.7866" smashed="yes" rot="MR180"/>
+<element name="U$10" library="Molex_2" package="RECEPTACLE_20_0.4_5024262030" value="RECEPTACLE_20_0.4_5024262030" x="89.6874" y="27.52725" smashed="yes" rot="MR270"/>
+<element name="U$11" library="Molex_2" package="RECEPTACLE_20_0.4_5024262030" value="RECEPTACLE_20_0.4_5024262030" x="86.0298" y="24.64435" smashed="yes" rot="MR0"/>
+<element name="U1" library="stm32" package="VFQFPN36" value="STM32F10XTXU6" x="85.9155" y="25.80005" smashed="yes" rot="MR0">
+<attribute name="NAME" x="88.9155" y="28.80005" size="0.8128" layer="26" rot="MR0"/>
+<attribute name="VALUE" x="88.9155" y="21.80005" size="0.8128" layer="28" rot="MR0"/>
+</element>
+<element name="U3" library="stm32" package="VFQFPN36" value="STM32F10XTXU6" x="79.5909" y="25.67305" smashed="yes" rot="MR0">
+<attribute name="NAME" x="82.5909" y="28.67305" size="0.8128" layer="26" rot="MR0"/>
+<attribute name="VALUE" x="82.5909" y="21.67305" size="0.8128" layer="28" rot="MR0"/>
+</element>
+<element name="U$12" library="CSD_Mosfet" package="Q5B" value="CSD17573Q5B" x="108.60405" y="32.4104" smashed="yes"/>
+<element name="U$13" library="CSD_Mosfet" package="Q5B" value="CSD17573Q5B" x="109.98835" y="26.4922" smashed="yes" rot="R270"/>
+<element name="U$14" library="CSD_Mosfet" package="Q5B" value="CSD17573Q5B" x="114.9731" y="32.40405" smashed="yes"/>
+<element name="U$15" library="CSD_Mosfet" package="Q5B" value="CSD17573Q5B" x="121.4501" y="32.3596" smashed="yes"/>
+<element name="U$16" library="CSD_Mosfet" package="Q5B" value="CSD17573Q5B" x="122.48515" y="26.54935" smashed="yes" rot="R270"/>
+<element name="U$17" library="CSD_Mosfet" package="Q5B" value="CSD17573Q5B" x="116.49075" y="26.43505" smashed="yes" rot="R270"/>
+<element name="0006" library="resistor" library_urn="urn:adsk.eagle:library:348" package="R2512" package3d_urn="urn:adsk.eagle:package:26070/1" value="5mohm" x="127.64135" y="26.1747" smashed="yes" rot="R90">
+<attribute name="NAME" x="125.73635" y="23.6347" size="1.27" layer="25" rot="R90"/>
+<attribute name="VALUE" x="130.81635" y="23.6347" size="1.27" layer="27" rot="R90"/>
+</element>
+<element name="0007" library="resistor" library_urn="urn:adsk.eagle:library:348" package="R2512" package3d_urn="urn:adsk.eagle:package:26070/1" value="5mohm" x="11.80465" y="-15.71625" smashed="yes">
+<attribute name="NAME" x="9.26465" y="-13.81125" size="1.27" layer="25"/>
+<attribute name="VALUE" x="9.26465" y="-18.89125" size="1.27" layer="27"/>
+</element>
+<element name="0008" library="resistor" library_urn="urn:adsk.eagle:library:348" package="R2512" package3d_urn="urn:adsk.eagle:package:26070/1" value="5mohm" x="19.80565" y="-15.71625" smashed="yes">
+<attribute name="NAME" x="17.26565" y="-13.81125" size="1.27" layer="25"/>
+<attribute name="VALUE" x="17.26565" y="-18.89125" size="1.27" layer="27"/>
+</element>
+<element name="U$18" library="Molex_2" package="PLUG_20_0.4_5024302012" value="PLUG_20_0.4_5024302012" x="8.48995" y="-30.82925" smashed="yes"/>
+<element name="U$19" library="Molex_2" package="RECEPTACLE_20_0.4_5024262030" value="RECEPTACLE_20_0.4_5024262030" x="14.0462" y="-25.62225" smashed="yes"/>
+<element name="U$20" library="Molex_2" package="RECEPTACLE_20_0.4_5024262030" value="RECEPTACLE_20_0.4_5024262030" x="1.63195" y="-30.82925" smashed="yes"/>
+<element name="U4" library="stm32" package="VFQFPN36" value="STM32F10XTXU6" x="120.3579" y="17.8435" smashed="yes">
+<attribute name="NAME" x="117.3579" y="20.8435" size="0.8128" layer="25"/>
+<attribute name="VALUE" x="117.3579" y="13.8435" size="0.8128" layer="27"/>
+</element>
+<element name="U5" library="stm32" package="VFQFPN36" value="STM32F10XTXU6" x="111.52505" y="17.84985" smashed="yes">
+<attribute name="NAME" x="108.52505" y="20.84985" size="0.8128" layer="25"/>
+<attribute name="VALUE" x="108.52505" y="13.84985" size="0.8128" layer="27"/>
 </element>
 </elements>
 <signals>
@@ -8152,6 +8257,78 @@ design rules under a new name.</description>
 <wire x1="33.4358" y1="0.4445" x2="38.650925" y2="0.4445" width="0.1524" layer="1"/>
 <wire x1="38.650925" y1="0.4445" x2="40.187625" y2="1.9812" width="0.1524" layer="1"/>
 <wire x1="32.8862" y1="-0.1051" x2="33.4358" y2="0.4445" width="0.1524" layer="1"/>
+</signal>
+<signal name="VDD_1">
+<contactref element="U1" pad="19"/>
+<contactref element="U3" pad="19"/>
+<contactref element="U4" pad="19"/>
+<contactref element="U5" pad="19"/>
+<wire x1="76.8909" y1="23.67305" x2="83.2155" y2="23.80005" width="0" layer="19" extent="16-16"/>
+<wire x1="114.22505" y1="15.84985" x2="76.8909" y2="23.67305" width="0" layer="19" extent="1-16"/>
+<wire x1="123.0579" y1="15.8435" x2="114.22505" y2="15.84985" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="VDD_2">
+<contactref element="U1" pad="27"/>
+<contactref element="U3" pad="27"/>
+<contactref element="U4" pad="27"/>
+<contactref element="U5" pad="27"/>
+<wire x1="76.8909" y1="27.67305" x2="83.2155" y2="27.80005" width="0" layer="19" extent="16-16"/>
+<wire x1="114.22505" y1="19.84985" x2="76.8909" y2="27.67305" width="0" layer="19" extent="1-16"/>
+<wire x1="123.0579" y1="19.8435" x2="114.22505" y2="19.84985" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="VDD_3">
+<contactref element="U1" pad="1"/>
+<contactref element="U3" pad="1"/>
+<contactref element="U4" pad="1"/>
+<contactref element="U5" pad="1"/>
+<wire x1="82.2909" y1="27.67305" x2="88.6155" y2="27.80005" width="0" layer="19" extent="16-16"/>
+<wire x1="108.82505" y1="19.84985" x2="82.2909" y2="27.67305" width="0" layer="19" extent="1-16"/>
+<wire x1="117.6579" y1="19.8435" x2="108.82505" y2="19.84985" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="VSS_1">
+<contactref element="U1" pad="18"/>
+<contactref element="U3" pad="18"/>
+<contactref element="U4" pad="18"/>
+<contactref element="U5" pad="18"/>
+<wire x1="77.5909" y1="22.97305" x2="83.9155" y2="23.10005" width="0" layer="19" extent="16-16"/>
+<wire x1="113.52505" y1="15.14985" x2="77.5909" y2="22.97305" width="0" layer="19" extent="1-16"/>
+<wire x1="122.3579" y1="15.1435" x2="113.52505" y2="15.14985" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="VSS_2">
+<contactref element="U1" pad="26"/>
+<contactref element="U3" pad="26"/>
+<contactref element="U4" pad="26"/>
+<contactref element="U5" pad="26"/>
+<wire x1="76.8909" y1="27.17305" x2="83.2155" y2="27.30005" width="0" layer="19" extent="16-16"/>
+<wire x1="114.22505" y1="19.34985" x2="76.8909" y2="27.17305" width="0" layer="19" extent="1-16"/>
+<wire x1="123.0579" y1="19.3435" x2="114.22505" y2="19.34985" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="VSS_3">
+<contactref element="U1" pad="36"/>
+<contactref element="U3" pad="36"/>
+<contactref element="U4" pad="36"/>
+<contactref element="U5" pad="36"/>
+<wire x1="81.5909" y1="28.37305" x2="87.9155" y2="28.50005" width="0" layer="19" extent="16-16"/>
+<wire x1="109.52505" y1="20.54985" x2="81.5909" y2="28.37305" width="0" layer="19" extent="1-16"/>
+<wire x1="118.3579" y1="20.5435" x2="109.52505" y2="20.54985" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="VSSA">
+<contactref element="U1" pad="5"/>
+<contactref element="U3" pad="5"/>
+<contactref element="U4" pad="5"/>
+<contactref element="U5" pad="5"/>
+<wire x1="82.2909" y1="25.67305" x2="88.6155" y2="25.80005" width="0" layer="19" extent="16-16"/>
+<wire x1="108.82505" y1="17.84985" x2="82.2909" y2="25.67305" width="0" layer="19" extent="1-16"/>
+<wire x1="117.6579" y1="17.8435" x2="108.82505" y2="17.84985" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="VDDA">
+<contactref element="U1" pad="6"/>
+<contactref element="U3" pad="6"/>
+<contactref element="U4" pad="6"/>
+<contactref element="U5" pad="6"/>
+<wire x1="82.2909" y1="25.17305" x2="88.6155" y2="25.30005" width="0" layer="19" extent="16-16"/>
+<wire x1="108.82505" y1="17.34985" x2="82.2909" y2="25.17305" width="0" layer="19" extent="1-16"/>
+<wire x1="117.6579" y1="17.3435" x2="108.82505" y2="17.34985" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 <mfgpreviewcolors>

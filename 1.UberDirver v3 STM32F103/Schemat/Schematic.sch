@@ -27524,9 +27524,9 @@ With round pins</description>
 <part name="0019" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-EU_" device="R0402" package3d_urn="urn:adsk.eagle:package:23547/3" value="4.99kR"/>
 <part name="0020" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-EU_" device="R0402" package3d_urn="urn:adsk.eagle:package:23547/3" value="34.8kR"/>
 <part name="0021" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-EU_" device="R0402" package3d_urn="urn:adsk.eagle:package:23547/3" value="4.99kR"/>
-<part name="C45" library="rcl" deviceset="C-EU" device="" package3d_urn="urn:adsk.eagle:package:23547/3" value="100nF"/>
-<part name="C46" library="rcl" deviceset="C-EU" device="" package3d_urn="urn:adsk.eagle:package:23547/3" value="100nF"/>
-<part name="C47" library="rcl" deviceset="C-EU" device="" package3d_urn="urn:adsk.eagle:package:23547/3" value="100nF"/>
+<part name="C45" library="rcl" deviceset="C-EU" device="" package3d_urn="urn:adsk.eagle:package:23547/3" value="1nF"/>
+<part name="C46" library="rcl" deviceset="C-EU" device="" package3d_urn="urn:adsk.eagle:package:23547/3" value="1nF"/>
+<part name="C47" library="rcl" deviceset="C-EU" device="" package3d_urn="urn:adsk.eagle:package:23547/3" value="1nF"/>
 <part name="+3V11" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="+3V3" device=""/>
 <part name="U$31" library="tpd4e001" deviceset="TPD4E001" device=""/>
 <part name="GND33" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
@@ -27545,7 +27545,7 @@ With round pins</description>
 <part name="U2" library="stm32" deviceset="STM32F10XTXU6" device="HS"/>
 <part name="0001" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-EU_" device="R0402" package3d_urn="urn:adsk.eagle:package:23547/3" value="34.8kR"/>
 <part name="0002" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-EU_" device="R0402" package3d_urn="urn:adsk.eagle:package:23547/3" value="4.99kR"/>
-<part name="C6" library="rcl" deviceset="C-EU" device="" package3d_urn="urn:adsk.eagle:package:23547/3" value="100nF"/>
+<part name="C6" library="rcl" deviceset="C-EU" device="" package3d_urn="urn:adsk.eagle:package:23547/3" value="1nF"/>
 <part name="LED9" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="SML0603" package3d_urn="urn:adsk.eagle:package:15832/1" value="Red"/>
 <part name="R24" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-EU_" device="R0402" package3d_urn="urn:adsk.eagle:package:23547/3" value="10k"/>
 <part name="GND5" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>

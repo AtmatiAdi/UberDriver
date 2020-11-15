@@ -1,9 +1,1389 @@
-10:00:28 **** Incremental Build of configuration Debug for project Uber_V2 ****
+20:00:00 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  17480	     24	  10568	  28072	   6da8	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+20:00:06 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  17480	     24	  10568	  28072	   6da8	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+20:46:52 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:413:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:412:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18484	     24	  10584	  29092	   71a4	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+21:34:40 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:445:11: warning: unused variable 'res' [-Wunused-variable]
+   uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send3, buf, 2, 1000);
+           ^~~
+../Core/Src/main.c:468:2: error: too many arguments to function 'BEMF_SixStep'
+  BEMF_SixStep(Speed, Value);
+  ^~~~~~~~~~~~
+../Core/Src/main.c:201:10: note: declared here
+ uint32_t BEMF_SixStep(uint16_t Value){
+          ^~~~~~~~~~~~
+../Core/Src/main.c:469:2: error: too many arguments to function 'BEMF_SixStep'
+  BEMF_SixStep(Speed, Value);
+  ^~~~~~~~~~~~
+../Core/Src/main.c:201:10: note: declared here
+ uint32_t BEMF_SixStep(uint16_t Value){
+          ^~~~~~~~~~~~
+../Core/Src/main.c:470:2: error: too many arguments to function 'BEMF_SixStep'
+  BEMF_SixStep(Speed, Value);
+  ^~~~~~~~~~~~
+../Core/Src/main.c:201:10: note: declared here
+ uint32_t BEMF_SixStep(uint16_t Value){
+          ^~~~~~~~~~~~
+../Core/Src/main.c:471:2: error: too many arguments to function 'BEMF_SixStep'
+  BEMF_SixStep(Speed, Value);
+  ^~~~~~~~~~~~
+../Core/Src/main.c:201:10: note: declared here
+ uint32_t BEMF_SixStep(uint16_t Value){
+          ^~~~~~~~~~~~
+../Core/Src/main.c:472:2: error: too many arguments to function 'BEMF_SixStep'
+  BEMF_SixStep(Speed, Value);
+  ^~~~~~~~~~~~
+../Core/Src/main.c:201:10: note: declared here
+ uint32_t BEMF_SixStep(uint16_t Value){
+          ^~~~~~~~~~~~
+../Core/Src/main.c:473:2: error: too many arguments to function 'BEMF_SixStep'
+  BEMF_SixStep(Speed, Value);
+  ^~~~~~~~~~~~
+../Core/Src/main.c:201:10: note: declared here
+ uint32_t BEMF_SixStep(uint16_t Value){
+          ^~~~~~~~~~~~
+../Core/Src/main.c:474:2: error: too many arguments to function 'BEMF_SixStep'
+  BEMF_SixStep(Speed, Value);
+  ^~~~~~~~~~~~
+../Core/Src/main.c:201:10: note: declared here
+ uint32_t BEMF_SixStep(uint16_t Value){
+          ^~~~~~~~~~~~
+../Core/Src/main.c:477:4: error: too many arguments to function 'BEMF_SixStep'
+    BEMF_SixStep(Speed, Value);
+    ^~~~~~~~~~~~
+../Core/Src/main.c:201:10: note: declared here
+ uint32_t BEMF_SixStep(uint16_t Value){
+          ^~~~~~~~~~~~
+../Core/Src/main.c:482:3: error: too many arguments to function 'BEMF_SixStep'
+   BEMF_SixStep(Speed, Value);
+   ^~~~~~~~~~~~
+../Core/Src/main.c:201:10: note: declared here
+ uint32_t BEMF_SixStep(uint16_t Value){
+          ^~~~~~~~~~~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+make: *** [Core/Src/subdir.mk:38: Core/Src/main.o] Error 1
+"make -j12 all" terminated with exit code 2. Build might be incomplete.
+21:35:05 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:445:11: warning: unused variable 'res' [-Wunused-variable]
+   uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send3, buf, 2, 1000);
+           ^~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  20036	     24	  10584	  30644	   77b4	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+07:50:27 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:445:11: warning: unused variable 'res' [-Wunused-variable]
+   uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send3, buf, 2, 1000);
+           ^~~
+../Core/Src/main.c:571:17: warning: passing argument 1 of 'BEMF_SixStep' makes integer from pointer without a cast [-Wint-conversion]
+    BEMF_SixStep(rx_buffer);
+                 ^~~~~~~~~
+../Core/Src/main.c:201:10: note: expected 'uint16_t {aka short unsigned int}' but argument is of type 'uint8_t * {aka unsigned char *}'
+ uint32_t BEMF_SixStep(uint16_t Value){
+          ^~~~~~~~~~~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  19920	     24	  10584	  30528	   7740	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+07:51:07 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:445:11: warning: unused variable 'res' [-Wunused-variable]
+   uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send3, buf, 2, 1000);
+           ^~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  19924	     24	  10584	  30532	   7744	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+07:52:11 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:445:11: warning: unused variable 'res' [-Wunused-variable]
+   uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send3, buf, 2, 1000);
+           ^~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  19916	     24	  10584	  30524	   773c	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+07:53:41 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:445:11: warning: unused variable 'res' [-Wunused-variable]
+   uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send3, buf, 2, 1000);
+           ^~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  19924	     24	  10584	  30532	   7744	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+07:54:41 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:445:11: warning: unused variable 'res' [-Wunused-variable]
+   uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send3, buf, 2, 1000);
+           ^~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  19928	     24	  10584	  30536	   7748	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+07:55:33 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:445:11: warning: unused variable 'res' [-Wunused-variable]
+   uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send3, buf, 2, 1000);
+           ^~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  19936	     24	  10584	  30544	   7750	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+07:59:00 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:445:11: warning: unused variable 'res' [-Wunused-variable]
+   uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send3, buf, 2, 1000);
+           ^~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  19888	     24	  10584	  30496	   7720	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+07:59:48 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:445:11: warning: unused variable 'res' [-Wunused-variable]
+   uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send3, buf, 2, 1000);
+           ^~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  19888	     24	  10584	  30496	   7720	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+08:00:24 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:445:11: warning: unused variable 'res' [-Wunused-variable]
+   uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send3, buf, 2, 1000);
+           ^~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  19936	     24	  10584	  30544	   7750	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+08:00:47 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:445:11: warning: unused variable 'res' [-Wunused-variable]
+   uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send3, buf, 2, 1000);
+           ^~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  19936	     24	  10584	  30544	   7750	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+08:01:29 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:445:11: warning: unused variable 'res' [-Wunused-variable]
+   uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send3, buf, 2, 1000);
+           ^~~
+../Core/Src/main.c:413:12: warning: variable 'Speed' set but not used [-Wunused-but-set-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  19696	     24	  10584	  30304	   7660	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+08:03:33 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:445:11: warning: unused variable 'res' [-Wunused-variable]
+   uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send3, buf, 2, 1000);
+           ^~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  19936	     24	  10584	  30544	   7750	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+09:13:42 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:563:11: warning: variable 'New_data' set but not used [-Wunused-but-set-variable]
+  uint16_t New_data[4096];
+           ^~~~~~~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18580	     24	  10584	  29188	   7204	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+09:14:57 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:563:11: warning: variable 'New_data' set but not used [-Wunused-but-set-variable]
+  uint16_t New_data[4096];
+           ^~~~~~~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18584	     24	  10584	  29192	   7208	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+09:16:56 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:563:11: warning: variable 'New_data' set but not used [-Wunused-but-set-variable]
+  uint16_t New_data[4096];
+           ^~~~~~~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18584	     28	  10580	  29192	   7208	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+10:18:19 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18584	     28	  10580	  29192	   7208	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+10:28:15 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18584	     28	  10580	  29192	   7208	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+10:29:29 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18584	     28	  10580	  29192	   7208	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+10:30:29 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18584	     28	  10580	  29192	   7208	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+10:34:51 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:573:11: warning: variable 'New_data' set but not used [-Wunused-but-set-variable]
+  uint16_t New_data[4096];
+           ^~~~~~~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18756	     28	  10580	  29364	   72b4	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+10:35:23 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:574:11: warning: variable 'New_data' set but not used [-Wunused-but-set-variable]
+  uint16_t New_data[4096];
+           ^~~~~~~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18580	     28	  10580	  29188	   7204	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+10:35:54 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:574:11: warning: variable 'New_data' set but not used [-Wunused-but-set-variable]
+  uint16_t New_data[4096];
+           ^~~~~~~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18576	     28	  10580	  29184	   7200	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+10:36:14 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:574:11: warning: variable 'New_data' set but not used [-Wunused-but-set-variable]
+  uint16_t New_data[4096];
+           ^~~~~~~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18576	     28	  10580	  29184	   7200	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+10:42:04 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:437:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:574:11: warning: variable 'New_data' set but not used [-Wunused-but-set-variable]
+  uint16_t New_data[4096];
+           ^~~~~~~~
+../Core/Src/main.c:410:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18588	     28	  10580	  29196	   720c	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+10:46:44 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:412:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:407:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:406:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:404:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:403:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18492	     28	  10580	  29100	   71ac	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+10:48:42 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:412:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:407:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:406:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:404:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:403:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18524	     28	  10580	  29132	   71cc	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+10:56:16 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:412:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:407:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:406:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:404:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:403:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18524	     28	  10580	  29132	   71cc	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+10:56:47 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:412:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:407:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:406:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:404:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:403:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18524	     28	  10580	  29132	   71cc	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+11:21:50 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:412:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:407:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:406:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:404:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:403:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18724	     28	  10580	  29332	   7294	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+11:22:58 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:412:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:407:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:406:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:404:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:403:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18740	     28	  10580	  29348	   72a4	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+11:23:24 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:412:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:407:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:406:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:404:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:403:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18744	     28	  10580	  29352	   72a8	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+11:23:49 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:412:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:407:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:406:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:404:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:403:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18724	     28	  10580	  29332	   7294	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+11:24:06 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:412:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:407:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:406:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:404:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:403:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18744	     28	  10580	  29352	   72a8	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+11:28:06 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18744	     28	  10580	  29352	   72a8	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+12:13:26 **** Incremental Build of configuration Debug for project Uber_V2 ****
 make -j12 all 
 arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.o"
 arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.o"
 arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.o"
-arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_can.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_can.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_can.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_can.o"
+arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.o"
+arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.o"
+arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.o"
+arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.o"
+arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.o"
+arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.o"
+arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.o"
+arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi.o"
+arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.o"
+arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.o"
+arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.o"
+arm-none-eabi-gcc "../Core/Src/DRV8305.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/DRV8305.d" -MT"Core/Src/DRV8305.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/DRV8305.o"
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/stm32f1xx_hal_msp.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_hal_msp.d" -MT"Core/Src/stm32f1xx_hal_msp.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_hal_msp.o"
+arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
+arm-none-eabi-gcc "../Core/Src/system_stm32f1xx.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/system_stm32f1xx.d" -MT"Core/Src/system_stm32f1xx.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/system_stm32f1xx.o"
+../Core/Src/DRV8305.c: In function 'DRV_Init':
+../Core/Src/DRV8305.c:14:2: warning: implicit declaration of function 'memcpy' [-Wimplicit-function-declaration]
+  memcpy(&DRV_spi, &hspi, sizeof(hspi));
+  ^~~~~~
+../Core/Src/DRV8305.c:14:2: warning: incompatible implicit declaration of built-in function 'memcpy'
+../Core/Src/DRV8305.c:14:2: note: include '<string.h>' or provide a declaration of 'memcpy'
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:412:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:407:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:406:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:404:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:403:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18744	     28	  10580	  29352	   72a8	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+12:20:20 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.o"
+arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.o"
+arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.o"
 arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.o"
 arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.o"
 arm-none-eabi-gcc "../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.d" -MT"Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.o"
@@ -24,10 +1404,26 @@ arm-none-eabi-gcc "../Core/Src/stm32f1xx_hal_msp.c" -mcpu=cortex-m3 -std=gnu11 -
 arm-none-eabi-gcc "../Core/Src/stm32f1xx_it.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f1xx_it.d" -MT"Core/Src/stm32f1xx_it.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/stm32f1xx_it.o"
 arm-none-eabi-gcc "../Core/Src/system_stm32f1xx.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/system_stm32f1xx.d" -MT"Core/Src/system_stm32f1xx.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/system_stm32f1xx.o"
 ../Core/Src/main.c: In function 'main':
-../Core/Src/main.c:346:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+../Core/Src/main.c:417:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:412:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:411:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
    uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
             ^~~~~~~~~~
-../Core/Src/main.c:345:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+../Core/Src/main.c:408:12: warning: unused variable 'ValueArray' [-Wunused-variable]
    uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
             ^~~~~~~~~~
 ../Core/Src/DRV8305.c: In function 'DRV_Init':
@@ -43,17 +1439,371 @@ arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
 arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
 arm-none-eabi-size   Uber_V2.elf 
    text	   data	    bss	    dec	    hex	filename
-  18728	     20	   2332	  21080	   5258	Uber_V2.elf
+  18856	     28	  11348	  30232	   7618	Uber_V2.elf
 Finished building: default.size.stdout
  
-Finished building: Uber_V2.list
 Finished building: Uber_V2.bin
  
+Finished building: Uber_V2.list
  
-10:05:38 **** Incremental Build of configuration Debug for project Uber_V2 ****
+12:21:32 **** Incremental Build of configuration Debug for project Uber_V2 ****
 make -j12 all 
 arm-none-eabi-size   Uber_V2.elf 
    text	   data	    bss	    dec	    hex	filename
-  18728	     20	   2332	  21080	   5258	Uber_V2.elf
+  18856	     28	  11348	  30232	   7618	Uber_V2.elf
 Finished building: default.size.stdout
+ 
+12:22:17 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:417:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:412:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:411:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:408:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18856	     28	  11348	  30232	   7618	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+12:24:53 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:417:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:412:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:411:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:408:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18856	     28	  11348	  30232	   7618	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+12:25:23 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:417:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:412:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:411:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:408:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18856	     28	  11348	  30232	   7618	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+12:25:50 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:417:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:412:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:411:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:408:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18856	     28	  11348	  30232	   7618	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+12:26:15 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:417:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:412:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:411:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:408:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18856	     28	  11348	  30232	   7618	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+12:26:49 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:417:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:412:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:411:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:408:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18856	     28	  11348	  30232	   7618	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+12:27:39 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:417:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:412:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:411:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:408:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18856	     28	  11348	  30232	   7618	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
+ 
+16:18:52 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:417:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:603:5: error: too few arguments to function 'BEMF_SixStep'
+     BEMF_SixStep();
+     ^~~~~~~~~~~~
+../Core/Src/main.c:202:10: note: declared here
+ uint32_t BEMF_SixStep(uint16_t Value){
+          ^~~~~~~~~~~~
+../Core/Src/main.c:412:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:411:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:408:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+make: *** [Core/Src/subdir.mk:38: Core/Src/main.o] Error 1
+"make -j12 all" terminated with exit code 2. Build might be incomplete.
+16:19:23 **** Incremental Build of configuration Debug for project Uber_V2 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:417:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
+                             ^~~~~~~~
+In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
+                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
+                 from ../Core/Inc/main.h:31,
+                 from ../Core/Src/main.c:21:
+../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
+ HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+                         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:412:12: warning: unused variable 'Speed' [-Wunused-variable]
+   uint32_t Speed = 0x0007ffff;
+            ^~~~~
+../Core/Src/main.c:411:12: warning: unused variable 'Value' [-Wunused-variable]
+   uint16_t Value = Presc;
+            ^~~~~
+../Core/Src/main.c:409:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
+   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
+            ^~~~~~~~~~
+../Core/Src/main.c:408:12: warning: unused variable 'ValueArray' [-Wunused-variable]
+   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
+            ^~~~~~~~~~
+arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Uber_V2.elf
+ 
+arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
+arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
+arm-none-eabi-size   Uber_V2.elf 
+   text	   data	    bss	    dec	    hex	filename
+  18696	     28	  11348	  30072	   7578	Uber_V2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Uber_V2.bin
+ 
+Finished building: Uber_V2.list
  

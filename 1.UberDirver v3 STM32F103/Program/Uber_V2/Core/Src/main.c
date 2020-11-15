@@ -35,6 +35,9 @@
 #define STATE_FLOATING	2
 #define	STATE_F_LOW		2
 #define	STATE_F_HIGH	3
+
+#define SINGLE_DMA		1
+int IsDMA = 1;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -51,8 +54,6 @@ ADC_HandleTypeDef hadc1;
 ADC_HandleTypeDef hadc2;
 DMA_HandleTypeDef hdma_adc1;
 
-CAN_HandleTypeDef hcan;
-
 SPI_HandleTypeDef hspi1;
 
 TIM_HandleTypeDef htim1;
@@ -61,65 +62,83 @@ TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 
 UART_HandleTypeDef huart1;
+DMA_HandleTypeDef hdma_usart1_rx;
+DMA_HandleTypeDef hdma_usart1_tx;
 
 /* USER CODE BEGIN PV */
 uint8_t buf[2] = {0, 0};
-uint32_t ADC_data[4] = {0,0,0,0};	// try 16bit
+uint16_t ADC_data[4] = {0,0,0,0};	// try 16bit
+uint16_t data[4096];	// try 16bit
+uint8_t tx_buffer[3] = {'O','K','!'};
+uint8_t rx_buffer[3] = {0,0,0};
+//uint32_t ADC_A[128];
+//uint32_t ADC_B[128];
+//uint32_t ADC_C[128];
+//uint32_t ADC_DC[128];
+uint8_t tim_num = 0;
+uint32_t TIM_A[64];
+uint32_t TIM_B[64];
+uint32_t TIM_C[64];
+uint16_t data_num = 0;
 TIM_OC_InitTypeDef TIM_LED = {0}, TIM_ADC = {0};
 
-
-void SetPulse_A(uint8_t value){
-	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, value);
-	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, value);
+void StartPWM(){
 	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-}
-
-void SetPulse_B(uint8_t value){
-	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, value);
-	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, value);
+	//HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+	//HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+	//HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
+
+	htim1.Instance->CNT = 0;
+	htim2.Instance->CNT = 0;
+	htim3.Instance->CNT = 0;
 }
 
-void SetPulse_C(uint8_t value){
-	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, value);
-	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, value);
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+void SetZero_A(){
+	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 0);
+	HAL_GPIO_WritePin(PWM_AL_GPIO_Port, PWM_AL_Pin, 1);
+}
+
+void SetZero_B(){
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
+	HAL_GPIO_WritePin(PWM_BL_GPIO_Port, PWM_BL_Pin, 1);
+}
+
+void SetZero_C(){
+	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
+	HAL_GPIO_WritePin(PWM_CL_GPIO_Port, PWM_CL_Pin, 1);
 }
 
 void SetPulse_AH(uint8_t value){
 	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, value);
-	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
+	HAL_GPIO_WritePin(PWM_AL_GPIO_Port, PWM_AL_Pin, 0);
 }
 
 void SetPulse_BH(uint8_t value){
 	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, value);
-	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
+	HAL_GPIO_WritePin(PWM_BL_GPIO_Port, PWM_BL_Pin, 0);
 }
 
 void SetPulse_CH(uint8_t value){
 	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, value);
-	HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+	HAL_GPIO_WritePin(PWM_CL_GPIO_Port, PWM_CL_Pin, 0);
 }
 
 void SetFloating_A(){
-	HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
+	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 0);
+	HAL_GPIO_WritePin(PWM_AL_GPIO_Port, PWM_AL_Pin, 0);
 }
 
 void SetFloating_B(){
-	HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
+	HAL_GPIO_WritePin(PWM_BL_GPIO_Port, PWM_BL_Pin, 0);
 }
 
 void SetFloating_C(){
-	HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_2);
+	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
+	HAL_GPIO_WritePin(PWM_CL_GPIO_Port, PWM_CL_Pin, 0);
 }
 
 void Delay_Tick(uint32_t val){
@@ -135,32 +154,32 @@ void Delay_Tick(uint32_t val){
 void SixStep(uint32_t Speed, uint16_t Value){
 	// 1
 	SetPulse_AH(Value);
-	SetPulse_B(0);
+	SetZero_B();
 	SetFloating_C();
 	Delay_Tick(Speed);
 	//2
 	SetPulse_AH(Value);
 	SetFloating_B();
-	SetPulse_C(0);
+	SetZero_C();
 	Delay_Tick(Speed);
 	//3
 	SetFloating_A();
 	SetPulse_BH(Value);
-	SetPulse_C(0);
+	SetZero_C();
 	Delay_Tick(Speed);
 	//4
-	SetPulse_A(0);
+	SetZero_A();
 	SetPulse_BH(Value);
 	SetFloating_C();
 	Delay_Tick(Speed);
 	//5
-	SetPulse_A(0);
+	SetZero_A();
 	SetFloating_B();
 	SetPulse_CH(Value);
 	Delay_Tick(Speed);
-	//5
+	//6
 	SetFloating_A();
-	SetPulse_B(0);
+	SetZero_B();
 	SetPulse_CH(Value);
 	Delay_Tick(Speed);
 }
@@ -169,7 +188,7 @@ uint32_t WaitForCross(uint8_t num, uint8_t val){
 	__HAL_TIM_SET_COUNTER(&htim4,0);
 	uint32_t ret_val = 0;
 
-	while(ADC_data[num] > val){
+	while(ADC_data[num] > val+ADC_data[3]/2){
 		if (__HAL_TIM_GET_COUNTER(&htim4) > 0x7fff){
 			ret_val += __HAL_TIM_GET_COUNTER(&htim4);
 			__HAL_TIM_SET_COUNTER(&htim4,0);
@@ -180,66 +199,125 @@ uint32_t WaitForCross(uint8_t num, uint8_t val){
 	return ret_val;
 }
 
-void BEMF_SixStep(uint16_t Value){
+uint32_t BEMF_SixStep(uint16_t Value){
 	uint32_t ticks = 0;
 	// 1
 	SetPulse_AH(Value);
-	SetPulse_B(0);
+	SetZero_B();
 	SetFloating_C();
-	ticks = WaitForCross(2,0);
+	//__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 64-20);
+	ticks = (WaitForCross(2,0))/2;
+	data[ data_num-1] = 0;
+	//__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
 	//2
 	SetPulse_AH(Value);
 	SetFloating_B();
-	SetPulse_C(0);
+	SetZero_C();
 	Delay_Tick(ticks);
+	data[ data_num-1] = 0;
 	//3
 	SetFloating_A();
 	SetPulse_BH(Value);
-	SetPulse_C(0);
-	ticks = WaitForCross(0,0);
+	SetZero_C();
+	//__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 64-20);
+	ticks = (WaitForCross(0,0))/2;
+	data[ data_num-1] = 0;
+	//__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
 	//4
-	SetPulse_A(0);
+	SetZero_A();
 	SetPulse_BH(Value);
 	SetFloating_C();
 	Delay_Tick(ticks);
+	data[ data_num-1] = 0;
 	//5
-	SetPulse_A(0);
+	SetZero_A();
 	SetFloating_B();
 	SetPulse_CH(Value);
-	ticks = WaitForCross(1,0);
-	//5
+	//__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 64-20);
+	ticks = (WaitForCross(1,0))/2;
+	data[ data_num-1] = 0;
+	//__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
+	//6
 	SetFloating_A();
-	SetPulse_B(0);
+	SetZero_B();
 	SetPulse_CH(Value);
 	Delay_Tick(ticks);
+	data[ data_num-1] = 0;
+
+	return ticks;
 }
 
-void TriStep(uint32_t Speed, uint16_t Value){
-	// 1
-	SetPulse_AH(Value);
-	SetPulse_B(0);
-	SetFloating_C();
-	Delay_Tick(Speed);
-	//2
-	SetFloating_A();
-	SetPulse_BH(Value);
-	SetPulse_C(0);
-	Delay_Tick(Speed);
-	//3
-	SetPulse_A(0);
-	SetFloating_B();
-	SetPulse_CH(Value);
-	Delay_Tick(Speed);
-}
 uint8_t test = 0;
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
+void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim){
 	test = __HAL_TIM_GET_COUNTER(&htim1);
 	if(htim->Instance == TIM1){
-		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_4){
+		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3){
 			test = __HAL_TIM_GET_COUNTER(&htim1);
 			test = __HAL_TIM_GET_COUNTER(&htim1);
 		}
+	}
+}
+uint8_t IsNewVal = 0;
+void WaitForRise(uint8_t Phase){
+	while(1){
+		if(IsNewVal){
+			if(ADC_data[Phase] > ADC_data[3]/2) return;
+		}
+	}
+}
+
+void WaitForFall(uint8_t Phase){
+	while(1){
+		if(IsNewVal){
+			if(ADC_data[Phase] < ADC_data[3]/2) return;
+		}
+	}
+}
+int cnt = 0;
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
+	// Collect data
+
+	if((data_num < (4096-4)) && IsDMA && cnt == 7){
+
+		data[data_num] = ADC_data[0];
+		data_num++;
+		data[data_num] = ADC_data[1];
+		data_num++;
+		data[data_num] = ADC_data[2];
+		data_num++;
+		data[data_num] = ADC_data[3];
+		data_num++;
+		cnt = 0;
+	}
+	if((tim_num < (64-4)) && IsDMA){
+		TIM_B[tim_num] = __HAL_TIM_GET_COUNTER(&htim3);
+		TIM_C[tim_num] = __HAL_TIM_GET_COUNTER(&htim1);
+		TIM_A[tim_num] = __HAL_TIM_GET_COUNTER(&htim2);
+		tim_num++;
+	}
+	IsNewVal = 1;
+	cnt ++;
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+	HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+	HAL_UART_Receive_DMA(&huart1, rx_buffer, 1);
+}
+
+void Accelerate_01(uint8_t Value, uint8_t Speed){		// Chinczyk - Value = 8; Speed = 0x0007ffff;
+	for (; Speed > 0x0000ffff; Speed = Speed - 0x00001fff){		// 1
+		SixStep(Speed, Value);
+	}
+
+	//
+	for (; Speed > 0x00006fff; Speed = Speed - 0x000001ff){		// 1
+		SixStep(Speed, Value);
+	}
+	for (; Speed > 0x00006000; Speed = Speed - 0x0000000f){		// 1
+		SixStep(Speed, Value);
+	}
+	for (; Speed > 0x00005000; Speed = Speed - 0x00000001){		// 1
+		SixStep(Speed, Value);
 	}
 }
 
@@ -252,7 +330,6 @@ static void MX_DMA_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_TIM1_Init(void);
-static void MX_CAN_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_USART1_UART_Init(void);
@@ -301,7 +378,6 @@ int main(void)
   MX_ADC1_Init();
   MX_SPI1_Init();
   MX_TIM1_Init();
-  MX_CAN_Init();
   MX_TIM3_Init();
   MX_TIM2_Init();
   MX_USART1_UART_Init();
@@ -311,29 +387,16 @@ int main(void)
   HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
   HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 1);
 
-  HAL_TIM_Base_Start(&htim4);
-
   DRV_Init(hspi1);
 
-  TIM_LED.OCMode = TIM_OCMODE_PWM1;
-  TIM_LED.Pulse = 7;
-  TIM_LED.OCPolarity = TIM_OCPOLARITY_HIGH;
-  TIM_LED.OCFastMode = TIM_OCFAST_DISABLE;
-  HAL_TIM_PWM_ConfigChannel(&htim1, &TIM_LED, TIM_CHANNEL_3);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);		// LED
+  HAL_TIM_Base_Start(&htim4);
 
-  TIM_ADC.OCMode = TIM_OCMODE_PWM1;
-  TIM_ADC.Pulse = 16;
-  TIM_ADC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  TIM_ADC.OCFastMode = TIM_OCFAST_DISABLE;
-  HAL_TIM_PWM_ConfigChannel(&htim1, &TIM_ADC, TIM_CHANNEL_4);
+  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, 0);		// LED
 
-  HAL_TIM_Base_Start_IT(&htim1);		// Włączenie pzrerwania dla kanał
-  HAL_TIM_PWM_Start_IT(&htim1, TIM_CHANNEL_4);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);		// Timer od pzrerwan dla timera
-  //__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 16);
-  //__HAL_TIM_ENABLE_IT(&htim1, TIM_CHANNEL_4);
+  StartPWM();
 
+  HAL_UART_Receive_DMA(&huart1, rx_buffer, 1);
+  HAL_UART_Transmit_DMA(&huart1, tx_buffer, 3);
   HAL_Delay(1);
   /* USER CODE END 2 */
 
@@ -344,69 +407,203 @@ int main(void)
 
   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
-  uint16_t Value = 0x0002;
-  uint32_t Speed = 0x00ffffff;
+  uint8_t Presc = 8;
+  uint16_t Value = Presc;
+  uint32_t Speed = 0x0007ffff;
 
-  //for(int a = 0; a < 10; a++){
-
-  uint32_t data[4096];	// try 16bit
-  for(int a = 0; a < 4096; a++){
-	  data[a] = 0;
-  }
+  HAL_Delay(3000);
 
   HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
+  HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);		// Po konwersji ADC, DMA zapisuje odczyty
+  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
+  HAL_TIM_PWM_Start_IT(&htim1, TIM_CHANNEL_3);	// Pulse wyzwala ADC
+
+// WSTAWKA 0.25A
+  /*
+	uint8_t send1[2] = {0x78,(5 << 3) + 0x3};			// Read command, MSB is shifted in and out first
+	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 0);
+	uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send1, buf, 2, 1000);
+	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 1);
+
+	Delay_Tick(0x0f);
+
+	uint8_t send2[2] = {0x78,(6 << 3) + 0x3};
+	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 0);
+	res = HAL_SPI_TransmitReceive(&hspi1, send2, buf, 2, 1000);
+	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 1);
+*/
 
 
-	for (; Speed > 0x007fffff; Speed = Speed - 0x005fffff){		// 1
+/*
+	for(int a = 1; a < 0xC; a++){
+		uint8_t send3[2] = {0,(a << 3) + 0x80};			// Read command, MSB is shifted in and out first
+		HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 0);
+		//Delay_Tick(0x0f);
+		uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send3, buf, 2, 1000);
+		//Delay_Tick(0x0f);
+		HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 1);
+	}*/
+	//Accelerate_01(Value, Speed);
+	//Value=16;
+  /*
+	Speed = 0x000Fffff;
+	Value = 16;
+	for (int b = 0; b < 8; b++){
+			for (int a = 0; a < 4; a++){		// DELAY
+			SixStep(Speed, Value);
+			//HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);		// LED
+		  }
+			Value ++;
+			Speed -= 0x0000ffff;
+		}
+		*/
+	/*
+	Speed = 0x000bffff;
+	Value = 32;
+	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 64-20);
+	for (int b = 0; b < 7; b++){
+		for (int a = 0; a < 4; a++){		// DELAY
 		SixStep(Speed, Value);
+		//HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);		// LED
+	  }
+		Value ++;
+		Speed -= 0x0000ffff;
 	}
-	Value ++;
-	for (; Speed > 0x001fffff; Speed = Speed - 0x000fffff){		// 1
-		SixStep(Speed, Value);
+*/
+	/////////////////////
+	/*
+	rx_buffer[0] = Value;
+	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 64-20);*/
+/*
+	IsDMA = 0;
+	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 64-20);
+	IsDMA = 1;
+	for (; Value < 63; Value++){
+		for (int a = 0; a < 100; a++){		// DELAY
+			BEMF_SixStep(Value);
+		  }
 	}
-	for (; Speed > 0x000fffff; Speed = Speed - 0x0007ffff){		// 1
+	Value = 63;
+	for (int a = 0; a < 1000; a++){		// DELAY
+		BEMF_SixStep(Value);
+	  }
+	SetFloating_A();
+	SetFloating_B();
+	SetFloating_C();
+	HAL_Delay(100);
+	IsDMA = 0;
+*/
+/*
+
+	////////////////
+	for (int b = 0; b < 8; b++){
+			for (int a = 0; a < 4; a++){		// DELAY
+			SixStep(Speed, Value);
+		  }
+			Value ++;
+			Speed -= 0x00001fff;
+		}
+	for (int b = 0; b < 8; b++){
+		for (int a = 0; a < 4; a++){		// DELAY
 		SixStep(Speed, Value);
-	}
-	for (; Speed > 0x0007ffff; Speed = Speed - 0x0001ffff){		// 1
-		SixStep(Speed, Value);
+	  }
+		Value ++;
+		Speed -= 0x00000aff;
 	}
 
-
-	Value ++;
-	for (; Speed > 0x00007fff; Speed = Speed - 0x000000ff){		// 1
+	for (int a = 0; a < 50; a++){		// DELAY
 		SixStep(Speed, Value);
-	}
+	  }
+
+	*/
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	HAL_ADC_Start_DMA(&hadc1, data, 4096);
-	int IsDMA = 1;
-	for (int a = 0; a < 500; a++){		// DELAY
+/*
+	  //HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);		// Po konwersji ADC, DMA zapisuje odczyty
+	  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 64-20);
+	  //HAL_TIM_PWM_Start_IT(&htim1, TIM_CHANNEL_3);	// Pulse wyzwala ADC
+
+	for (int a = 0; a < 100; a++){		// DELAY
 		SixStep(Speed, Value);
-		if (IsDMA == 1){
-			HAL_ADC_Stop_DMA(&hadc1);
+		if ((IsDMA == 1) && SINGLE_DMA){
+			//HAL_ADC_Stop_DMA(&hadc1);
+			//HAL_ADC_Stop_DMA(&hadc1);		// Po konwersji ADC, DMA zapisuje odczyty
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
+			//HAL_TIM_PWM_Stop_IT(&htim1, TIM_CHANNEL_3);	// Pulse wyzwala ADC
 			IsDMA = 0;
 		}
 	  }
+	  */
+
+
+
+
 /*
-	HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);
-	Value = 2;
+
+	for(int b = 0; b < 20; b ++){
+		for (int a = 0; a < 1000; a++){		// DELAY
+			ticks = BEMF_SixStep(Value, ticks);
+		}
+		Value++;
+		//HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);		// LED
+	}
+
+	HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,1);		// LED
 	for (int a = 0; a < 5000; a++){		// DELAY
-		BEMF_SixStep(Value);
+		ticks = BEMF_SixStep(Value, ticks);
 	  }
-	HAL_ADC_Stop_DMA(&hadc1);*/
+
+
+
+
+	  */
+
+/* PRZED_UART_PRZED_UART_PRZED_UART_PRZED_UART_PRZED_UART_PRZED_UART_PRZED_UART_PRZED_UART
+	HAL_ADC_Stop_DMA(&hadc1);		// Po konwersji ADC, DMA zapisuje odczyty
+	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
+	HAL_TIM_PWM_Stop_IT(&htim1, TIM_CHANNEL_3);	// Pulse wyzwala ADC
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+*/
+	/*
+	  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
 
-	SetPulse_A(0);
-	SetPulse_B(0);
-	SetPulse_C(0);
-
+	SetFloating_A();
+	SetFloating_B();
+	SetFloating_C();
+	  HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
+	uint16_t New_data[4096];
+	for (int a = 0; a < 4096; a ++){
+		New_data[a] = data[a];
+	}
+*/
 	//Speed = Speed - 0x0ff;
 		  //Speed = SpeedArray[a];
 		  //Value = ValueArray[a];
   //}
-
+  IsDMA = 1;
+__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 1);
+uint8_t IsRunning = 0;
+uint8_t Power = 0;
   while (1)
   {
-	  HAL_Delay(1);
+	  //HAL_Delay(1);
+	  if(rx_buffer[0] == 0){
+		  HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
+		  IsRunning = 0;
+	  }else {
+		  HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
+		  if (!IsRunning){
+			 // SixStep(0x000fffff, 16);
+			 // SixStep(0x0007ffff, 16);
+			 // SixStep(0x0000ffff, 16);
+		  }
+		  Power = rx_buffer[0];				// bufer w kazdej chwili moze zmienic sie
+		  if (Power < 8) Power = 8;			// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik
+		  else if (Power > 55) Power = 63;	// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik
+		  BEMF_SixStep(Power);
+		  IsRunning = 1;
+	  }
+	  //HAL_Delay(100);
 	  //SixStep(Speed, Value);
     /* USER CODE END WHILE */
 
@@ -415,19 +612,28 @@ int main(void)
 	  //PWMCL.Pulse =  PWMCL.Pulse - 1;
 	  //HAL_TIM_PWM_ConfigChannel(&htim1, &PWMCL, TIM_CHANNEL_1);
 	  //HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-	  	/*uint8_t data[2] = {0,(Value << 3) + 0x80};			// Read command, MSB is shifted in and out first
-	  	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 0);
-	  	HAL_Delay(1);
-	  	uint8_t res = HAL_SPI_TransmitReceive(&hspi1, data, buf, 2, 1000);
-	  	HAL_Delay(1);
-	  	Value ++;
-	  	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 1);
+
+
 	  //uint8_t test[2] = {0,2};
 	  //DRV_Write(IC_OPERATION, test);
-	  for(int a = 0; a < 5; a++){
-		  HAL_Delay(1);
-		  DRV_Read(a, buf);
-	  }*/
+/*
+	  for(int a = 1; a < 7; a++){
+		  //HAL_Delay(1);
+		  //DRV_Read(a, buf);
+
+		  	uint8_t send[2] = {0,(a << 3) + 0x80};			// Read command, MSB is shifted in and out first
+		  	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 0);
+		  	//HAL_Delay(1);
+		  	//Delay_Tick(0x0f);
+		  	uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send, buf, 2, 1000);
+		  	//HAL_Delay(1);
+		  	//Delay_Tick(0x0f);
+		  	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 1);
+		  	//HAL_Delay(1);
+
+	  }
+	  */
+
 	  //if((buf[0] == 0x16)&&(buf[1] == 0x2)){
 	  //}
 	  //HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
@@ -502,7 +708,7 @@ static void MX_ADC1_Init(void)
   hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
   hadc1.Init.ContinuousConvMode = DISABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
-  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC3;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc1.Init.NbrOfConversion = 4;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
@@ -513,7 +719,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_0;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_13CYCLES_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -568,21 +774,45 @@ static void MX_ADC2_Init(void)
   /** Common config
   */
   hadc2.Instance = ADC2;
-  hadc2.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc2.Init.ScanConvMode = ADC_SCAN_ENABLE;
   hadc2.Init.ContinuousConvMode = DISABLE;
   hadc2.Init.DiscontinuousConvMode = DISABLE;
   hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc2.Init.NbrOfConversion = 1;
+  hadc2.Init.NbrOfConversion = 4;
   if (HAL_ADC_Init(&hadc2) != HAL_OK)
   {
     Error_Handler();
   }
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_9;
+  sConfig.Channel = ADC_CHANNEL_0;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Rank = ADC_REGULAR_RANK_2;
+  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Rank = ADC_REGULAR_RANK_3;
+  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_4;
+  sConfig.Rank = ADC_REGULAR_RANK_4;
   if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -590,43 +820,6 @@ static void MX_ADC2_Init(void)
   /* USER CODE BEGIN ADC2_Init 2 */
 
   /* USER CODE END ADC2_Init 2 */
-
-}
-
-/**
-  * @brief CAN Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_CAN_Init(void)
-{
-
-  /* USER CODE BEGIN CAN_Init 0 */
-
-  /* USER CODE END CAN_Init 0 */
-
-  /* USER CODE BEGIN CAN_Init 1 */
-
-  /* USER CODE END CAN_Init 1 */
-  hcan.Instance = CAN1;
-  hcan.Init.Prescaler = 16;
-  hcan.Init.Mode = CAN_MODE_NORMAL;
-  hcan.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan.Init.TimeSeg1 = CAN_BS1_1TQ;
-  hcan.Init.TimeSeg2 = CAN_BS2_1TQ;
-  hcan.Init.TimeTriggeredMode = DISABLE;
-  hcan.Init.AutoBusOff = DISABLE;
-  hcan.Init.AutoWakeUp = DISABLE;
-  hcan.Init.AutoRetransmission = DISABLE;
-  hcan.Init.ReceiveFifoLocked = DISABLE;
-  hcan.Init.TransmitFifoPriority = DISABLE;
-  if (HAL_CAN_Init(&hcan) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN CAN_Init 2 */
-
-  /* USER CODE END CAN_Init 2 */
 
 }
 
@@ -708,7 +901,7 @@ static void MX_TIM1_Init(void)
   {
     Error_Handler();
   }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_OC3REF;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
   {
@@ -716,25 +909,17 @@ static void MX_TIM1_Init(void)
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
   sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_LOW;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
   sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
   {
     Error_Handler();
   }
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_LOW;
   if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
   {
     Error_Handler();
   }
@@ -808,11 +993,6 @@ static void MX_TIM2_Init(void)
   {
     Error_Handler();
   }
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_LOW;
-  if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
-  {
-    Error_Handler();
-  }
   /* USER CODE BEGIN TIM2_Init 2 */
 
   /* USER CODE END TIM2_Init 2 */
@@ -872,11 +1052,6 @@ static void MX_TIM3_Init(void)
   {
     Error_Handler();
   }
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_LOW;
-  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
-  {
-    Error_Handler();
-  }
   /* USER CODE BEGIN TIM3_Init 2 */
 
   /* USER CODE END TIM3_Init 2 */
@@ -903,9 +1078,9 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 1 */
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 1-1;
+  htim4.Init.Prescaler = 0;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 0xffff-1;
+  htim4.Init.Period = 65535;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
@@ -945,7 +1120,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 9600;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -975,6 +1150,12 @@ static void MX_DMA_Init(void)
   /* DMA1_Channel1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+  /* DMA1_Channel4_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
+  /* DMA1_Channel5_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
 
 }
 
@@ -996,10 +1177,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(INPUT_GPIO_Port, INPUT_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, INPUT_Pin|PWM_CL_Pin|LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, SPI_CS_Pin|PWM_AL_Pin|PWM_BL_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : ENGATE_Pin */
   GPIO_InitStruct.Pin = ENGATE_Pin;
@@ -1014,19 +1195,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(NFAULT_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : INPUT_Pin */
-  GPIO_InitStruct.Pin = INPUT_Pin;
+  /*Configure GPIO pins : INPUT_Pin PWM_CL_Pin LED_Pin */
+  GPIO_InitStruct.Pin = INPUT_Pin|PWM_CL_Pin|LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(INPUT_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : SPI_CS_Pin */
-  GPIO_InitStruct.Pin = SPI_CS_Pin;
+  /*Configure GPIO pins : SPI_CS_Pin PWM_AL_Pin PWM_BL_Pin */
+  GPIO_InitStruct.Pin = SPI_CS_Pin|PWM_AL_Pin|PWM_BL_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(SPI_CS_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure peripheral I/O remapping */
   __HAL_AFIO_REMAP_PD01_ENABLE();

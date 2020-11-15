@@ -27892,13 +27892,13 @@ na plytce nadrzednej</text>
 <attribute name="NAME" x="-278.257" y="76.6826" size="1.778" layer="95"/>
 <attribute name="VALUE" x="-278.257" y="71.6026" size="1.778" layer="96"/>
 </instance>
-<instance part="JP2" gate="A" x="-403.86" y="134.62" smashed="yes">
-<attribute name="NAME" x="-410.21" y="140.335" size="1.778" layer="95"/>
-<attribute name="VALUE" x="-410.21" y="127" size="1.778" layer="96"/>
+<instance part="JP2" gate="A" x="-175.26" y="142.24" smashed="yes">
+<attribute name="NAME" x="-181.61" y="147.955" size="1.778" layer="95"/>
+<attribute name="VALUE" x="-181.61" y="134.62" size="1.778" layer="96"/>
 </instance>
-<instance part="JP1" gate="A" x="-403.86" y="124.46" smashed="yes">
-<attribute name="NAME" x="-410.21" y="130.175" size="1.778" layer="95"/>
-<attribute name="VALUE" x="-410.21" y="116.84" size="1.778" layer="96"/>
+<instance part="JP1" gate="A" x="-175.26" y="132.08" smashed="yes">
+<attribute name="NAME" x="-181.61" y="137.795" size="1.778" layer="95"/>
+<attribute name="VALUE" x="-181.61" y="124.46" size="1.778" layer="96"/>
 </instance>
 <instance part="JP5" gate="A" x="-327.66" y="121.92" smashed="yes">
 <attribute name="NAME" x="-334.01" y="132.715" size="1.778" layer="95"/>
@@ -27924,9 +27924,9 @@ na plytce nadrzednej</text>
 <attribute name="NAME" x="-306.07" y="112.395" size="1.778" layer="95"/>
 <attribute name="VALUE" x="-306.07" y="91.44" size="1.778" layer="96"/>
 </instance>
-<instance part="JP3" gate="A" x="-403.86" y="114.3" smashed="yes">
-<attribute name="NAME" x="-410.21" y="120.015" size="1.778" layer="95"/>
-<attribute name="VALUE" x="-410.21" y="106.68" size="1.778" layer="96"/>
+<instance part="JP3" gate="A" x="-175.26" y="121.92" smashed="yes">
+<attribute name="NAME" x="-181.61" y="127.635" size="1.778" layer="95"/>
+<attribute name="VALUE" x="-181.61" y="114.3" size="1.778" layer="96"/>
 </instance>
 <instance part="JP4" gate="A" x="-345.44" y="104.14" smashed="yes">
 <attribute name="NAME" x="-351.79" y="114.935" size="1.778" layer="95"/>
@@ -28240,6 +28240,11 @@ na plytce nadrzednej</text>
 <junction x="124.46" y="12.7"/>
 <pinref part="GND4" gate="1" pin="GND"/>
 </segment>
+<segment>
+<pinref part="JP3" gate="A" pin="1"/>
+<wire x1="-177.8" y1="124.46" x2="-190.5" y2="124.46" width="0.1524" layer="91"/>
+<label x="-190.5" y="124.46" size="1.778" layer="95" rot="R180"/>
+</segment>
 </net>
 <net name="+3V3" class="0">
 <segment>
@@ -28547,6 +28552,11 @@ na plytce nadrzednej</text>
 <pinref part="U$1" gate="G$1" pin="3"/>
 <wire x1="-43.18" y1="101.6" x2="-50.8" y2="101.6" width="0.1524" layer="91"/>
 <label x="-50.8" y="101.6" size="1.778" layer="95" rot="R180"/>
+</segment>
+<segment>
+<pinref part="JP1" gate="A" pin="2"/>
+<wire x1="-177.8" y1="132.08" x2="-190.5" y2="132.08" width="0.1524" layer="91"/>
+<label x="-190.5" y="132.08" size="1.778" layer="95" rot="R180"/>
 </segment>
 </net>
 <net name="GH_A" class="0">
@@ -28958,6 +28968,11 @@ na plytce nadrzednej</text>
 <wire x1="-43.18" y1="106.68" x2="-50.8" y2="106.68" width="0.1524" layer="91"/>
 <label x="-50.8" y="106.68" size="1.778" layer="95" rot="R180"/>
 </segment>
+<segment>
+<pinref part="JP3" gate="A" pin="2"/>
+<wire x1="-177.8" y1="121.92" x2="-190.5" y2="121.92" width="0.1524" layer="91"/>
+<label x="-190.5" y="121.92" size="1.778" layer="95" rot="R180"/>
+</segment>
 </net>
 <net name="SWCLK" class="0">
 <segment>
@@ -28969,6 +28984,11 @@ na plytce nadrzednej</text>
 <pinref part="U$1" gate="G$1" pin="2"/>
 <wire x1="-43.18" y1="104.14" x2="-50.8" y2="104.14" width="0.1524" layer="91"/>
 <label x="-50.8" y="104.14" size="1.778" layer="95" rot="R180"/>
+</segment>
+<segment>
+<pinref part="JP1" gate="A" pin="1"/>
+<wire x1="-177.8" y1="134.62" x2="-190.5" y2="134.62" width="0.1524" layer="91"/>
+<label x="-190.5" y="134.62" size="1.778" layer="95" rot="R180"/>
 </segment>
 </net>
 <net name="N$81" class="0">
@@ -28988,6 +29008,11 @@ na plytce nadrzednej</text>
 <pinref part="U$1" gate="G$1" pin="4"/>
 <wire x1="-43.18" y1="99.06" x2="-50.8" y2="99.06" width="0.1524" layer="91"/>
 <label x="-50.8" y="99.06" size="1.778" layer="95" rot="R180"/>
+</segment>
+<segment>
+<pinref part="JP1" gate="A" pin="3"/>
+<wire x1="-177.8" y1="129.54" x2="-190.5" y2="129.54" width="0.1524" layer="91"/>
+<label x="-190.5" y="129.54" size="1.778" layer="95" rot="R180"/>
 </segment>
 </net>
 <net name="GND_C" class="0">
@@ -29094,6 +29119,11 @@ na plytce nadrzednej</text>
 <wire x1="-43.18" y1="83.82" x2="-50.8" y2="83.82" width="0.1524" layer="91"/>
 <label x="-50.8" y="83.82" size="1.778" layer="95" rot="R180"/>
 </segment>
+<segment>
+<pinref part="JP2" gate="A" pin="3"/>
+<wire x1="-177.8" y1="139.7" x2="-190.5" y2="139.7" width="0.1524" layer="91"/>
+<label x="-190.5" y="139.7" size="1.778" layer="95" rot="R180"/>
+</segment>
 </net>
 <net name="CAN_TX" class="0">
 <segment>
@@ -29105,6 +29135,11 @@ na plytce nadrzednej</text>
 <pinref part="U$1" gate="G$1" pin="9"/>
 <wire x1="-43.18" y1="86.36" x2="-50.8" y2="86.36" width="0.1524" layer="91"/>
 <label x="-50.8" y="86.36" size="1.778" layer="95" rot="R180"/>
+</segment>
+<segment>
+<pinref part="JP2" gate="A" pin="2"/>
+<wire x1="-177.8" y1="142.24" x2="-190.5" y2="142.24" width="0.1524" layer="91"/>
+<label x="-190.5" y="142.24" size="1.778" layer="95" rot="R180"/>
 </segment>
 </net>
 <net name="PWM_AL" class="0">
@@ -29142,6 +29177,11 @@ na plytce nadrzednej</text>
 <wire x1="-43.18" y1="91.44" x2="-50.8" y2="91.44" width="0.1524" layer="91"/>
 <label x="-50.8" y="91.44" size="1.778" layer="95" rot="R180"/>
 </segment>
+<segment>
+<pinref part="JP2" gate="A" pin="1"/>
+<wire x1="-177.8" y1="144.78" x2="-190.5" y2="144.78" width="0.1524" layer="91"/>
+<label x="-190.5" y="144.78" size="1.778" layer="95" rot="R180"/>
+</segment>
 </net>
 <net name="I2C_SDA" class="0">
 <segment>
@@ -29153,6 +29193,11 @@ na plytce nadrzednej</text>
 <pinref part="U$1" gate="G$1" pin="6"/>
 <wire x1="-43.18" y1="93.98" x2="-50.8" y2="93.98" width="0.1524" layer="91"/>
 <label x="-50.8" y="93.98" size="1.778" layer="95" rot="R180"/>
+</segment>
+<segment>
+<pinref part="JP3" gate="A" pin="3"/>
+<wire x1="-177.8" y1="119.38" x2="-190.5" y2="119.38" width="0.1524" layer="91"/>
+<label x="-190.5" y="119.38" size="1.778" layer="95" rot="R180"/>
 </segment>
 </net>
 <net name="ADC_CA" class="0">

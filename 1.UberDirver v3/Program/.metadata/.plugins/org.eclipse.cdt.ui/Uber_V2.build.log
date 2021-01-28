@@ -1,43 +1,10 @@
-16:19:23 **** Incremental Build of configuration Debug for project Uber_V2 ****
+23:41:12 **** Incremental Build of configuration Debug for project Uber_V2 ****
 make -j12 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F103xB -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c: In function 'main':
-../Core/Src/main.c:417:29: warning: passing argument 2 of 'HAL_ADC_Start_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
-   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);  // Po konwersji ADC, DMA zapisuje odczyty
-                             ^~~~~~~~
-In file included from ../Core/Inc/stm32f1xx_hal_conf.h:273:0,
-                 from ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:30,
-                 from ../Core/Inc/main.h:31,
-                 from ../Core/Src/main.c:21:
-../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_adc.h:929:25: note: expected 'uint32_t * {aka long unsigned int *}' but argument is of type 'uint16_t * {aka short unsigned int *}'
- HAL_StatusTypeDef       HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
-                         ^~~~~~~~~~~~~~~~~
-../Core/Src/main.c:412:12: warning: unused variable 'Speed' [-Wunused-variable]
-   uint32_t Speed = 0x0007ffff;
-            ^~~~~
-../Core/Src/main.c:411:12: warning: unused variable 'Value' [-Wunused-variable]
-   uint16_t Value = Presc;
-            ^~~~~
-../Core/Src/main.c:409:12: warning: unused variable 'SpeedArray' [-Wunused-variable]
-   uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
-            ^~~~~~~~~~
-../Core/Src/main.c:408:12: warning: unused variable 'ValueArray' [-Wunused-variable]
-   uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
-            ^~~~~~~~~~
-arm-none-eabi-gcc -o "Uber_V2.elf" @"objects.list"   -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\1.UberDirver v3 STM32F103\Program\Uber_V2\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_V2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: Uber_V2.elf
- 
-arm-none-eabi-objdump -h -S  Uber_V2.elf  > "Uber_V2.list"
-arm-none-eabi-objcopy  -O binary  Uber_V2.elf  "Uber_V2.bin"
 arm-none-eabi-size   Uber_V2.elf 
    text	   data	    bss	    dec	    hex	filename
-  18696	     28	  11348	  30072	   7578	Uber_V2.elf
+  24544	     24	  11352	  35920	   8c50	Uber_V2.elf
 Finished building: default.size.stdout
  
-Finished building: Uber_V2.bin
- 
-Finished building: Uber_V2.list
- 
 
-16:19:25 Build Finished. 0 errors, 5 warnings. (took 2s.105ms)
+23:41:13 Build Finished. 0 errors, 0 warnings. (took 192ms)
 

@@ -1,3 +1,0 @@
-DRV8305.c:12:6:DRV_Init	8	static
-DRV8305.c:17:9:DRV_Read	32	static
-DRV8305.c:27:9:DRV_Write	32	static

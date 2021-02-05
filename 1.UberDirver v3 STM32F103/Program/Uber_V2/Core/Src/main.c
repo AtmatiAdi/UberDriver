@@ -855,7 +855,8 @@ if(COLLECT_DATA == 1){
 	for (; Speed > 0x00006000; Speed = Speed - 0x00000fff){		// 1
 		SixStep(Speed, val);
 	}
-
+	val+=8;
+while(1)SixStep(Speed, val);
 
 	uint16_t New_data[4096];
 	for (int a = 0; a < 4096; a ++){

@@ -1,0 +1,10 @@
+20:02:53 **** Incremental Build of configuration Debug for project KPro_CDC ****
+make -j12 all 
+arm-none-eabi-size   KPro_CDC.elf 
+   text	   data	    bss	    dec	    hex	filename
+  33812	    388	   6316	  40516	   9e44	KPro_CDC.elf
+Finished building: default.size.stdout
+ 
+
+20:02:53 Build Finished. 0 errors, 0 warnings. (took 223ms)
+

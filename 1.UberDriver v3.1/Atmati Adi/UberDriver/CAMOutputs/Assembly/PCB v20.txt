@@ -1,0 +1,27 @@
+Partlist exported from Team Hub: Atmati Adi   Project: UberDriver  Board: PCB v20 at 04.03.2021 18:08
+
+Qty Value           Device             Package      Parts                               Description                          POPULARITY SPICEPREFIX
+5                   CPOL-USE5-6        E5-6         C28, C29, C30, C36, C37             POLARIZED CAPACITOR, American symbol                       
+3                   R-EU_R0402         R0402        R15, R16, R17                       RESISTOR, European symbol            0          R          
+5                   SMD5               SMD2,54-5,08 PAD_A, PAD_A1, PAD_A2, PAD_B, PAD_C SMD PAD                                                    
+2   0.047uF         C-EU               R0402        C10, C11                            CAPACITOR, European symbol                                 
+1   100K            R-EU_R0402         R0402        R9                                  RESISTOR, European symbol            0          R          
+1   100R            R-EU_R0603         R0603        R11                                 RESISTOR, European symbol                                  
+4   100k            R-EU_R0402         R0402        R1, R3, R5, R7                      RESISTOR, European symbol            0          R          
+5   100nF           C-EU               R0402        C5, C16, C18, C20, C22              CAPACITOR, European symbol                                 
+1   10k             R-EU_R0402         R0402        R10                                 RESISTOR, European symbol            0          R          
+1   1mH             R-EU_R0603         R0603        L1                                  RESISTOR, European symbol                                  
+7   1nF             C-EU               R0402        C1, C2, C3, C4, C14, C15, C24       CAPACITOR, European symbol                                 
+4   1uF             C-EU               R0402        C6, C7, C8, C9                      CAPACITOR, European symbol                                 
+5   220uf           CPOL-EU150CLZ-0810 150CLZ-0810  C31, C32, C33, C34, C35             POLARIZED CAPACITOR, European symbol            C          
+4   22uF            C-EUC1206          C1206        C24\, C25, C26, C27                 CAPACITOR, European symbol           54         C          
+4   4.7uF           C-EU               R0402        C17, C19, C21, C23                  CAPACITOR, European symbol                                 
+2   4.7uF           C-EUC0805          C0805        C12, C13                            CAPACITOR, European symbol           88         C          
+4   4.99kR          R-EU_R0402         R0402        R2, R4, R6, R8                      RESISTOR, European symbol            0          R          
+3   5mohm           R-EU_R2512         R2512        R12, R13, R14                       RESISTOR, European symbol                                  
+6   CSD17573Q5B     CSD17573Q5B        Q5B          Q1, Q2, Q3, Q4, Q5, Q6                                                                         
+1   DRV8305         DRV8305            S-PQFP-G48   U$21                                                                                           
+1   PINHD-1X10      PINHD-1X10         1X10-BIG     U$1                                 Pin header 1x10 0.1" spacing                               
+1   Red             LEDSML0603         SML0603      D1                                  LED                                                        
+1   STM32F10XTXU6HS STM32F10XTXU6HS    VFQFPN36-HS  U2                                  STM32F101/103 36pad VFQPFN36                               
+1   TPD4E001        TPD4E001           SOT-23       U$31                                                                                           

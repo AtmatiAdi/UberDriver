@@ -27,7 +27,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-#define COLLECT_DATA	1	// 1 - Collection wil be performed, otherwise not.
+#define COLLECT_DATA	0	// 1 - Collection wil be performed, otherwise not.
 #define SCOTTER_PROGRAM 0	// SCOTTER program
 
 #define PHASE_A			1
@@ -65,7 +65,6 @@ int IsDMA = 1;
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
-ADC_HandleTypeDef hadc2;
 DMA_HandleTypeDef hdma_adc1;
 
 SPI_HandleTypeDef hspi1;
@@ -83,7 +82,7 @@ DMA_HandleTypeDef hdma_usart1_tx;
 uint8_t buf[2] = {0, 0};
 uint16_t ADC_data[4] = {0,0,0,0};	// try 16bit
 uint16_t adc_val = 0;
-uint16_t data[4096];	// try 16bit
+//uint16_t data[4096];	// try 16bit
 uint8_t tx_buffer[3] = {'O','K','!'};
 uint8_t rx_buffer[3] = {0,0,0};
 //uint32_t ADC_A[128];
@@ -91,9 +90,9 @@ uint8_t rx_buffer[3] = {0,0,0};
 //uint32_t ADC_C[128];
 //uint32_t ADC_DC[128];
 uint8_t tim_num = 0;
-uint32_t TIM_A[64];
-uint32_t TIM_B[64];
-uint32_t TIM_C[64];
+//uint32_t TIM_A[64];
+//uint32_t TIM_B[64];
+//uint32_t TIM_C[64];
 uint16_t data_num = 0;
 TIM_OC_InitTypeDef TIM_LED = {0}, TIM_ADC = {0};
 uint8_t ToSend[1] = {0};
@@ -179,37 +178,37 @@ void SixStep(uint32_t Speed, uint16_t Value){
 	SetZero_B();
 	SetFloating_C();
 	Delay_Tick(Speed);
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	//2
 	SetPulse_AH(Value);
 	SetFloating_B();
 	SetZero_C();
 	Delay_Tick(Speed);
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	//3
 	SetFloating_A();
 	SetPulse_BH(Value);
 	SetZero_C();
 	Delay_Tick(Speed);
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	//4
 	SetZero_A();
 	SetPulse_BH(Value);
 	SetFloating_C();
 	Delay_Tick(Speed);
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	//5
 	SetZero_A();
 	SetFloating_B();
 	SetPulse_CH(Value);
 	Delay_Tick(Speed);
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	//6
 	SetFloating_A();
 	SetZero_B();
 	SetPulse_CH(Value);
 	Delay_Tick(Speed);
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	ToSend[0]++;
 }
 
@@ -219,37 +218,37 @@ void SixStep_rev(uint32_t Speed, uint16_t Value){
 	SetZero_B();
 	SetFloating_A();
 	Delay_Tick(Speed);
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	//2
 	SetPulse_CH(Value);
 	SetFloating_B();
 	SetZero_A();
 	Delay_Tick(Speed);
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	//3
 	SetFloating_C();
 	SetPulse_BH(Value);
 	SetZero_A();
 	Delay_Tick(Speed);
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	//4
 	SetZero_C();
 	SetPulse_BH(Value);
 	SetFloating_A();
 	Delay_Tick(Speed);
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	//5
 	SetZero_C();
 	SetFloating_B();
 	SetPulse_AH(Value);
 	Delay_Tick(Speed);
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	//6
 	SetFloating_C();
 	SetZero_B();
 	SetPulse_AH(Value);
 	Delay_Tick(Speed);
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	ToSend[0]++;
 }
 
@@ -316,7 +315,7 @@ uint32_t BEMF_SixStep(uint16_t Value, uint16_t LastTicks){
 		SetFloating_C();
 		HAL_Delay(100);
 	}
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 2
 	SetPulse_AH(Value);
 	SetFloating_B();
@@ -329,7 +328,7 @@ uint32_t BEMF_SixStep(uint16_t Value, uint16_t LastTicks){
 		SetFloating_C();
 		HAL_Delay(100);
 	}
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 3
 	SetFloating_A();
 	SetPulse_BH(Value);
@@ -342,7 +341,7 @@ uint32_t BEMF_SixStep(uint16_t Value, uint16_t LastTicks){
 		SetFloating_C();
 		HAL_Delay(100);
 	}
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 4
 	SetZero_A();
 	SetPulse_BH(Value);
@@ -355,7 +354,7 @@ uint32_t BEMF_SixStep(uint16_t Value, uint16_t LastTicks){
 		SetFloating_C();
 		HAL_Delay(100);
 	}
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 5
 	SetZero_A();
 	SetFloating_B();
@@ -368,7 +367,7 @@ uint32_t BEMF_SixStep(uint16_t Value, uint16_t LastTicks){
 		SetFloating_C();
 		HAL_Delay(100);
 	}
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 6
 	SetFloating_A();
 	SetZero_B();
@@ -381,7 +380,7 @@ uint32_t BEMF_SixStep(uint16_t Value, uint16_t LastTicks){
 		SetFloating_C();
 		HAL_Delay(100);
 	}
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	ToSend[0]++;
 	return ticks;
 }
@@ -401,7 +400,7 @@ uint32_t BEMF_SixStep_rev(uint16_t Value, uint16_t LastTicks){
 		SetFloating_C();
 		HAL_Delay(100);
 	}
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 2
 	SetPulse_CH(Value);
 	SetFloating_B();
@@ -414,7 +413,7 @@ uint32_t BEMF_SixStep_rev(uint16_t Value, uint16_t LastTicks){
 		SetFloating_C();
 		HAL_Delay(100);
 	}
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 3
 	SetFloating_C();
 	SetPulse_BH(Value);
@@ -427,7 +426,7 @@ uint32_t BEMF_SixStep_rev(uint16_t Value, uint16_t LastTicks){
 		SetFloating_C();
 		HAL_Delay(100);
 	}
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 4
 	SetZero_C();
 	SetPulse_BH(Value);
@@ -440,7 +439,7 @@ uint32_t BEMF_SixStep_rev(uint16_t Value, uint16_t LastTicks){
 		SetFloating_C();
 		HAL_Delay(100);
 	}
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 5
 	SetZero_C();
 	SetFloating_B();
@@ -453,7 +452,7 @@ uint32_t BEMF_SixStep_rev(uint16_t Value, uint16_t LastTicks){
 		SetFloating_C();
 		HAL_Delay(100);
 	}
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 6
 	SetFloating_C();
 	SetZero_B();
@@ -466,7 +465,7 @@ uint32_t BEMF_SixStep_rev(uint16_t Value, uint16_t LastTicks){
 		SetFloating_C();
 		HAL_Delay(100);
 	}
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	ToSend[0]++;
 	return ticks;
 }
@@ -484,7 +483,7 @@ uint32_t BEMF_SixStep_TEST(uint16_t Value, uint16_t LastTicks){
 	ticks += WaitForCross(2,0);
 	Delay_Tick(ticks/div);
 
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 2
 	if(rx_buffer[0] == 0) return;
 	SetPulse_AH(Value);
@@ -495,7 +494,7 @@ uint32_t BEMF_SixStep_TEST(uint16_t Value, uint16_t LastTicks){
 	ticks += WaitForCross2(1,0);	// 1/2
 	Delay_Tick(ticks/div);
 
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 3
 	if(rx_buffer[0] == 0) return;
 	SetFloating_A();
@@ -506,7 +505,7 @@ uint32_t BEMF_SixStep_TEST(uint16_t Value, uint16_t LastTicks){
 	ticks += WaitForCross(0,0);
 	Delay_Tick(ticks/div);
 
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 4
 	if(rx_buffer[0] == 0) return;
 	SetZero_A();
@@ -517,7 +516,7 @@ uint32_t BEMF_SixStep_TEST(uint16_t Value, uint16_t LastTicks){
 	ticks += WaitForCross2(2,0);
 	Delay_Tick(ticks/div);
 
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 5
 	if(rx_buffer[0] == 0) return;
 	SetZero_A();
@@ -528,7 +527,7 @@ uint32_t BEMF_SixStep_TEST(uint16_t Value, uint16_t LastTicks){
 	ticks += WaitForCross(1,0);
 	Delay_Tick(ticks/div);
 
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 6
 	if(rx_buffer[0] == 0) return;
 	SetFloating_A();
@@ -539,7 +538,7 @@ uint32_t BEMF_SixStep_TEST(uint16_t Value, uint16_t LastTicks){
 	ticks += WaitForCross2(0,0);
 	Delay_Tick(ticks/div);
 
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	ToSend[0]++;
 	return ticks;
 }
@@ -557,7 +556,7 @@ uint32_t BEMF_SixStep_TEST_rev(uint16_t Value, uint16_t LastTicks){
 	ticks += WaitForCross(0,0);
 	Delay_Tick(ticks/div);
 
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 2
 	if(rx_buffer[0] == 0) return;
 	SetPulse_CH(Value);
@@ -568,7 +567,7 @@ uint32_t BEMF_SixStep_TEST_rev(uint16_t Value, uint16_t LastTicks){
 	ticks += WaitForCross2(1,0);	// 1/2
 	Delay_Tick(ticks/div);
 
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 3
 	if(rx_buffer[0] == 0) return;
 	SetFloating_C();
@@ -579,7 +578,7 @@ uint32_t BEMF_SixStep_TEST_rev(uint16_t Value, uint16_t LastTicks){
 	ticks += WaitForCross(2,0);
 	Delay_Tick(ticks/div);
 
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 4
 	if(rx_buffer[0] == 0) return;
 	SetZero_C();
@@ -590,7 +589,7 @@ uint32_t BEMF_SixStep_TEST_rev(uint16_t Value, uint16_t LastTicks){
 	ticks += WaitForCross2(0,0);
 	Delay_Tick(ticks/div);
 
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 5
 	if(rx_buffer[0] == 0) return;
 	SetZero_C();
@@ -601,7 +600,7 @@ uint32_t BEMF_SixStep_TEST_rev(uint16_t Value, uint16_t LastTicks){
 	ticks += WaitForCross(1,0);
 	Delay_Tick(ticks/div);
 
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 6
 	if(rx_buffer[0] == 0) return;
 	SetFloating_C();
@@ -612,7 +611,7 @@ uint32_t BEMF_SixStep_TEST_rev(uint16_t Value, uint16_t LastTicks){
 	ticks += WaitForCross2(2,0);
 	Delay_Tick(ticks/div);
 
-	data[ data_num-1] = 0;
+	//data[ data_num-1] = 0;
 	ToSend[0]++;
 	return ticks;
 }
@@ -650,20 +649,20 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
 	if(COLLECT_DATA == 1){
 		if((data_num < (4096-4)) && cnt >= div){
 
-			data[data_num] = ADC_data[0];
+			//data[data_num] = ADC_data[0];
 			data_num++;
-			data[data_num] = ADC_data[1];
+			//data[data_num] = ADC_data[1];
 			data_num++;
-			data[data_num] = ADC_data[2];
+			//data[data_num] = ADC_data[2];
 			data_num++;
-			data[data_num] = ADC_data[3];
+			//data[data_num] = ADC_data[3];
 			data_num++;
 			cnt = 0;
 		}
 		if((tim_num < (64-4))){
-			TIM_B[tim_num] = __HAL_TIM_GET_COUNTER(&htim3);
-			TIM_C[tim_num] = __HAL_TIM_GET_COUNTER(&htim1);
-			TIM_A[tim_num] = __HAL_TIM_GET_COUNTER(&htim2);
+			//TIM_B[tim_num] = __HAL_TIM_GET_COUNTER(&htim3);
+			//TIM_C[tim_num] = __HAL_TIM_GET_COUNTER(&htim1);
+			//TIM_A[tim_num] = __HAL_TIM_GET_COUNTER(&htim2);
 			tim_num++;
 		}
 	}
@@ -714,7 +713,6 @@ static void MX_TIM3_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_TIM4_Init(void);
-static void MX_ADC2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -762,7 +760,6 @@ int main(void)
   MX_TIM2_Init();
   MX_USART1_UART_Init();
   MX_TIM4_Init();
-  MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
   HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
   HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 1);
@@ -797,7 +794,7 @@ int main(void)
   HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, 0);
   HAL_Delay(3000);
 
-  HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
+  HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
   HAL_ADC_Start_DMA(&hadc1, ADC_data, 4);		// Po konwersji ADC, DMA zapisuje odczyty
   __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 8);
   HAL_TIM_PWM_Start_IT(&htim1, TIM_CHANNEL_3);	// Pulse wyzwala ADC
@@ -860,7 +857,7 @@ while(1)SixStep(Speed, val);
 
 	uint16_t New_data[4096];
 	for (int a = 0; a < 4096; a ++){
-		New_data[a] = data[a];
+		//New_data[a] = data[a];
 	}
 
 	HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
@@ -914,10 +911,10 @@ while (1){
 			HAL_Delay(10);
 			IsBreaking = 0;
 		}
-		HAL_ADC_Start(&hadc2); // start the adc
-		HAL_ADC_PollForConversion(&hadc2, 100); // poll for conversion
-		rx_buffer[0] = rx_buffer[1] = Power = adc_val = HAL_ADC_GetValue(&hadc2)/32; // get the adc value
-		HAL_ADC_Stop(&hadc2); // stop adc
+		//HAL_ADC_Start(&hadc2); // start the adc
+		//HAL_ADC_PollForConversion(&hadc2, 100); // poll for conversion
+		//rx_buffer[0] = rx_buffer[1] = Power = adc_val = HAL_ADC_GetValue(&hadc2)/32; // get the adc value
+		//HAL_ADC_Stop(&hadc2); // stop adc
 		if (Power < 28) Power = 0;
 		if (Power > 128-28) Power = 128;
 		if (Power > 0){
@@ -1134,7 +1131,7 @@ static void MX_ADC1_Init(void)
   }
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_0;
+  sConfig.Channel = ADC_CHANNEL_4;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
@@ -1143,7 +1140,7 @@ static void MX_ADC1_Init(void)
   }
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Channel = ADC_CHANNEL_3;
   sConfig.Rank = ADC_REGULAR_RANK_2;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
@@ -1151,7 +1148,7 @@ static void MX_ADC1_Init(void)
   }
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Channel = ADC_CHANNEL_2;
   sConfig.Rank = ADC_REGULAR_RANK_3;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
@@ -1159,7 +1156,7 @@ static void MX_ADC1_Init(void)
   }
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_4;
+  sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = ADC_REGULAR_RANK_4;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
@@ -1168,51 +1165,6 @@ static void MX_ADC1_Init(void)
   /* USER CODE BEGIN ADC1_Init 2 */
 
   /* USER CODE END ADC1_Init 2 */
-
-}
-
-/**
-  * @brief ADC2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_ADC2_Init(void)
-{
-
-  /* USER CODE BEGIN ADC2_Init 0 */
-
-  /* USER CODE END ADC2_Init 0 */
-
-  ADC_ChannelConfTypeDef sConfig = {0};
-
-  /* USER CODE BEGIN ADC2_Init 1 */
-
-  /* USER CODE END ADC2_Init 1 */
-  /** Common config
-  */
-  hadc2.Instance = ADC2;
-  hadc2.Init.ScanConvMode = ADC_SCAN_DISABLE;
-  hadc2.Init.ContinuousConvMode = DISABLE;
-  hadc2.Init.DiscontinuousConvMode = DISABLE;
-  hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc2.Init.NbrOfConversion = 1;
-  if (HAL_ADC_Init(&hadc2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /** Configure Regular Channel
-  */
-  sConfig.Channel = ADC_CHANNEL_2;
-  sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_7CYCLES_5;
-  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN ADC2_Init 2 */
-
-  /* USER CODE END ADC2_Init 2 */
 
 }
 

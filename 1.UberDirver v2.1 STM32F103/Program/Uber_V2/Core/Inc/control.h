@@ -8,26 +8,27 @@
 #ifndef INC_CONTROL_H_
 #define INC_CONTROL_H_
 
-#define COLLECT_DATA	0	// 1 - Collection wil be performed, otherwise not.
-#define SCOTTER_PROGRAM 0	// SCOTTER program
+#define PHASE_A			1
+#define PHASE_B			2
+#define PHASE_C			3
+#define STATE_LOW		0
+#define STATE_HIGH		1
+#define STATE_FLOATING	2
+#define	STATE_F_LOW		2
+#define	STATE_F_HIGH	3
 
 #define MIN_TICKS  		0x0000000f
-#define MAX_TICKS  		0x00ffffff
+#define MAX_TICKS  		0x000fffff
 
-#include "stm32f1xx_hal.h"
+#include "DRV8305.h"
 #include "main.h"
 
-
-
 void Control_Init(
-		TIM_HandleTypeDef htim1_,
-		TIM_HandleTypeDef htim2_,
-		TIM_HandleTypeDef htim3_,
-		TIM_HandleTypeDef htim4_,
-		ADC_HandleTypeDef hadc1_,
-		UART_HandleTypeDef huart1_);
-
-
+		TIM_HandleTypeDef *_htim1,
+		TIM_HandleTypeDef *_htim2,
+		TIM_HandleTypeDef *_htim3,
+		TIM_HandleTypeDef *_htim4,
+		ADC_HandleTypeDef *_hadc1);
 void SetZero_A();
 void SetZero_B();
 void SetZero_C();

@@ -7,97 +7,131 @@
 
 #include "control.h"
 
+#define COLLECT_DATA	0	// 1 - Collection wil be performed, otherwise not.
 
-static TIM_HandleTypeDef htim1;
-static TIM_HandleTypeDef htim2;
-static TIM_HandleTypeDef htim3;
-static TIM_HandleTypeDef htim4;
-static ADC_HandleTypeDef hadc1;
-static UART_HandleTypeDef huart1;
+
+static TIM_HandleTypeDef *htim1;
+static TIM_HandleTypeDef *htim2;
+static TIM_HandleTypeDef *htim3;
+static TIM_HandleTypeDef *htim4;
+static ADC_HandleTypeDef *hadc1;
 
 uint16_t ADC_data[7] = {0,0,0,0,0,0,0};	// try 16bit
 uint8_t IsNewVal = 0;
 uint16_t data_num = 0;
 uint8_t tim_num = 0;
 int cnt = 0;
-uint8_t rx_buffer[3] = {0,0,0};
-uint8_t ToSend[1] = {0};
+
+uint16_t Value = 8;
+
+
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
+	// Collect data
+	uint8_t div = 1;
+	if(COLLECT_DATA == 1){
+		if((data_num < (4096-4)) && cnt >= div){
+
+			//data[data_num] = ADC_data[0];
+			data_num++;
+			//data[data_num] = ADC_data[1];
+			data_num++;
+			//data[data_num] = ADC_data[2];
+			data_num++;
+			//data[data_num] = ADC_data[3];
+			data_num++;
+			cnt = 0;
+		}
+		if((tim_num < (64-4))){
+			//TIM_B[tim_num] = __HAL_TIM_GET_COUNTER(htim3);
+			//TIM_C[tim_num] = __HAL_TIM_GET_COUNTER(htim1);
+			//TIM_A[tim_num] = __HAL_TIM_GET_COUNTER(htim2);
+			tim_num++;
+		}
+	}
+	IsNewVal = 1;
+	cnt ++;
+}
 
 void Control_Init(
-		TIM_HandleTypeDef htim1_,
-		TIM_HandleTypeDef htim2_,
-		TIM_HandleTypeDef htim3_,
-		TIM_HandleTypeDef htim4_,
-		ADC_HandleTypeDef hadc1_,
-		UART_HandleTypeDef huart1_){
-	memcpy(&htim1, &htim1_, sizeof(htim1_));
-	memcpy(&htim2, &htim2_, sizeof(htim2_));
-	memcpy(&htim3, &htim3_, sizeof(htim3_));
-	memcpy(&htim4, &htim4_, sizeof(htim4_));
-	memcpy(&hadc1, &hadc1_, sizeof(hadc1_));
-	memcpy(&huart1, &huart1_, sizeof(huart1_));
+		TIM_HandleTypeDef *_htim1,
+		TIM_HandleTypeDef *_htim2,
+		TIM_HandleTypeDef *_htim3,
+		TIM_HandleTypeDef *_htim4,
+		ADC_HandleTypeDef *_hadc1){
+	htim1 = _htim1;
+	htim2 = _htim2;
+	htim3 = _htim3;
+	htim4 = _htim4;
+	hadc1 = _hadc1;
+
+	HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
+	// ADC and Timer Configuration
+	HAL_ADC_Start_DMA(hadc1, ADC_data, 7);
+	HAL_TIM_PWM_Start_IT(htim1, TIM_CHANNEL_3);
+	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, 3);
+
+	HAL_Delay(1);
 }
 
 void StartPWM(){
-	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
-	//HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
-	//HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
-	//HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
+	HAL_TIM_PWM_Start(htim2, TIM_CHANNEL_1);
+	//HAL_TIM_PWM_Start(htim2, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_1);
+	//HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(htim1, TIM_CHANNEL_2);
+	//HAL_TIM_PWM_Start(htim1, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(htim1, TIM_CHANNEL_3);
 
-	htim1.Instance->CNT = 0;
-	htim2.Instance->CNT = 0;
-	htim3.Instance->CNT = 0;
+	htim1->Instance->CNT = 0;
+	htim2->Instance->CNT = 0;
+	htim3->Instance->CNT = 0;
 
-	HAL_TIM_Base_Start(&htim4);
-	HAL_ADC_Start_DMA(&hadc1, ADC_data, 7);		// Po konwersji ADC, DMA zapisuje odczyty
-	HAL_UART_Receive_DMA(&huart1, rx_buffer, 2);
+	HAL_TIM_Base_Start(htim4);
 }
 
 void SetZero_A(){
-	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 0);
+	__HAL_TIM_SET_COMPARE(htim2, TIM_CHANNEL_1, 0);
 	HAL_GPIO_WritePin(PWM_AL_GPIO_Port, PWM_AL_Pin, 1);
 }
 
 void SetZero_B(){
-	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
+	__HAL_TIM_SET_COMPARE(htim3, TIM_CHANNEL_1, 0);
 	HAL_GPIO_WritePin(PWM_BL_GPIO_Port, PWM_BL_Pin, 1);
 }
 
 void SetZero_C(){
-	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
+	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_2, 0);
 	HAL_GPIO_WritePin(PWM_CL_GPIO_Port, PWM_CL_Pin, 1);
 }
 
 void SetPulse_AH(uint8_t value){
-	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, value);
+	__HAL_TIM_SET_COMPARE(htim2, TIM_CHANNEL_1, value);
 	HAL_GPIO_WritePin(PWM_AL_GPIO_Port, PWM_AL_Pin, 0);
 }
 
 void SetPulse_BH(uint8_t value){
-	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, value);
+	__HAL_TIM_SET_COMPARE(htim3, TIM_CHANNEL_1, value);
 	HAL_GPIO_WritePin(PWM_BL_GPIO_Port, PWM_BL_Pin, 0);
 }
 
 void SetPulse_CH(uint8_t value){
-	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, value);
+	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_2, value);
 	HAL_GPIO_WritePin(PWM_CL_GPIO_Port, PWM_CL_Pin, 0);
 }
 
 void SetFloating_A(){
-	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 0);
+	__HAL_TIM_SET_COMPARE(htim2, TIM_CHANNEL_1, 0);
 	HAL_GPIO_WritePin(PWM_AL_GPIO_Port, PWM_AL_Pin, 0);
 }
 
 void SetFloating_B(){
-	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
+	__HAL_TIM_SET_COMPARE(htim3, TIM_CHANNEL_1, 0);
 	HAL_GPIO_WritePin(PWM_BL_GPIO_Port, PWM_BL_Pin, 0);
 }
 
 void SetFloating_C(){
-	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
+	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_2, 0);
 	HAL_GPIO_WritePin(PWM_CL_GPIO_Port, PWM_CL_Pin, 0);
 }
 
@@ -138,7 +172,6 @@ void SixStep(uint32_t Speed, uint16_t Value){
 	SetPulse_CH(Value);
 	Delay_Tick(Speed);
 	//data[ data_num-1] = 0;
-	ToSend[0]++;
 }
 
 void SixStep_rev(uint32_t Speed, uint16_t Value){
@@ -178,26 +211,25 @@ void SixStep_rev(uint32_t Speed, uint16_t Value){
 	SetPulse_AH(Value);
 	Delay_Tick(Speed);
 	//data[ data_num-1] = 0;
-	ToSend[0]++;
 }
 
 uint32_t WaitForCross(uint8_t num, uint8_t val){
-	__HAL_TIM_SET_COUNTER(&htim4,0);
+	__HAL_TIM_SET_COUNTER(htim4,0);
 	uint32_t ret_val = 0;
 
 	while(ADC_data[num] > val+ADC_data[3]/2){
-		if (__HAL_TIM_GET_COUNTER(&htim4) > 0x7fff){
-			ret_val += __HAL_TIM_GET_COUNTER(&htim4);
-			__HAL_TIM_SET_COUNTER(&htim4,0);
+		if (__HAL_TIM_GET_COUNTER(htim4) > 0x7fff){
+			ret_val += __HAL_TIM_GET_COUNTER(htim4);
+			__HAL_TIM_SET_COUNTER(htim4,0);
 		}
-		if((ret_val + __HAL_TIM_GET_COUNTER(&htim4) ) > MAX_TICKS){
+		if((ret_val + __HAL_TIM_GET_COUNTER(htim4) ) > MAX_TICKS){
 			break;
 		}
 	}
 	/*while(1){
-		if (__HAL_TIM_GET_COUNTER(&htim4) > 0x7fff){
-			ret_val += __HAL_TIM_GET_COUNTER(&htim4);
-			__HAL_TIM_SET_COUNTER(&htim4,0);
+		if (__HAL_TIM_GET_COUNTER(htim4) > 0x7fff){
+			ret_val += __HAL_TIM_GET_COUNTER(htim4);
+			__HAL_TIM_SET_COUNTER(htim4,0);
 		}
 		if (IsNewVal == 1){
 			if(ADC_data[num] < val+ADC_data[3]/2){
@@ -207,25 +239,25 @@ uint32_t WaitForCross(uint8_t num, uint8_t val){
 		}
 	}*/
 
-	ret_val += __HAL_TIM_GET_COUNTER(&htim4);
+	ret_val += __HAL_TIM_GET_COUNTER(htim4);
 	return ret_val;
 }
 
 uint32_t WaitForCross2(uint8_t num, uint8_t val){
-	__HAL_TIM_SET_COUNTER(&htim4,0);
+	__HAL_TIM_SET_COUNTER(htim4,0);
 	uint32_t ret_val = 0;
 
 	while(ADC_data[num] < val+ADC_data[3]/2){
-		if (__HAL_TIM_GET_COUNTER(&htim4) > 0x7fff){
-			ret_val += __HAL_TIM_GET_COUNTER(&htim4);
-			__HAL_TIM_SET_COUNTER(&htim4,0);
+		if (__HAL_TIM_GET_COUNTER(htim4) > 0x7fff){
+			ret_val += __HAL_TIM_GET_COUNTER(htim4);
+			__HAL_TIM_SET_COUNTER(htim4,0);
 		}
-		if((ret_val + __HAL_TIM_GET_COUNTER(&htim4) ) > MAX_TICKS){
+		if((ret_val + __HAL_TIM_GET_COUNTER(htim4) ) > MAX_TICKS){
 			break;
 		}
 	}
 
-	ret_val += __HAL_TIM_GET_COUNTER(&htim4);
+	ret_val += __HAL_TIM_GET_COUNTER(htim4);
 	return ret_val;
 }
 
@@ -310,7 +342,6 @@ uint32_t BEMF_SixStep(uint16_t Value, uint16_t LastTicks){
 		HAL_Delay(100);
 	}
 	//data[ data_num-1] = 0;
-	ToSend[0]++;
 	return ticks;
 }
 
@@ -395,7 +426,6 @@ uint32_t BEMF_SixStep_rev(uint16_t Value, uint16_t LastTicks){
 		HAL_Delay(100);
 	}
 	//data[ data_num-1] = 0;
-	ToSend[0]++;
 	return ticks;
 }
 
@@ -403,7 +433,7 @@ uint32_t BEMF_SixStep_TEST(uint16_t Value, uint16_t LastTicks){
 	float ticks = 0;
 	float div = 6;//1.5;
 	////////////////////////////////////////////////////////// 1
-	if(rx_buffer[0] == 0) return 0;
+	//if(rx_buffer[0] == 0) return 0;
 	SetPulse_AH(Value);
 	SetZero_B();
 	SetFloating_C();
@@ -414,7 +444,7 @@ uint32_t BEMF_SixStep_TEST(uint16_t Value, uint16_t LastTicks){
 
 	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 2
-	if(rx_buffer[0] == 0) return 0;
+	//if(rx_buffer[0] == 0) return 0;
 	SetPulse_AH(Value);
 	SetFloating_B();
 	SetZero_C();
@@ -425,7 +455,7 @@ uint32_t BEMF_SixStep_TEST(uint16_t Value, uint16_t LastTicks){
 
 	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 3
-	if(rx_buffer[0] == 0) return 0;
+	//if(rx_buffer[0] == 0) return 0;
 	SetFloating_A();
 	SetPulse_BH(Value);
 	SetZero_C();
@@ -436,7 +466,7 @@ uint32_t BEMF_SixStep_TEST(uint16_t Value, uint16_t LastTicks){
 
 	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 4
-	if(rx_buffer[0] == 0) return 0;
+	//if(rx_buffer[0] == 0) return 0;
 	SetZero_A();
 	SetPulse_BH(Value);
 	SetFloating_C();
@@ -447,7 +477,7 @@ uint32_t BEMF_SixStep_TEST(uint16_t Value, uint16_t LastTicks){
 
 	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 5
-	if(rx_buffer[0] == 0) return 0;
+	//if(rx_buffer[0] == 0) return 0;
 	SetZero_A();
 	SetFloating_B();
 	SetPulse_CH(Value);
@@ -458,7 +488,7 @@ uint32_t BEMF_SixStep_TEST(uint16_t Value, uint16_t LastTicks){
 
 	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 6
-	if(rx_buffer[0] == 0) return 0;
+	//if(rx_buffer[0] == 0) return 0;
 	SetFloating_A();
 	SetZero_B();
 	SetPulse_CH(Value);
@@ -468,7 +498,6 @@ uint32_t BEMF_SixStep_TEST(uint16_t Value, uint16_t LastTicks){
 	Delay_Tick(ticks/div);
 
 	//data[ data_num-1] = 0;
-	ToSend[0]++;
 	return ticks;
 }
 
@@ -476,7 +505,7 @@ uint32_t BEMF_SixStep_TEST_rev(uint16_t Value, uint16_t LastTicks){
 	float ticks = 0;
 	float div = 6;//1.5;
 	////////////////////////////////////////////////////////// 1
-	if(rx_buffer[0] == 0) return 0;
+	//if(rx_buffer[0] == 0) return 0;
 	SetPulse_CH(Value);
 	SetZero_B();
 	SetFloating_A();
@@ -487,7 +516,7 @@ uint32_t BEMF_SixStep_TEST_rev(uint16_t Value, uint16_t LastTicks){
 
 	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 2
-	if(rx_buffer[0] == 0) return 0;
+	//if(rx_buffer[0] == 0) return 0;
 	SetPulse_CH(Value);
 	SetFloating_B();
 	SetZero_A();
@@ -498,7 +527,7 @@ uint32_t BEMF_SixStep_TEST_rev(uint16_t Value, uint16_t LastTicks){
 
 	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 3
-	if(rx_buffer[0] == 0) return 0;
+	//if(rx_buffer[0] == 0) return 0;
 	SetFloating_C();
 	SetPulse_BH(Value);
 	SetZero_A();
@@ -509,7 +538,7 @@ uint32_t BEMF_SixStep_TEST_rev(uint16_t Value, uint16_t LastTicks){
 
 	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 4
-	if(rx_buffer[0] == 0) return 0;
+	//if(rx_buffer[0] == 0) return 0;
 	SetZero_C();
 	SetPulse_BH(Value);
 	SetFloating_A();
@@ -520,7 +549,7 @@ uint32_t BEMF_SixStep_TEST_rev(uint16_t Value, uint16_t LastTicks){
 
 	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 5
-	if(rx_buffer[0] == 0) return 0;
+	//if(rx_buffer[0] == 0) return 0;
 	SetZero_C();
 	SetFloating_B();
 	SetPulse_AH(Value);
@@ -531,7 +560,7 @@ uint32_t BEMF_SixStep_TEST_rev(uint16_t Value, uint16_t LastTicks){
 
 	//data[ data_num-1] = 0;
 	////////////////////////////////////////////////////////// 6
-	if(rx_buffer[0] == 0) return 0;
+	//if(rx_buffer[0] == 0) return 0;
 	SetFloating_C();
 	SetZero_B();
 	SetPulse_AH(Value);
@@ -541,7 +570,6 @@ uint32_t BEMF_SixStep_TEST_rev(uint16_t Value, uint16_t LastTicks){
 	Delay_Tick(ticks/div);
 
 	//data[ data_num-1] = 0;
-	ToSend[0]++;
 	return ticks;
 }
 
@@ -558,46 +586,6 @@ void WaitForFall(uint8_t Phase){
 		if(IsNewVal){
 			if(ADC_data[Phase] < ADC_data[3]/2) return;
 		}
-	}
-}
-
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
-	// Collect data
-	uint8_t div = 1;
-	if(COLLECT_DATA == 1){
-		if((data_num < (4096-4)) && cnt >= div){
-
-			//data[data_num] = ADC_data[0];
-			data_num++;
-			//data[data_num] = ADC_data[1];
-			data_num++;
-			//data[data_num] = ADC_data[2];
-			data_num++;
-			//data[data_num] = ADC_data[3];
-			data_num++;
-			cnt = 0;
-		}
-		if((tim_num < (64-4))){
-			//TIM_B[tim_num] = __HAL_TIM_GET_COUNTER(&htim3);
-			//TIM_C[tim_num] = __HAL_TIM_GET_COUNTER(&htim1);
-			//TIM_A[tim_num] = __HAL_TIM_GET_COUNTER(&htim2);
-			tim_num++;
-		}
-	}
-	IsNewVal = 1;
-	cnt ++;
-}
-
-// Po odebraniu danych z UART + DMA wyowulje sie przerwanie
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-	HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-	HAL_UART_Receive_DMA(&huart1, rx_buffer, 2);		// Chcemy obierac dalej
-	HAL_UART_Transmit_DMA(&huart1, ToSend, 1);			// Odsylamy warrtosc obrotow
-	ToSend[0] = 0;										// resetujemy zmienna obrotow
-	if ((rx_buffer[0] == 0) || rx_buffer[1] ==0){		// Zatrzymanie awaryjne
-		SetFloating_A();
-		SetFloating_B();
-		SetFloating_C();
 	}
 }
 
@@ -618,3 +606,25 @@ void Accelerate_01(uint8_t Value, uint8_t Speed){		// Chinczyk - Value = 8; Spee
 	}
 }
 
+
+void Delay_Tick(uint32_t val){
+	__HAL_TIM_SET_COUNTER(htim4,0);
+	if (val > MAX_TICKS) val = MAX_TICKS;
+	while(val > 0x00007fff){
+		val -= 0x00007fff;
+		while(__HAL_TIM_GET_COUNTER(htim4) < 0x7fff);
+		__HAL_TIM_SET_COUNTER(htim4,0);
+	}
+	while(__HAL_TIM_GET_COUNTER(htim4) < val);
+}
+
+uint8_t test = 0;
+void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim){
+	test = __HAL_TIM_GET_COUNTER(htim1);
+	if(htim->Instance == TIM1){
+		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3){
+			test = __HAL_TIM_GET_COUNTER(htim1);
+			test = __HAL_TIM_GET_COUNTER(htim1);
+		}
+	}
+}

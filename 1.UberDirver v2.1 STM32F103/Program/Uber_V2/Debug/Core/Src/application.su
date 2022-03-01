@@ -1,0 +1,7 @@
+application.c:24:6:HAL_UART_RxCpltCallback	16	static
+application.c:38:6:Application_Init	16	static
+application.c:44:6:ScotterProgram	8	static
+application.c:104:6:CollectData	16	static
+application.c:139:6:NormalControl	24	static
+application.c:229:6:Application_Update	8	static
+application.c:249:6:Test_Sequence_01	24	static

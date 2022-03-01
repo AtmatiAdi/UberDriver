@@ -22,36 +22,11 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "DRV8305.h"
-#include "control.h"
+#include "application.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
-
-#define PHASE_A			1
-#define PHASE_B			2
-#define PHASE_C			3
-#define STATE_LOW		0
-#define STATE_HIGH		1
-#define STATE_FLOATING	2
-#define	STATE_F_LOW		2
-#define	STATE_F_HIGH	3
-
-#define SINGLE_DMA		1
-
-int IsDMA = 1;
-
-// COMMANDS DEFINITION FOR COMMUNICATIONS
-#define SET_MOTOR_1_SPEED_FORWAD    	64   	// 0
-#define SET_MOTOR_1_SPEED_BACK         	65   	// 1
-#define	SET_MOTOR_1_SPEED_FORWAD_SEQ_1	66		// 2
-#define SET_MOTOR_1_SPEED_BACK_SEQ_1	67		// 3
-#define	SET_MOTOR_1_SPEED_FORWAD_SEQ_2	68		// 4
-#define SET_MOTOR_1_SPEED_BACK_SEQ_2	69		// 5
-#define	SET_MOTOR_1_SPEED_FORWAD_SEQ_3	70		// 6
-#define SET_MOTOR_1_SPEED_BACK_SEQ_3	71		// 7
 
 /* USER CODE END PTD */
 
@@ -80,61 +55,6 @@ DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart1_tx;
 
 /* USER CODE BEGIN PV */
-uint8_t buf[2] = {0, 0};
-
-uint16_t adc_val = 0;
-//uint16_t data[4096];	// try 16bit
-uint8_t tx_buffer[3] = {'O','K','!'};
-
-//uint32_t ADC_A[128];
-//uint32_t ADC_B[128];
-//uint32_t ADC_C[128];
-//uint32_t ADC_DC[128];
-
-//uint32_t TIM_A[64];
-//uint32_t TIM_B[64];
-//uint32_t TIM_C[64];
-
-TIM_OC_InitTypeDef TIM_LED = {0}, TIM_ADC = {0};
-
-
-uint8_t IsRunning = 0;
-uint8_t IsBreaking = 0;
-uint8_t Power = 0;
-uint8_t Break = 0;
-uint8_t Function = 0;
-
-
-
-
-
-void Delay_Tick(uint32_t val){
-	__HAL_TIM_SET_COUNTER(&htim4,0);
-	while(val > 0x00007fff){
-		val -= 0x00007fff;
-		while(__HAL_TIM_GET_COUNTER(&htim4) < 0x7fff);
-		__HAL_TIM_SET_COUNTER(&htim4,0);
-	}
-	while(__HAL_TIM_GET_COUNTER(&htim4) < val);
-}
-
-
-
-uint8_t test = 0;
-void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim){
-	test = __HAL_TIM_GET_COUNTER(&htim1);
-	if(htim->Instance == TIM1){
-		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3){
-			test = __HAL_TIM_GET_COUNTER(&htim1);
-			test = __HAL_TIM_GET_COUNTER(&htim1);
-		}
-	}
-}
-
-
-
-
-
 
 /* USER CODE END PV */
 
@@ -155,9 +75,7 @@ static void MX_TIM4_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-/*
 
-*/
 /* USER CODE END 0 */
 
 /**
@@ -197,353 +115,32 @@ int main(void)
   MX_USART1_UART_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
-  HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
-  HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 1);
 
+	HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, 0);
 
-	// 				   DATA2,(  READ  ) + ADDR						     + DATA1
-	HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
-	HAL_Delay(100);
-	HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
-	HAL_Delay(100);
-	HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
+	DRV_Init(hspi1);
+	DRV_Write(SHUNT_AMPLIFIER_CONTROL,
+			(GAIN_CS1 & 0xffff) +
+			(GAIN_CS2 & 0xffff) +
+			(GAIN_CS3 & 0xffff));
 
-	HAL_Delay(100);
-	uint8_t ret[2] = {0, 0};
-	uint8_t send[2] = {0x44,(1 << 7) + (0x5 << 3) + 0x0};
+	Control_Init(&htim1, &htim2, &htim3, &htim4, &hadc1);
+	Application_Init(&huart1);
 
-	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 0);
-	HAL_Delay(100);
-	uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send, ret, 2, 1000);
-	HAL_Delay(100);
-	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 1);
+	StartPWM();
 
-
-	HAL_Delay(100);
-	uint8_t ret2[2] = {0, 0};
-	uint8_t send2[2] = {0x44,(0 << 7) + (0x5 << 3) + 0x0};
-
-	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 0);
-	HAL_Delay(100);
-	uint8_t res2 = HAL_SPI_TransmitReceive(&hspi1, send2, ret2, 2, 1000);
-	HAL_Delay(100);
-	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 1);
-
-  DRV_Init(hspi1);
-
-  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, 0);		// LED
-  Control_Init(htim1, htim2, htim3, htim4, hadc1, huart1);
-  StartPWM();
-
-
-
-  //HAL_UART_Transmit_DMA(&huart1, tx_buffer, 3);
-  HAL_Delay(1);
+	HAL_Delay(1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
-
-
-  uint16_t ValueArray[10] = {0x0002,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003,0x0003};
-  uint16_t SpeedArray[10] = {0xff00,0xf800,0xf000,0x8000,0x0fff,0x0ff0,0x0f00,0x0800,0x00ff,0x00f0};
-  uint8_t Presc = 8;
-  uint16_t Value = Presc;
-  uint32_t Speed = 0x0007ffff;
-
-  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, 1);
-  HAL_Delay(500);
-  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, 0);
-  HAL_Delay(3000);
-
-  HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
-
-  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 8);
-  HAL_TIM_PWM_Start_IT(&htim1, TIM_CHANNEL_3);	// Pulse wyzwala ADC
-
-// WSTAWKA 0.25A
-  /*
-	uint8_t send1[2] = {0x78,(5 << 3) + 0x3};			// Read command, MSB is shifted in and out first
-	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 0);
-	uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send1, buf, 2, 1000);
-	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 1);
-
-	Delay_Tick(0x0f);
-
-	uint8_t send2[2] = {0x78,(6 << 3) + 0x3};
-	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 0);
-	res = HAL_SPI_TransmitReceive(&hspi1, send2, buf, 2, 1000);
-	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 1);
-*/
-
-	/*
-	  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
-
-	SetFloating_A();
-	SetFloating_B();
-	SetFloating_C();
-	  HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
-
-*/
-	//Speed = Speed - 0x0ff;
-		  //Speed = SpeedArray[a];
-		  //Value = ValueArray[a];
-  //}
-  IsDMA = 1;
-__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 3);
-uint16_t ticks = MIN_TICKS;
-
-///////////////////////
-if(COLLECT_DATA == 1){
 	HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
-	int c = 0;
-	int val = 8;
-	Speed = 0x00070000;
-	for (; Speed > 0x00030000; Speed -= 0x00001fff){		// 1
-		SixStep(Speed, val);
-		++c;
-		if (c == 4){
-			++val;
-			c = 0;
-		}
-	}
-	// Reset Stored Values
-	//data_num = 0;
-	//cnt = 0;
-	//tim_num = 0;
-	for (; Speed > 0x00006000; Speed = Speed - 0x00000fff){		// 1
-		SixStep(Speed, val);
-	}
-	val+=8;
-while(1)SixStep(Speed, val);
-
-	uint16_t New_data[4096];
-	for (int a = 0; a < 4096; a ++){
-		//New_data[a] = data[a];
-	}
-
-	HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
-	SetFloating_A();
-	SetFloating_B();
-	SetFloating_C();
-	IsRunning = 0;
-}
-
-///////////////////////
-ticks = MIN_TICKS;
-
+	Test_Sequence_01();
 while (1){
-
-	int Speed;
-	int cnt = 0;
-	int val = 8;
-	HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
-	// Sekwencja rozruchowa dla silnika: TAROT_SZYBKI
-	Speed = 0x00070000;
-	for (; Speed > 0x00030000; Speed -= 0x00001fff){		// 1
-		SixStep(Speed, val);
-		++cnt;
-		if (cnt == 4){
-			++val;
-			cnt = 0;
-		}
-	}
-
-	for (; Speed > 0x00006000; Speed = Speed - 0x00000fff){		// 1
-		SixStep(Speed, val);
-	}
-
-	SetZero_A();
-	SetZero_B();
-	SetZero_C();
-	//HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
-	HAL_Delay(100);
-
-
-	while(1){
-
-
-	}
-/////////////////////////////////////////////////////////
-
-	if(SCOTTER_PROGRAM){
-		Break = 0;
-		if (HAL_GPIO_ReadPin(D1_INPUT_GPIO_Port, D1_INPUT_Pin) == 1){
-			Break += 1;
-		}
-		if (HAL_GPIO_ReadPin(D2_INPUT_GPIO_Port, D2_INPUT_Pin) == 1){
-			Break += 1;
-		}
-		if (Break > 0){
-			IsBreaking = 1;
-			Power = 0;
-			ticks = MIN_TICKS;
-			HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
-			if(IsRunning) {			// Gdy hamujemy z jazdy to synchronizujący delay
-				IsRunning = 0;
-				SetFloating_A();
-				SetFloating_B();
-				SetFloating_C();
-				HAL_Delay(10);
-			}
-			SetZero_A();
-			SetZero_B();
-			SetZero_C();
-			HAL_Delay(Break);
-			SetFloating_A();
-			SetFloating_B();
-			SetFloating_C();
-			HAL_Delay(4-Break);
-			continue;
-		}
-
-		if(IsBreaking) {
-			SetFloating_A();
-			SetFloating_B();
-			SetFloating_C();
-			HAL_Delay(10);
-			IsBreaking = 0;
-		}
-		//HAL_ADC_Start(&hadc2); // start the adc
-		//HAL_ADC_PollForConversion(&hadc2, 100); // poll for conversion
-		//rx_buffer[0] = rx_buffer[1] = Power = adc_val = HAL_ADC_GetValue(&hadc2)/32; // get the adc value
-		//HAL_ADC_Stop(&hadc2); // stop adc
-		if (Power < 28) Power = 0;
-		if (Power > 128-28) Power = 128;
-		if (Power > 0){
-			// Kręcimy normalnie								// Kręcimy do przodu
-			HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
-			ticks = BEMF_SixStep_TEST(Power, ticks);
-			IsRunning = 1;
-		}else {
-			HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
-			SetFloating_A();
-			SetFloating_B();
-			SetFloating_C();
-			IsRunning = 0;
-			ticks = MIN_TICKS;
-		}
-		continue;
-	}
-	//Power = rx_buffer[1];
-	//HAL_Delay(1);
-	if(Power == 0){								// wartosc = 0, stop
-		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
-		SetFloating_A();
-		SetFloating_B();
-		SetFloating_C();
-		IsRunning = 0;
-		ticks = MIN_TICKS;
-		//Function = rx_buffer[0];				// Zmiana funkcji jest mzliwa jedynie gdy silnik stoi
-		if (SCOTTER_PROGRAM) HAL_Delay(10);		// Synchronizujący delay
-	}else if(Function >= 64){					// Jezeli to funkcja z jakas wartoscia
-		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
-		if (Power < 28) Power = 28;				// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik
-		else if (Power > 128-28) Power = 128;	// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik
-
-		if (IsRunning == 0){					// Startujemy
-			int Speed;
-			int cnt = 0;
-			int val = 8;
-			switch (Function){
-			case SET_MOTOR_1_SPEED_FORWAD_SEQ_1: {
-				// Sekwencja rozruchowa dla silnika: TAROT_SZYBKI
-				Speed = 0x00070000;
-				for (; Speed > 0x00030000; Speed -= 0x00001fff){		// 1
-					SixStep(Speed, val);
-					++cnt;
-					if (cnt == 4){
-						++val;
-						cnt = 0;
-					}
-				}
-
-				for (; Speed > 0x00006000; Speed = Speed - 0x00000fff){		// 1
-					SixStep(Speed, val);
-				}
-				break;
-			}
-			case SET_MOTOR_1_SPEED_BACK_SEQ_1: {
-				// Sekwencja rozruchowa dla silnika: TAROT_SZYBKI
-				Speed = 0x00070000;
-				for (; Speed > 0x00030000; Speed -= 0x00001fff){		// 1
-					SixStep_rev(Speed, val);
-					++cnt;
-					if (cnt == 4){
-						++val;
-						cnt = 0;
-					}
-				}
-
-				for (; Speed > 0x00006000; Speed = Speed - 0x00000fff){		// 1
-					SixStep_rev(Speed, val);
-				}
-				break;
-			}
-			case SET_MOTOR_1_SPEED_FORWAD_SEQ_2: {
-				break;
-			}
-			case SET_MOTOR_1_SPEED_BACK_SEQ_2: {
-				break;
-			}
-			case SET_MOTOR_1_SPEED_FORWAD_SEQ_3: {
-				break;
-			}
-			case SET_MOTOR_1_SPEED_BACK_SEQ_3: {
-				break;
-			}
-			default: {
-				// Błąd
-			}
-			}
-		}
-		// Kręcimy normalnie
-		if(Function % 2 == 1){					// Kręcimy do tylu
-			ticks = BEMF_SixStep_TEST_rev(Power, ticks);
-
-		}else{									// Kręcimy do przodu
-			ticks = BEMF_SixStep_TEST(Power, ticks);
-		}
-
-		IsRunning = 1;
-	} else {								// Nie funkcja z wartoscia -> Bład
-		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
-		SetFloating_A();
-		SetFloating_B();
-		SetFloating_C();
-		IsRunning = 0;
-		ticks = MIN_TICKS;
-	}
-
+	Application_Update();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
-	  //PWMCL.Pulse =  PWMCL.Pulse - 1;
-	  //HAL_TIM_PWM_ConfigChannel(&htim1, &PWMCL, TIM_CHANNEL_1);
-	  //HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-
-
-	  //uint8_t test[2] = {0,2};
-	  //DRV_Write(IC_OPERATION, test);
-/*
-	  for(int a = 1; a < 7; a++){
-		  //HAL_Delay(1);
-		  //DRV_Read(a, buf);
-
-		  	uint8_t send[2] = {0,(a << 3) + 0x80};			// Read command, MSB is shifted in and out first
-		  	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 0);
-		  	//HAL_Delay(1);
-		  	//Delay_Tick(0x0f);
-		  	uint8_t res = HAL_SPI_TransmitReceive(&hspi1, send, buf, 2, 1000);
-		  	//HAL_Delay(1);
-		  	//Delay_Tick(0x0f);
-		  	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, 1);
-		  	//HAL_Delay(1);
-
-	  }
-	  */
 
   }
   /* USER CODE END 3 */
@@ -658,7 +255,7 @@ static void MX_ADC1_Init(void)
   }
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_0;
+  sConfig.Channel = ADC_CHANNEL_4;
   sConfig.Rank = ADC_REGULAR_RANK_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {

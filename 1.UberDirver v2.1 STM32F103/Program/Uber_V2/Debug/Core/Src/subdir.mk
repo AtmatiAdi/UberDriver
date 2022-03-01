@@ -6,6 +6,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../Core/Src/DRV8305.c \
+../Core/Src/application.c \
 ../Core/Src/control.c \
 ../Core/Src/main.c \
 ../Core/Src/stm32f1xx_hal_msp.c \
@@ -16,6 +17,7 @@ C_SRCS += \
 
 OBJS += \
 ./Core/Src/DRV8305.o \
+./Core/Src/application.o \
 ./Core/Src/control.o \
 ./Core/Src/main.o \
 ./Core/Src/stm32f1xx_hal_msp.o \
@@ -26,6 +28,7 @@ OBJS += \
 
 C_DEPS += \
 ./Core/Src/DRV8305.d \
+./Core/Src/application.d \
 ./Core/Src/control.d \
 ./Core/Src/main.d \
 ./Core/Src/stm32f1xx_hal_msp.d \

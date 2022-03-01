@@ -1,4 +1,5 @@
 Core/Src/control.o: ../Core/Src/control.c ../Core/Inc/control.h \
+ ../Core/Inc/DRV8305.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h \
  ../Core/Inc/stm32f1xx_hal_conf.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h \
@@ -30,6 +31,8 @@ Core/Src/control.o: ../Core/Src/control.c ../Core/Inc/control.h \
  ../Core/Inc/main.h
 
 ../Core/Inc/control.h:
+
+../Core/Inc/DRV8305.h:
 
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 

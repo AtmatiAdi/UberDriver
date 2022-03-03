@@ -119,10 +119,10 @@ int main(void)
 	HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, 0);
 
 	DRV_Init(hspi1);
-	DRV_Write(SHUNT_AMPLIFIER_CONTROL,
-			(GAIN_CS1 & 0xffff) +
-			(GAIN_CS2 & 0xffff) +
-			(GAIN_CS3 & 0xffff));
+	//DRV_Write(SHUNT_AMPLIFIER_CONTROL,
+	//		(GAIN_CS1 & 0xffff) +
+	//		(GAIN_CS2 & 0xffff) +
+	//		(GAIN_CS3 & 0xffff));
 
 	Control_Init(&htim1, &htim2, &htim3, &htim4, &hadc1);
 	Application_Init(&huart1);
@@ -135,7 +135,6 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
-	Test_Sequence_01();
 while (1){
 	Application_Update();
     /* USER CODE END WHILE */
@@ -215,7 +214,7 @@ static void MX_ADC1_Init(void)
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC3;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 7;
+  hadc1.Init.NbrOfConversion = 4;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     Error_Handler();
@@ -249,30 +248,6 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = ADC_REGULAR_RANK_4;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /** Configure Regular Channel
-  */
-  sConfig.Channel = ADC_CHANNEL_4;
-  sConfig.Rank = ADC_REGULAR_RANK_5;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /** Configure Regular Channel
-  */
-  sConfig.Channel = ADC_CHANNEL_8;
-  sConfig.Rank = ADC_REGULAR_RANK_6;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /** Configure Regular Channel
-  */
-  sConfig.Channel = ADC_CHANNEL_9;
-  sConfig.Rank = ADC_REGULAR_RANK_7;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();

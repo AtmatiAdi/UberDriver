@@ -8,7 +8,7 @@
 
 #define COLLECT_DATA  		0
 #define SCOTTER_PROGRAM  	0
-#define NORMAL_CONTROL	 	0
+#define NORMAL_CONTROL	 	1
 
 static UART_HandleTypeDef *huart;
 uint8_t rx_buffer[2] = {0,0};
@@ -209,10 +209,10 @@ void NormalControl(){
 		}
 		// Kręcimy normalnie
 		if(Function % 2 == 1){					// Kręcimy do tylu
-			ticks = BEMF_SixStep_TEST_rev(8, ticks);
+			ticks = BEMF_SixStep_TEST_rev(pwm, ticks);
 
 		}else{									// Kręcimy do przodu
-			ticks = BEMF_SixStep_TEST(8, ticks);
+			ticks = BEMF_SixStep_TEST(pwm, ticks);
 		}
 
 		IsRunning = 1;

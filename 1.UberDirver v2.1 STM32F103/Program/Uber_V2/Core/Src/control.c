@@ -65,29 +65,42 @@ void Control_Init(
 	htim4 = _htim4;
 	hadc1 = _hadc1;
 
+	// Disable gate driver output
 	HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
-	// ADC and Timer Configuration
-	HAL_ADC_Start_DMA(hadc1, ADC_data, 7);
-	HAL_TIM_PWM_Start_IT(htim1, TIM_CHANNEL_3);
-	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, 3);
 
-	HAL_Delay(1);
-}
+	// Timer for precise time counting
+	HAL_TIM_Base_Start(htim4);
 
-void StartPWM(){
+	// Timers for mosfet control
 	HAL_TIM_PWM_Start(htim2, TIM_CHANNEL_1);
 	//HAL_TIM_PWM_Start(htim2, TIM_CHANNEL_2);
 	HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_1);
 	//HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_2);
 	HAL_TIM_PWM_Start(htim1, TIM_CHANNEL_2);
 	//HAL_TIM_PWM_Start(htim1, TIM_CHANNEL_1);
+
+	// Timer for ADC releasing
 	HAL_TIM_PWM_Start(htim1, TIM_CHANNEL_3);
 
+	// Control timers basic synchronisation
 	htim1->Instance->CNT = 0;
 	htim2->Instance->CNT = 0;
 	htim3->Instance->CNT = 0;
 
-	HAL_TIM_Base_Start(htim4);
+
+	// ADC and Timer Configuration
+	HAL_ADC_Start_DMA(hadc1, ADC_data, 4);
+	HAL_TIM_PWM_Start_IT(htim1, TIM_CHANNEL_3);
+	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, 3);
+
+
+	HAL_Delay(1);
+}
+
+void StartPWM(){
+
+
+
 }
 
 void SetZero_A(){
@@ -618,9 +631,8 @@ void Delay_Tick(uint32_t val){
 	while(__HAL_TIM_GET_COUNTER(htim4) < val);
 }
 
-uint8_t test = 0;
 void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim){
-	test = __HAL_TIM_GET_COUNTER(htim1);
+	uint8_t test = __HAL_TIM_GET_COUNTER(htim1);
 	if(htim->Instance == TIM1){
 		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3){
 			test = __HAL_TIM_GET_COUNTER(htim1);

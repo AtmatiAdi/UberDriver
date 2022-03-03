@@ -51,5 +51,5 @@ void WaitForRise(uint8_t Phase);
 void WaitForFall(uint8_t Phase);
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 void Accelerate_01(uint8_t Value, uint8_t Speed);
-//void Delay_Tick(uint32_t val);
+void Delay_Tick(uint32_t val);
 #endif /* INC_CONTROL_H_ */

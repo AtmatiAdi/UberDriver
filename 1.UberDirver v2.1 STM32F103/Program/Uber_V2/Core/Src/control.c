@@ -66,6 +66,7 @@ void BEMF_Observer(){
 			break;
 		}
 	}
+	// 0 Cross Detection Block
 
 	if (Scan_Is_enabled > 0){
 		Scan_Data[Scan_iter] = V_Floating/16;

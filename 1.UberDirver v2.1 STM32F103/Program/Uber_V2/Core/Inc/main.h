@@ -60,8 +60,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define PWM_PRESC 5-1
-#define PWM_PERIOD 128
+#define PWM_PRESC 1-1
+#define PWM_PERIOD 640-1
 #define ENGATE_Pin GPIO_PIN_0
 #define ENGATE_GPIO_Port GPIOD
 #define NFAULT_Pin GPIO_PIN_1

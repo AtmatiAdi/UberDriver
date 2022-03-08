@@ -21,6 +21,8 @@
 #define	SET_MOTOR_1_SPEED_FORWAD_SEQ_3	70		// 6
 #define SET_MOTOR_1_SPEED_BACK_SEQ_3	71		// 7
 
+#define SCAN_ONE_VARIABLE               80    // 16
+
 void Application_Init(UART_HandleTypeDef *_huart);
 void CollectData();
 void ScotterProgram();

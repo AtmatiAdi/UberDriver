@@ -8,7 +8,7 @@
 #include "control.h"
 
 #define COLLECT_DATA	0	// 1 - Collection wil be performed, otherwise not.
-
+#define PWM_COUNTER     639	// 640-1 = 639
 
 static TIM_HandleTypeDef *htim1;
 static TIM_HandleTypeDef *htim2;
@@ -21,12 +21,61 @@ uint8_t IsNewVal = 0;
 uint16_t data_num = 0;
 uint8_t tim_num = 0;
 int cnt = 0;
-
 uint16_t Value = 8;
 
+uint8_t Scan_Is_enabled = 0;
+uint8_t Scan_Data[4096];
+uint16_t Scan_iter = 0;
 
+char FloatingPhasae = 0;
+
+void EnableScan(){
+	Scan_Is_enabled = 1;
+}
+
+uint8_t IsScanReady(){
+	if (Scan_iter == 4095) return 1;
+	else return 0;
+}
+
+uint8_t* GetScanData(){
+	Scan_iter = 0;
+	Scan_Is_enabled = 0;
+	return Scan_Data;
+}
+
+void BEMF_Observer(){
+	// Input Block
+	uint16_t V_A = ADC_data[0];
+	uint16_t V_B = ADC_data[1];
+	uint16_t V_C = ADC_data[2];
+	uint16_t V_DC = ADC_data[3];
+	// Floating Phase Detect Block
+	uint16_t V_Floating = 0;
+	switch(FloatingPhasae){
+		case 'A':{
+			V_Floating = V_A;
+			break;
+		}
+		case 'B':{
+			V_Floating = V_B;
+			break;
+		}
+		case 'C':{
+			V_Floating = V_C;
+			break;
+		}
+	}
+
+	if (Scan_Is_enabled > 0){
+		Scan_Data[Scan_iter] = V_Floating/16;
+		Scan_iter ++ ;
+		if (Scan_iter == 4095) Scan_Is_enabled = 0;
+	}
+}
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
+	BEMF_Observer();
 	// Collect data
 	uint8_t div = 1;
 	if(COLLECT_DATA == 1){
@@ -73,11 +122,11 @@ void Control_Init(
 
 	// Timers for mosfet control
 	HAL_TIM_PWM_Start(htim2, TIM_CHANNEL_1);
-	//HAL_TIM_PWM_Start(htim2, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(htim2, TIM_CHANNEL_2); 	// LOW POLARITY
 	HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_1);
-	//HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_2);	// LOW POLARITY
 	HAL_TIM_PWM_Start(htim1, TIM_CHANNEL_2);
-	//HAL_TIM_PWM_Start(htim1, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(htim1, TIM_CHANNEL_1);  	// LOW POLARITY
 
 	// Timer for ADC releasing
 	HAL_TIM_PWM_Start(htim1, TIM_CHANNEL_3);
@@ -89,7 +138,7 @@ void Control_Init(
 
 
 	// ADC and Timer Configuration
-	HAL_ADC_Start_DMA(hadc1, ADC_data, 4);
+	HAL_ADC_Start_DMA(hadc1, ADC_data, 7);
 	HAL_TIM_PWM_Start_IT(htim1, TIM_CHANNEL_3);
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, 3);
 
@@ -97,55 +146,61 @@ void Control_Init(
 	HAL_Delay(1);
 }
 
-void StartPWM(){
-
-
-
-}
-
 void SetZero_A(){
 	__HAL_TIM_SET_COMPARE(htim2, TIM_CHANNEL_1, 0);
-	HAL_GPIO_WritePin(PWM_AL_GPIO_Port, PWM_AL_Pin, 1);
+	//HAL_GPIO_WritePin(PWM_AL_GPIO_Port, PWM_AL_Pin, 1);
+	__HAL_TIM_SET_COMPARE(htim2, TIM_CHANNEL_2, 0);
 }
 
 void SetZero_B(){
 	__HAL_TIM_SET_COMPARE(htim3, TIM_CHANNEL_1, 0);
-	HAL_GPIO_WritePin(PWM_BL_GPIO_Port, PWM_BL_Pin, 1);
+	//HAL_GPIO_WritePin(PWM_BL_GPIO_Port, PWM_BL_Pin, 1);
+	__HAL_TIM_SET_COMPARE(htim3, TIM_CHANNEL_2, 0);
 }
 
 void SetZero_C(){
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_2, 0);
-	HAL_GPIO_WritePin(PWM_CL_GPIO_Port, PWM_CL_Pin, 1);
+	//HAL_GPIO_WritePin(PWM_CL_GPIO_Port, PWM_CL_Pin, 1);
+	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_1, 0);
 }
-
-void SetPulse_AH(uint8_t value){
+///////////////////
+void SetPulse_AH(uint16_t value){
 	__HAL_TIM_SET_COMPARE(htim2, TIM_CHANNEL_1, value);
-	HAL_GPIO_WritePin(PWM_AL_GPIO_Port, PWM_AL_Pin, 0);
+	//HAL_GPIO_WritePin(PWM_AL_GPIO_Port, PWM_AL_Pin, 0);
+	__HAL_TIM_SET_COMPARE(htim2, TIM_CHANNEL_2, value);
 }
 
-void SetPulse_BH(uint8_t value){
+void SetPulse_BH(uint16_t value){
 	__HAL_TIM_SET_COMPARE(htim3, TIM_CHANNEL_1, value);
-	HAL_GPIO_WritePin(PWM_BL_GPIO_Port, PWM_BL_Pin, 0);
+	//HAL_GPIO_WritePin(PWM_BL_GPIO_Port, PWM_BL_Pin, 0);
+	__HAL_TIM_SET_COMPARE(htim3, TIM_CHANNEL_2, value);
 }
 
-void SetPulse_CH(uint8_t value){
+void SetPulse_CH(uint16_t value){
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_2, value);
-	HAL_GPIO_WritePin(PWM_CL_GPIO_Port, PWM_CL_Pin, 0);
+	//HAL_GPIO_WritePin(PWM_CL_GPIO_Port, PWM_CL_Pin, 0);
+	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_1, value);
 }
-
+///////////////////
 void SetFloating_A(){
+	FloatingPhasae = 'A';
 	__HAL_TIM_SET_COMPARE(htim2, TIM_CHANNEL_1, 0);
-	HAL_GPIO_WritePin(PWM_AL_GPIO_Port, PWM_AL_Pin, 0);
+	//HAL_GPIO_WritePin(PWM_AL_GPIO_Port, PWM_AL_Pin, 0);
+	__HAL_TIM_SET_COMPARE(htim2, TIM_CHANNEL_2, PWM_COUNTER);
 }
 
 void SetFloating_B(){
+	FloatingPhasae = 'B';
 	__HAL_TIM_SET_COMPARE(htim3, TIM_CHANNEL_1, 0);
-	HAL_GPIO_WritePin(PWM_BL_GPIO_Port, PWM_BL_Pin, 0);
+	//HAL_GPIO_WritePin(PWM_BL_GPIO_Port, PWM_BL_Pin, 0);
+	__HAL_TIM_SET_COMPARE(htim3, TIM_CHANNEL_2, PWM_COUNTER);
 }
 
 void SetFloating_C(){
+	FloatingPhasae = 'C';
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_2, 0);
-	HAL_GPIO_WritePin(PWM_CL_GPIO_Port, PWM_CL_Pin, 0);
+	//HAL_GPIO_WritePin(PWM_CL_GPIO_Port, PWM_CL_Pin, 0);
+	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_1, PWM_COUNTER);
 }
 
 void SixStep(uint32_t Speed, uint16_t Value){
@@ -516,7 +571,7 @@ uint32_t BEMF_SixStep_TEST(uint16_t Value, uint16_t LastTicks){
 
 uint32_t BEMF_SixStep_TEST_rev(uint16_t Value, uint16_t LastTicks){
 	float ticks = 0;
-	float div = 6;//1.5;
+	float div = 1.5;//1.5;
 	////////////////////////////////////////////////////////// 1
 	//if(rx_buffer[0] == 0) return 0;
 	SetPulse_CH(Value);
@@ -584,6 +639,147 @@ uint32_t BEMF_SixStep_TEST_rev(uint16_t Value, uint16_t LastTicks){
 
 	//data[ data_num-1] = 0;
 	return ticks;
+}
+
+uint32_t BEMF_SixStep_TEST_3_rev(uint16_t Value, uint16_t LastTicks, float div){
+
+	if (div < 1) div = 1;
+	float ticks = 0;
+	//float div = 1.5;//1.5;
+	////////////////////////////////////////////////////////// 1
+	//if(rx_buffer[0] == 0) return 0;
+	SetPulse_CH(Value);
+	SetZero_B();
+	SetFloating_A();
+	ticks = LastTicks/2;	// 1/4
+	Delay_Tick(ticks);
+	ticks += WaitForCross(0,0);
+	if (div < 10 ) Delay_Tick(ticks/(float)div);
+
+	//data[ data_num-1] = 0;
+	////////////////////////////////////////////////////////// 2
+	//if(rx_buffer[0] == 0) return 0;
+	SetPulse_CH(Value);
+	SetFloating_B();
+	SetZero_A();
+	ticks = ticks/2;	// 1/4
+	Delay_Tick(ticks);
+	ticks += WaitForCross2(1,0);	// 1/2
+	if (div < 10 ) Delay_Tick(ticks/(float)div);
+
+	//data[ data_num-1] = 0;
+	////////////////////////////////////////////////////////// 3
+	//if(rx_buffer[0] == 0) return 0;
+	SetFloating_C();
+	SetPulse_BH(Value);
+	SetZero_A();
+	ticks = ticks/2;	// 1/4
+	Delay_Tick(ticks);
+	ticks += WaitForCross(2,0);
+	if (div < 10 ) Delay_Tick(ticks/(float)div);
+
+	//data[ data_num-1] = 0;
+	////////////////////////////////////////////////////////// 4
+	//if(rx_buffer[0] == 0) return 0;
+	SetZero_C();
+	SetPulse_BH(Value);
+	SetFloating_A();
+	ticks = ticks/2;	// 1/4
+	Delay_Tick(ticks);
+	ticks += WaitForCross2(0,0);
+	if (div < 10 ) Delay_Tick(ticks/(float)div);
+
+	//data[ data_num-1] = 0;
+	////////////////////////////////////////////////////////// 5
+	//if(rx_buffer[0] == 0) return 0;
+	SetZero_C();
+	SetFloating_B();
+	SetPulse_AH(Value);
+	ticks = ticks/2;	// 1/4
+	Delay_Tick(ticks);
+	ticks += WaitForCross(1,0);
+	if (div < 10 ) Delay_Tick(ticks/(float)div);
+
+	//data[ data_num-1] = 0;
+	////////////////////////////////////////////////////////// 6
+	//if(rx_buffer[0] == 0) return 0;
+	SetFloating_C();
+	SetZero_B();
+	SetPulse_AH(Value);
+	ticks = ticks/2;	// 1/4
+	Delay_Tick(ticks);
+	ticks += WaitForCross2(2,0);
+	if (div < 10 ) Delay_Tick(ticks/(float)div);
+
+	//data[ data_num-1] = 0;
+	return ticks;
+}
+
+uint32_t BEMF_SixStep_TEST_2_rev(uint16_t Value, uint16_t ticks_30deg){
+	float ticks_diode_15deg = 0;
+	float ticks_cross_15deg = 0;
+	////////////////////////////////////////////////////////// 1
+	SetPulse_CH(Value);
+	SetZero_B();
+	SetFloating_A();
+
+	ticks_diode_15deg = ticks_30deg / 2;
+	Delay_Tick(ticks_diode_15deg);
+	ticks_cross_15deg = WaitForCross(0,0);
+	ticks_30deg = (ticks_diode_15deg + ticks_cross_15deg);
+	//Delay_Tick(ticks_cross_15deg);
+	////////////////////////////////////////////////////////// 2
+	SetPulse_CH(Value);
+	SetFloating_B();
+	SetZero_A();
+
+	ticks_diode_15deg = ticks_30deg / 2;
+	Delay_Tick(ticks_diode_15deg);
+	ticks_cross_15deg = WaitForCross2(1,0);
+	ticks_30deg = (ticks_diode_15deg + ticks_cross_15deg);
+	//Delay_Tick(ticks_cross_15deg);
+	////////////////////////////////////////////////////////// 3
+	SetFloating_C();
+	SetPulse_BH(Value);
+	SetZero_A();
+
+	ticks_diode_15deg = ticks_30deg / 2;
+	Delay_Tick(ticks_diode_15deg);
+	ticks_cross_15deg = WaitForCross(2,0);
+	ticks_30deg = (ticks_diode_15deg + ticks_cross_15deg);
+	//Delay_Tick(ticks_cross_15deg);
+	////////////////////////////////////////////////////////// 4
+	SetZero_C();
+	SetPulse_BH(Value);
+	SetFloating_A();
+
+	ticks_diode_15deg = ticks_30deg / 2;
+	Delay_Tick(ticks_diode_15deg);
+	ticks_cross_15deg = WaitForCross2(0,0);
+	ticks_30deg = (ticks_diode_15deg + ticks_cross_15deg);
+	//Delay_Tick(ticks_cross_15deg);
+	////////////////////////////////////////////////////////// 5
+	SetZero_C();
+	SetFloating_B();
+	SetPulse_AH(Value);
+
+	ticks_diode_15deg = ticks_30deg / 2;
+	Delay_Tick(ticks_diode_15deg);
+	ticks_cross_15deg = WaitForCross(1,0);
+	ticks_30deg = (ticks_diode_15deg + ticks_cross_15deg);
+	//Delay_Tick(ticks_cross_15deg);
+	////////////////////////////////////////////////////////// 6
+	SetFloating_C();
+	SetZero_B();
+	SetPulse_AH(Value);
+
+	ticks_diode_15deg = ticks_30deg / 2;
+	Delay_Tick(ticks_diode_15deg);
+	ticks_cross_15deg = WaitForCross2(2,0);
+	ticks_30deg = (ticks_diode_15deg + ticks_cross_15deg);
+	//Delay_Tick(ticks_cross_15deg);
+
+	return ticks_30deg;
 }
 
 void WaitForRise(uint8_t Phase){

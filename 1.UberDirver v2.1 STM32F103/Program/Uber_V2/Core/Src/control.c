@@ -26,15 +26,15 @@ uint16_t Value = 8;
 uint8_t Scan_Is_enabled = 0;
 uint8_t Scan_Data[4096];
 uint16_t Scan_iter = 0;
-
-char FloatingPhasae = 0;
+uint8_t ADC_Meas_Enabled = 0;
+uint8_t Step_Num = 0;
 
 void EnableScan(){
 	Scan_Is_enabled = 1;
 }
 
 uint8_t IsScanReady(){
-	if (Scan_iter == 4095) return 1;
+	if (Scan_iter >= 4095) return 1;
 	else return 0;
 }
 
@@ -46,32 +46,20 @@ uint8_t* GetScanData(){
 
 void BEMF_Observer(){
 	// Input Block
-	uint16_t V_A = ADC_data[0];
-	uint16_t V_B = ADC_data[1];
-	uint16_t V_C = ADC_data[2];
-	uint16_t V_DC = ADC_data[3];
-	// Floating Phase Detect Block
-	uint16_t V_Floating = 0;
-	switch(FloatingPhasae){
-		case 'A':{
-			V_Floating = V_A;
-			break;
-		}
-		case 'B':{
-			V_Floating = V_B;
-			break;
-		}
-		case 'C':{
-			V_Floating = V_C;
-			break;
-		}
-	}
+	uint16_t V_Floating = ADC_data[0];
+	uint16_t V_DC = ADC_data[1];
 	// 0 Cross Detection Block
 
 	if (Scan_Is_enabled > 0){
 		Scan_Data[Scan_iter] = V_Floating/16;
 		Scan_iter ++ ;
-		if (Scan_iter == 4095) Scan_Is_enabled = 0;
+		Scan_Data[Scan_iter] = V_DC/16;
+		Scan_iter ++ ;
+		Scan_Data[Scan_iter] = ADC_Meas_Enabled * 64;
+		Scan_iter ++ ;
+		Scan_Data[Scan_iter] = Step_Num * 8;
+		Scan_iter ++ ;
+		if (Scan_iter >= 4095) Scan_Is_enabled = 0;
 	}
 }
 
@@ -139,9 +127,9 @@ void Control_Init(
 
 
 	// ADC and Timer Configuration
-	HAL_ADC_Start_DMA(hadc1, ADC_data, 7);
+	HAL_ADC_Start_DMA(hadc1, ADC_data, 2);
 	HAL_TIM_PWM_Start_IT(htim1, TIM_CHANNEL_3);
-	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, 3);
+	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, 1);
 
 
 	HAL_Delay(1);
@@ -184,21 +172,18 @@ void SetPulse_CH(uint16_t value){
 }
 ///////////////////
 void SetFloating_A(){
-	FloatingPhasae = 'A';
 	__HAL_TIM_SET_COMPARE(htim2, TIM_CHANNEL_1, 0);
 	//HAL_GPIO_WritePin(PWM_AL_GPIO_Port, PWM_AL_Pin, 0);
 	__HAL_TIM_SET_COMPARE(htim2, TIM_CHANNEL_2, PWM_COUNTER);
 }
 
 void SetFloating_B(){
-	FloatingPhasae = 'B';
 	__HAL_TIM_SET_COMPARE(htim3, TIM_CHANNEL_1, 0);
 	//HAL_GPIO_WritePin(PWM_BL_GPIO_Port, PWM_BL_Pin, 0);
 	__HAL_TIM_SET_COMPARE(htim3, TIM_CHANNEL_2, PWM_COUNTER);
 }
 
 void SetFloating_C(){
-	FloatingPhasae = 'C';
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_2, 0);
 	//HAL_GPIO_WritePin(PWM_CL_GPIO_Port, PWM_CL_Pin, 0);
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_1, PWM_COUNTER);
@@ -286,7 +271,7 @@ uint32_t WaitForCross(uint8_t num, uint8_t val){
 	__HAL_TIM_SET_COUNTER(htim4,0);
 	uint32_t ret_val = 0;
 
-	while(ADC_data[num] > val+ADC_data[3]/2){
+	while(ADC_data[num] > val+ADC_data[1]/2){
 		if (__HAL_TIM_GET_COUNTER(htim4) > 0x7fff){
 			ret_val += __HAL_TIM_GET_COUNTER(htim4);
 			__HAL_TIM_SET_COUNTER(htim4,0);
@@ -316,7 +301,7 @@ uint32_t WaitForCross2(uint8_t num, uint8_t val){
 	__HAL_TIM_SET_COUNTER(htim4,0);
 	uint32_t ret_val = 0;
 
-	while(ADC_data[num] < val+ADC_data[3]/2){
+	while(ADC_data[num] < val+ADC_data[1]/2){
 		if (__HAL_TIM_GET_COUNTER(htim4) > 0x7fff){
 			ret_val += __HAL_TIM_GET_COUNTER(htim4);
 			__HAL_TIM_SET_COUNTER(htim4,0);
@@ -330,389 +315,142 @@ uint32_t WaitForCross2(uint8_t num, uint8_t val){
 	return ret_val;
 }
 
-uint32_t BEMF_SixStep(uint16_t Value, uint16_t LastTicks){
-	uint32_t ticks = 0;
-	//uint8_t div = 2;
-	////////////////////////////////////////////////////////// 1
-	SetPulse_AH(Value);
-	SetZero_B();
-	SetFloating_C();
-	ticks = WaitForCross(2,0);
-	//Delay_Tick(ticks/div);
-	if ((ticks > MAX_TICKS) || (ticks < MIN_TICKS)){
-		SetFloating_A();
-		SetFloating_B();
-		SetFloating_C();
-		HAL_Delay(100);
+
+void ADC_Change_Order(char channel){
+	ADC_ChannelConfTypeDef sConfig = {0};
+	// Stop timer what triggers ADC conversions
+	HAL_TIM_PWM_Stop_IT(htim1, TIM_CHANNEL_3);
+	// Stop ADC DMA
+	HAL_ADC_Stop_DMA(hadc1);
+	// Change order of conversions
+	sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+	sConfig.Rank = ADC_REGULAR_RANK_1;
+	if(channel == 'A'){
+		sConfig.Channel = ADC_CHANNEL_4;
+	}else if(channel == 'B'){
+		sConfig.Channel = ADC_CHANNEL_3;
+	}else if(channel == 'C'){
+		sConfig.Channel = ADC_CHANNEL_2;
 	}
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 2
-	SetPulse_AH(Value);
-	SetFloating_B();
-	SetZero_C();
-	ticks = WaitForCross2(1,0);
-	//Delay_Tick(ticks/div);
-	if ((ticks > MAX_TICKS) || (ticks < MIN_TICKS)){
-		SetFloating_A();
-		SetFloating_B();
-		SetFloating_C();
-		HAL_Delay(100);
-	}
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 3
-	SetFloating_A();
-	SetPulse_BH(Value);
-	SetZero_C();
-	ticks = WaitForCross(0,0);
-	//Delay_Tick(ticks/div);
-	if ((ticks > MAX_TICKS) || (ticks < MIN_TICKS)){
-		SetFloating_A();
-		SetFloating_B();
-		SetFloating_C();
-		HAL_Delay(100);
-	}
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 4
-	SetZero_A();
-	SetPulse_BH(Value);
-	SetFloating_C();
-	ticks = WaitForCross2(2,0);
-	//Delay_Tick(ticks/div);
-	if ((ticks > MAX_TICKS) || (ticks < MIN_TICKS)){
-		SetFloating_A();
-		SetFloating_B();
-		SetFloating_C();
-		HAL_Delay(100);
-	}
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 5
-	SetZero_A();
-	SetFloating_B();
-	SetPulse_CH(Value);
-	ticks = WaitForCross(1,0);
-	//Delay_Tick(ticks/div);
-	if ((ticks > MAX_TICKS) || (ticks < MIN_TICKS)){
-		SetFloating_A();
-		SetFloating_B();
-		SetFloating_C();
-		HAL_Delay(100);
-	}
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 6
-	SetFloating_A();
-	SetZero_B();
-	SetPulse_CH(Value);
-	ticks = WaitForCross2(0,0);
-	//Delay_Tick(ticks/div);
-	if ((ticks > MAX_TICKS) || (ticks < MIN_TICKS)){
-		SetFloating_A();
-		SetFloating_B();
-		SetFloating_C();
-		HAL_Delay(100);
-	}
-	//data[ data_num-1] = 0;
-	return ticks;
+	if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)  Error_Handler();
+	// Start ADC DMA
+	HAL_ADC_Start_DMA(hadc1, ADC_data, 2);
+	// Start timer what triggers ADC conversions
+	HAL_TIM_PWM_Start_IT(htim1, TIM_CHANNEL_3);
+	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, 1);
+	// Timers synchonisation
+	//htim1->Instance->CNT = 0;
+	//htim2->Instance->CNT = 0;
+	//htim3->Instance->CNT = 0;
 }
 
-uint32_t BEMF_SixStep_rev(uint16_t Value, uint16_t LastTicks){
-	uint32_t ticks = 0;
-	//uint8_t div = 2;
-	////////////////////////////////////////////////////////// 1
-	SetPulse_CH(Value);
-	SetZero_B();
-	SetFloating_A();
-	ticks = WaitForCross(0,0);
-	//Delay_Tick(ticks/div);
-	if ((ticks > MAX_TICKS) || (ticks < MIN_TICKS)){
-		SetFloating_A();
-		SetFloating_B();
-		SetFloating_C();
-		HAL_Delay(100);
-	}
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 2
-	SetPulse_CH(Value);
-	SetFloating_B();
-	SetZero_A();
-	ticks = WaitForCross2(1,0);
-	//Delay_Tick(ticks/div);
-	if ((ticks > MAX_TICKS) || (ticks < MIN_TICKS)){
-		SetFloating_A();
-		SetFloating_B();
-		SetFloating_C();
-		HAL_Delay(100);
-	}
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 3
-	SetFloating_C();
-	SetPulse_BH(Value);
-	SetZero_A();
-	ticks = WaitForCross(2,0);
-	//Delay_Tick(ticks/div);
-	if ((ticks > MAX_TICKS) || (ticks < MIN_TICKS)){
-		SetFloating_A();
-		SetFloating_B();
-		SetFloating_C();
-		HAL_Delay(100);
-	}
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 4
-	SetZero_C();
-	SetPulse_BH(Value);
-	SetFloating_A();
-	ticks = WaitForCross2(0,0);
-	//Delay_Tick(ticks/div);
-	if ((ticks > MAX_TICKS) || (ticks < MIN_TICKS)){
-		SetFloating_A();
-		SetFloating_B();
-		SetFloating_C();
-		HAL_Delay(100);
-	}
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 5
-	SetZero_C();
-	SetFloating_B();
-	SetPulse_AH(Value);
-	ticks = WaitForCross(1,0);
-	//Delay_Tick(ticks/div);
-	if ((ticks > MAX_TICKS) || (ticks < MIN_TICKS)){
-		SetFloating_A();
-		SetFloating_B();
-		SetFloating_C();
-		HAL_Delay(100);
-	}
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 6
-	SetFloating_C();
-	SetZero_B();
-	SetPulse_AH(Value);
-	ticks = WaitForCross2(2,0);
-	//Delay_Tick(ticks/div);
-	if ((ticks > MAX_TICKS) || (ticks < MIN_TICKS)){
-		SetFloating_A();
-		SetFloating_B();
-		SetFloating_C();
-		HAL_Delay(100);
-	}
-	//data[ data_num-1] = 0;
-	return ticks;
-}
+uint32_t WaitOneStep(uint32_t beforeCross, float div){
+	if (div < 1) div = 1;
+	uint16_t Diode_Delay = 10000; // 10000 -> 166us
+	uint32_t ticks = Diode_Delay;
+	uint32_t afterCross;
 
-uint32_t BEMF_SixStep_TEST(uint16_t Value, uint16_t LastTicks){
-	float ticks = 0;
-	float div = 6;//1.5;
-	////////////////////////////////////////////////////////// 1
-	//if(rx_buffer[0] == 0) return 0;
-	SetPulse_AH(Value);
-	SetZero_B();
-	SetFloating_C();
-	ticks = LastTicks/2;	// 1/4
-	Delay_Tick(ticks);
-	ticks += WaitForCross(2,0);
-	Delay_Tick(ticks/div);
-
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 2
-	//if(rx_buffer[0] == 0) return 0;
-	SetPulse_AH(Value);
-	SetFloating_B();
-	SetZero_C();
-	ticks = ticks/2;	// 1/4
-	Delay_Tick(ticks);
-	ticks += WaitForCross2(1,0);	// 1/2
-	Delay_Tick(ticks/div);
-
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 3
-	//if(rx_buffer[0] == 0) return 0;
-	SetFloating_A();
-	SetPulse_BH(Value);
-	SetZero_C();
-	ticks = ticks/2;	// 1/4
-	Delay_Tick(ticks);
+	Delay_Tick(Diode_Delay);
+	ADC_Meas_Enabled = 1;
 	ticks += WaitForCross(0,0);
-	Delay_Tick(ticks/div);
+	ADC_Meas_Enabled = 0;
 
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 4
-	//if(rx_buffer[0] == 0) return 0;
-	SetZero_A();
-	SetPulse_BH(Value);
-	SetFloating_C();
-	ticks = ticks/2;	// 1/4
-	Delay_Tick(ticks);
-	ticks += WaitForCross2(2,0);
-	Delay_Tick(ticks/div);
-
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 5
-	//if(rx_buffer[0] == 0) return 0;
-	SetZero_A();
-	SetFloating_B();
-	SetPulse_CH(Value);
-	ticks = ticks/2;	// 1/4
-	Delay_Tick(ticks);
-	ticks += WaitForCross(1,0);
-	Delay_Tick(ticks/div);
-
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 6
-	//if(rx_buffer[0] == 0) return 0;
-	SetFloating_A();
-	SetZero_B();
-	SetPulse_CH(Value);
-	ticks = ticks/2;	// 1/4
-	Delay_Tick(ticks);
-	ticks += WaitForCross2(0,0);
-	Delay_Tick(ticks/div);
-
-	//data[ data_num-1] = 0;
-	return ticks;
+	afterCross = (ticks) / (float)div; // Median of old before cross and new before cross
+	if (div < 10 ) {
+		Delay_Tick(afterCross);
+		ticks += afterCross;
+	}
+	return ticks/2;
 }
 
-uint32_t BEMF_SixStep_TEST_rev(uint16_t Value, uint16_t LastTicks){
-	float ticks = 0;
-	float div = 1.5;//1.5;
-	////////////////////////////////////////////////////////// 1
-	//if(rx_buffer[0] == 0) return 0;
-	SetPulse_CH(Value);
-	SetZero_B();
-	SetFloating_A();
-	ticks = LastTicks/2;	// 1/4
-	Delay_Tick(ticks);
-	ticks += WaitForCross(0,0);
-	Delay_Tick(ticks/div);
-
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 2
-	//if(rx_buffer[0] == 0) return 0;
-	SetPulse_CH(Value);
-	SetFloating_B();
-	SetZero_A();
-	ticks = ticks/2;	// 1/4
-	Delay_Tick(ticks);
-	ticks += WaitForCross2(1,0);	// 1/2
-	Delay_Tick(ticks/div);
-
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 3
-	//if(rx_buffer[0] == 0) return 0;
-	SetFloating_C();
-	SetPulse_BH(Value);
-	SetZero_A();
-	ticks = ticks/2;	// 1/4
-	Delay_Tick(ticks);
-	ticks += WaitForCross(2,0);
-	Delay_Tick(ticks/div);
-
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 4
-	//if(rx_buffer[0] == 0) return 0;
-	SetZero_C();
-	SetPulse_BH(Value);
-	SetFloating_A();
-	ticks = ticks/2;	// 1/4
-	Delay_Tick(ticks);
-	ticks += WaitForCross2(0,0);
-	Delay_Tick(ticks/div);
-
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 5
-	//if(rx_buffer[0] == 0) return 0;
-	SetZero_C();
-	SetFloating_B();
-	SetPulse_AH(Value);
-	ticks = ticks/2;	// 1/4
-	Delay_Tick(ticks);
-	ticks += WaitForCross(1,0);
-	Delay_Tick(ticks/div);
-
-	//data[ data_num-1] = 0;
-	////////////////////////////////////////////////////////// 6
-	//if(rx_buffer[0] == 0) return 0;
-	SetFloating_C();
-	SetZero_B();
-	SetPulse_AH(Value);
-	ticks = ticks/2;	// 1/4
-	Delay_Tick(ticks);
-	ticks += WaitForCross2(2,0);
-	Delay_Tick(ticks/div);
-
-	//data[ data_num-1] = 0;
-	return ticks;
-}
-
-uint32_t BEMF_SixStep_TEST_3_rev(uint16_t Value, uint16_t LastTicks, float div){
-
+uint32_t BEMF_SixStep(uint16_t Value, uint32_t LastTicks, float div){
 	if (div < 1) div = 1;
 	float ticks = 0;
-	//float div = 1.5;//1.5;
+	uint16_t Diode_Delay;
 	////////////////////////////////////////////////////////// 1
-	//if(rx_buffer[0] == 0) return 0;
 	SetPulse_CH(Value);
 	SetZero_B();
 	SetFloating_A();
-	ticks = LastTicks/2;	// 1/4
+	ADC_Change_Order('A');
+	Step_Num = 1;
+
+	ticks = LastTicks/8;	// 1/4
 	Delay_Tick(ticks);
+	ADC_Meas_Enabled = 1;
 	ticks += WaitForCross(0,0);
+	ADC_Meas_Enabled = 0;
 	if (div < 10 ) Delay_Tick(ticks/(float)div);
-
-	//data[ data_num-1] = 0;
+	ticks += ticks/(float)div;
 	////////////////////////////////////////////////////////// 2
-	//if(rx_buffer[0] == 0) return 0;
 	SetPulse_CH(Value);
 	SetFloating_B();
 	SetZero_A();
-	ticks = ticks/2;	// 1/4
-	Delay_Tick(ticks);
-	ticks += WaitForCross2(1,0);	// 1/2
-	if (div < 10 ) Delay_Tick(ticks/(float)div);
+	ADC_Change_Order('B');
+	Step_Num = 2;
 
-	//data[ data_num-1] = 0;
+	ticks = ticks/8;	// 1/4
+	Delay_Tick(ticks);
+	ADC_Meas_Enabled = 1;
+	ticks += WaitForCross2(0,0);	// 1/2
+	ADC_Meas_Enabled = 0;
+	if (div < 10 ) Delay_Tick(ticks/(float)div);
+	ticks += ticks/(float)div;
 	////////////////////////////////////////////////////////// 3
-	//if(rx_buffer[0] == 0) return 0;
 	SetFloating_C();
 	SetPulse_BH(Value);
 	SetZero_A();
-	ticks = ticks/2;	// 1/4
-	Delay_Tick(ticks);
-	ticks += WaitForCross(2,0);
-	if (div < 10 ) Delay_Tick(ticks/(float)div);
+	ADC_Change_Order('C');
+	Step_Num = 3;
 
-	//data[ data_num-1] = 0;
+	ticks = ticks/8;	// 1/4
+	Delay_Tick(ticks);
+	ADC_Meas_Enabled = 1;
+	ticks += WaitForCross(0,0);
+	ADC_Meas_Enabled = 0;
+	if (div < 10 ) Delay_Tick(ticks/(float)div);
+	ticks += ticks/(float)div;
 	////////////////////////////////////////////////////////// 4
-	//if(rx_buffer[0] == 0) return 0;
 	SetZero_C();
 	SetPulse_BH(Value);
 	SetFloating_A();
-	ticks = ticks/2;	// 1/4
-	Delay_Tick(ticks);
-	ticks += WaitForCross2(0,0);
-	if (div < 10 ) Delay_Tick(ticks/(float)div);
+	ADC_Change_Order('A');
+	Step_Num = 4;
 
-	//data[ data_num-1] = 0;
+	ticks = ticks/8;	// 1/4
+	Delay_Tick(ticks);
+	ADC_Meas_Enabled = 1;
+	ticks += WaitForCross2(0,0);
+	ADC_Meas_Enabled = 0;
+	if (div < 10 ) Delay_Tick(ticks/(float)div);
+	ticks += ticks/(float)div;
 	////////////////////////////////////////////////////////// 5
-	//if(rx_buffer[0] == 0) return 0;
 	SetZero_C();
 	SetFloating_B();
 	SetPulse_AH(Value);
-	ticks = ticks/2;	// 1/4
-	Delay_Tick(ticks);
-	ticks += WaitForCross(1,0);
-	if (div < 10 ) Delay_Tick(ticks/(float)div);
+	ADC_Change_Order('B');
+	Step_Num = 5;
 
-	//data[ data_num-1] = 0;
+	ticks = ticks/8;	// 1/4
+	Delay_Tick(ticks);
+	ADC_Meas_Enabled = 1;
+	ticks += WaitForCross(0,0);
+	ADC_Meas_Enabled = 0;
+	if (div < 10 ) Delay_Tick(ticks/(float)div);
+	ticks += ticks/(float)div;
 	////////////////////////////////////////////////////////// 6
-	//if(rx_buffer[0] == 0) return 0;
 	SetFloating_C();
 	SetZero_B();
 	SetPulse_AH(Value);
-	ticks = ticks/2;	// 1/4
-	Delay_Tick(ticks);
-	ticks += WaitForCross2(2,0);
-	if (div < 10 ) Delay_Tick(ticks/(float)div);
+	ADC_Change_Order('C');
+	Step_Num = 6;
 
-	//data[ data_num-1] = 0;
+	ticks = ticks/8;	// 1/4
+	Delay_Tick(ticks);
+	ADC_Meas_Enabled = 1;
+	ticks += WaitForCross2(0,0);
+	ADC_Meas_Enabled = 0;
+	if (div < 10 ) Delay_Tick(ticks/(float)div);
+	ticks += ticks/(float)div;
 	return ticks;
 }
 

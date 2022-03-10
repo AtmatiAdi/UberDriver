@@ -21,7 +21,7 @@
 #define SCAN_ONE_VARIABLE               80    // 16
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial1.begin(9600);
   pinMode(3,INPUT);
 }
@@ -30,6 +30,9 @@ uint8_t power = 0;
 uint8_t com_delay = 0;
 uint8_t old_power = 0;
 int delay_ms = 50;
+int scan_data_size = 4095;
+int scan_pack_size = 4;
+bool display_RPM = true;
 // the loop function runs over and over again forever
 void loop() {
   
@@ -42,16 +45,23 @@ void loop() {
   power = pot1/4;
   com_delay = pot2/4;
   uint8_t buf[3] = {0,0,0};
+  int scan_cnt = 0;
 
   if (bt1){
+    display_RPM = false;
     // Button funcion
     buf[0] = SCAN_ONE_VARIABLE;
     buf[1] = 1;
     buf[2] = 0;
     Serial1.write(buf, 3);
-    while(1){
-      if(Serial1.available()){
+    while(scan_cnt < scan_data_size){
+      if(Serial1.available() >= scan_pack_size){
+        for (int i = 0; i <= scan_pack_size - 2; i ++ ){
+          Serial.print(Serial1.read());
+          Serial.print("\t");
+        }
         Serial.println(Serial1.read());
+        scan_cnt += scan_pack_size;
       }
     }
   }
@@ -59,11 +69,16 @@ void loop() {
   buf[0] = SET_MOTOR_1_SPEED_FORWAD;
   buf[1] = power;
   buf[2] = com_delay;
-  
   Serial1.write(buf, 3);
-  old_power = power;
   delay(delay_ms);
-  uint8_t Rotations = Serial1.read();
-  float RPM = ((float)Rotations / 4) * (1000/delay_ms) * 60;
-  Serial.println(RPM);
+      
+  if (display_RPM){
+    uint8_t Rotations = Serial1.read();
+    float RPM = ((float)Rotations / 4) * (1000/delay_ms) * 60;
+    for (int i = 0; i <= scan_pack_size - 2; i ++ ){
+      Serial.print(RPM);
+      Serial.print("\t");
+    }
+    Serial.println(RPM);
+  }
 }

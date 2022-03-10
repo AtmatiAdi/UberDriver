@@ -217,10 +217,10 @@ void NormalControl(){
 		}
 		// Kręcimy normalnie
 		if(Function % 2 == 1){					// Kręcimy do tylu
-			ticks = BEMF_SixStep_TEST_3_rev(pwm, ticks,step_delay/16);
+			ticks = BEMF_SixStep(pwm, ticks,step_delay/16);
 
 		}else{									// Kręcimy do przodu
-			ticks = BEMF_SixStep_TEST_3_rev(pwm, ticks,step_delay/16);
+			ticks = BEMF_SixStep(pwm, ticks,step_delay/16);
 		}
 		Rotations[0] += 1;
 

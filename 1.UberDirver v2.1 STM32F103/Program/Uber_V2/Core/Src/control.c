@@ -62,6 +62,7 @@ uint16_t BEMF_Angle = 330;
 uint8_t Div = 16;
 uint16_t BEMF_Treshold = 0;
 uint16_t PWM_Value = 0;
+uint8_t BEMF_delay = 32;
 
 void BEMF_Observer_Block(){
 // Input Block
@@ -72,7 +73,7 @@ void BEMF_Observer_Block(){
 	// differentiate BEMF to obtain value and sign of changes
 	V_Floating_Diff = (4095 + V_Floating) - V_Floating_Old;
 	V_Floating_Old = V_Floating;
-	if((Cross == 0) && (BEMF_cnt_sign == 1) && (BEMF_time_cnt > 32)){
+	if((Cross == 0) && (BEMF_cnt_sign == 1) && (BEMF_time_cnt > BEMF_delay)){
 		if((Step_Num == 1) || (Step_Num == 3) || (Step_Num == 5)){
 			// BEMF voltage will be decreasing -> '\'
 			if (V_Floating_Diff < 4095){
@@ -91,6 +92,7 @@ void BEMF_Observer_Block(){
 	// Change counting sign when 0-cross is detected
 	if (Cross == 1) {
 		BEMF_cnt_sign = 0;
+		BEMF_delay = BEMF_time_cnt/4;
 		Cross = 0;
 		BEMF_Angle += 30;
 		if (Div > 30) BEMF_Treshold = 0;
@@ -121,13 +123,20 @@ void BEMF_Observer_Block(){
 	if (Scan_Is_enabled > 0){
 		Scan_Data[Scan_iter] = V_Floating/16;
 		Scan_iter ++ ;
-		//Scan_Data[Scan_iter] = Cross*64;
-		//Scan_iter ++ ;
-		Scan_Data[Scan_iter] = BEMF_Angle/4;
+		Scan_Data[Scan_iter] = V_DC/16;
 		Scan_iter ++ ;
 		Scan_Data[Scan_iter] = Step_Num * 8;
 		Scan_iter ++ ;
 		Scan_Data[Scan_iter] = BEMF_time_cnt;
+		Scan_iter ++ ;
+
+		Scan_Data[Scan_iter] = BEMF_Treshold;
+		Scan_iter ++ ;
+		Scan_Data[Scan_iter] = BEMF_Angle/4;
+		Scan_iter ++ ;
+		Scan_Data[Scan_iter] = Step_Num * 8;
+		Scan_iter ++ ;
+		Scan_Data[Scan_iter] = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin)*64;
 		Scan_iter ++ ;
 		if (Scan_iter >= 4095) Scan_Is_enabled = 0;
 	}
@@ -139,6 +148,7 @@ void BEMF_Observer_Block(){
 		BEMF_time_cnt = 1;
 		BEMF_Angle = 330;
 		V_Floating_Old = 0;
+		BEMF_delay = 32;
 	}
 }
 
@@ -151,7 +161,7 @@ uint8_t Hall = 0;
 uint8_t OldHall = 0xff;			// Starting state
 uint8_t HALL_cnt_sign = 0;		// Starting state
 uint8_t HALL_time_cnt = 1;		// Starting state
-uint16_t HALL_Angle = 330;	// Starting state
+uint16_t HALL_Angle = 300;	// UWAZAC Z GOWNO PRZESUNIECIAMI
 
 uint16_t HALL_Treshold = 0;
 
@@ -179,16 +189,31 @@ void HALL_Observer_Block(){
 		HALL_cnt_sign = 1;
 		HALL_time_cnt = 0;
 	}
+	if(HALL_cnt_sign){
+		// cnt is increasing
+	}else{
+		// cnt is decreasing
+	}
 //	if (Old_Step != Step_Num) {
 //		HALL_Angle += 30;
 //		HALL_cnt_sign = 1;
 //		HALL_time_cnt = 0;
 //	}
-	Old_Step = Step_Num;
+	//Old_Step = Step_Num;
 	if(HALL_Angle >= 360) HALL_Angle = 0;
 
 
 	if (Scan_Is_enabled > 0){
+		Scan_Data[Scan_iter] = Hall*64;
+		Scan_iter ++ ;
+		Scan_Data[Scan_iter] = HALL_Angle/4;
+		Scan_iter ++ ;
+		Scan_Data[Scan_iter] = Step_Num * 8;
+		Scan_iter ++ ;
+		Scan_Data[Scan_iter] = HALL_time_cnt;
+		Scan_iter ++ ;
+		if (Scan_iter >= 4095) Scan_Is_enabled = 0;
+
 		Scan_Data[Scan_iter] = Hall*64;
 		Scan_iter ++ ;
 		Scan_Data[Scan_iter] = HALL_Angle/4;
@@ -204,7 +229,7 @@ void HALL_Observer_Block(){
 		OldHall = 0xff;
 		HALL_cnt_sign = 0;
 		HALL_time_cnt = 1;
-		HALL_Angle = 330;
+		HALL_Angle = 300;	// UWAZAC Z GOWNO PRZESUNIECIAMI
 	}
 }
 
@@ -218,7 +243,7 @@ void Six_Step_Block(uint16_t PWM_Value){
 		Old_Step = 0;
 		return;
 	}
-	Step_Num = (BEMF_Angle/60)+1;
+	Step_Num = (HALL_Angle/60)+1;
 	if(Step_Num != Old_Step){
 		if(Step_Num == 1){
 			SetPulse_CH(PWM_Value);
@@ -254,13 +279,25 @@ void Six_Step_Block(uint16_t PWM_Value){
 	}
 }
 
+void Sin_Block(uint16_t PWM_Value){
+	if(PWM_Value == 0){
+		SetFloating_A();
+		SetFloating_B();
+		SetFloating_C();
+		Step_Num = 0;
+		Old_Step = 0;
+		return;
+	}
+}
+
+
 void Set_PWM(uint16_t value){
 	PWM_Value = value;
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
-	BEMF_Observer_Block();
-	//HALL_Observer_Block();
+	//BEMF_Observer_Block();
+	HALL_Observer_Block();
 	// Collect data
 	uint8_t div = 1;
 	if(COLLECT_DATA == 1){

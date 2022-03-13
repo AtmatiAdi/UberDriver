@@ -31,7 +31,7 @@ uint8_t com_delay = 0;
 uint8_t old_power = 0;
 int delay_ms = 50;
 int scan_data_size = 4095;
-int scan_pack_size = 4;
+int scan_pack_size = 8;
 bool display_RPM = true;
 // the loop function runs over and over again forever
 void loop() {
@@ -57,7 +57,11 @@ void loop() {
     while(scan_cnt < scan_data_size){
       if(Serial1.available() >= scan_pack_size){
         for (int i = 0; i <= scan_pack_size - 2; i ++ ){
-          Serial.print(Serial1.read());
+          int treshold = 0;
+          if(i >= 3){
+            treshold = 256;
+          }
+          Serial.print((uint16_t)Serial1.read() + treshold);
           Serial.print("\t");
         }
         Serial.println(Serial1.read());

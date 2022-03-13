@@ -117,7 +117,7 @@ void BEMF_Observer_Block(){
 		BEMF_cnt_sign = 1;
 		BEMF_time_cnt = 0;
 	}
-	Old_Step = Step_Num;
+	//Old_Step = Step_Num;
 	if (BEMF_Angle >= 360) BEMF_Angle = 0;
 
 	if (Scan_Is_enabled > 0){
@@ -162,7 +162,10 @@ uint8_t OldHall = 0xff;			// Starting state
 uint8_t HALL_cnt_sign = 0;		// Starting state
 uint8_t HALL_time_cnt = 1;		// Starting state
 uint16_t HALL_Angle = 300;	// UWAZAC Z GOWNO PRZESUNIECIAMI
-
+uint16_t Angle = 0;
+uint16_t First_Half_Upper = 0;
+uint16_t Second_Half_Upper = 0;
+uint8_t Approx_Angle = 0;
 uint16_t HALL_Treshold = 0;
 
 void HALL_Observer_Block(){
@@ -175,6 +178,9 @@ void HALL_Observer_Block(){
 		HALL_Angle  += 30;
 		if (Div > 30) HALL_Treshold = 0;
 		else HALL_Treshold = HALL_time_cnt/Div;
+		// For angle aproximation
+		First_Half_Upper = HALL_time_cnt;
+		Second_Half_Upper = HALL_time_cnt - HALL_Treshold;
 	}
 	OldHall = Hall;
 	// Countter
@@ -189,26 +195,37 @@ void HALL_Observer_Block(){
 		HALL_cnt_sign = 1;
 		HALL_time_cnt = 0;
 	}
+	// Counter buffor reset before overflow
+	if(HALL_time_cnt == 255){
+		HALL_Angle += 60;
+		HALL_cnt_sign = 1;
+		HALL_time_cnt = 0;
+		First_Half_Upper = 0;
+	}
 	if(HALL_cnt_sign){
 		// cnt is increasing
+		Approx_Angle = ((uint16_t)(HALL_time_cnt)*30)/First_Half_Upper;
+		if(Approx_Angle > 30 ) Approx_Angle = 30;
 	}else{
 		// cnt is decreasing
+		Approx_Angle = ((uint16_t)(HALL_time_cnt-HALL_Treshold)*30)/Second_Half_Upper;
+		Approx_Angle = 30 - Approx_Angle;
 	}
 //	if (Old_Step != Step_Num) {
 //		HALL_Angle += 30;
 //		HALL_cnt_sign = 1;
 //		HALL_time_cnt = 0;
 //	}
-	//Old_Step = Step_Num;
-	if(HALL_Angle >= 360) HALL_Angle = 0;
 
+	if(HALL_Angle >= 360) HALL_Angle = 0;
+	Angle = HALL_Angle + Approx_Angle;
 
 	if (Scan_Is_enabled > 0){
 		Scan_Data[Scan_iter] = Hall*64;
 		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = HALL_Angle/4;
+		Scan_Data[Scan_iter] = Angle/2;
 		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = Step_Num * 8;
+		Scan_Data[Scan_iter] = Step_Num * 30;
 		Scan_iter ++ ;
 		Scan_Data[Scan_iter] = HALL_time_cnt;
 		Scan_iter ++ ;
@@ -216,9 +233,9 @@ void HALL_Observer_Block(){
 
 		Scan_Data[Scan_iter] = Hall*64;
 		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = HALL_Angle/4;
+		Scan_Data[Scan_iter] = HALL_Angle/2;
 		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = Step_Num * 8;
+		Scan_Data[Scan_iter] = Step_Num * 30;
 		Scan_iter ++ ;
 		Scan_Data[Scan_iter] = HALL_time_cnt;
 		Scan_iter ++ ;
@@ -243,7 +260,7 @@ void Six_Step_Block(uint16_t PWM_Value){
 		Old_Step = 0;
 		return;
 	}
-	Step_Num = (HALL_Angle/60)+1;
+	Step_Num = (Angle/60)+1;
 	if(Step_Num != Old_Step){
 		if(Step_Num == 1){
 			SetPulse_CH(PWM_Value);
@@ -276,6 +293,7 @@ void Six_Step_Block(uint16_t PWM_Value){
 			SetPulse_AH(PWM_Value);
 			ADC_Change_Order(ADC_CHANNEL_C);
 		}
+		Old_Step = Step_Num;
 	}
 }
 

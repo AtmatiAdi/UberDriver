@@ -73,12 +73,14 @@ void loop() {
   delay(delay_ms);
       
   if (display_RPM){
-    uint8_t Rotations = Serial1.read();
-    float RPM = ((float)Rotations / 4) * (1000/delay_ms) * 60;
-    for (int i = 0; i <= scan_pack_size - 2; i ++ ){
-      Serial.print(RPM);
-      Serial.print("\t");
+    if(Serial1.available()){
+        uint8_t Rotations = Serial1.read();
+        float RPM = ((float)Rotations / 4) * (1000/delay_ms) * 60;
+        for (int i = 0; i <= scan_pack_size - 2; i ++ ){
+          Serial.print(RPM);
+          Serial.print("\t");
+        }
+        Serial.println(255);
     }
-    Serial.println(RPM);
   }
 }

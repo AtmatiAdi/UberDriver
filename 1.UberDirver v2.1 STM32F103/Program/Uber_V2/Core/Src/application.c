@@ -20,10 +20,10 @@ uint8_t IsRunning = 0;
 uint8_t IsBreaking = 0;
 uint16_t ticks = MIN_TICKS;
 uint8_t Rotations[1] = {0};
-float step_delay = 255;	// (255+1)/32 = 8 times shorter t3 = (t1+t2)/8
+uint8_t step_delay = 255;	// (255+1)/32 = 8 times shorter t3 = (t1+t2)/8
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *_huart){
-	HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+	//HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 	HAL_UART_Receive_DMA(huart, rx_buffer, 3);		// Chcemy obierac dalej
 	HAL_UART_Transmit_DMA(huart, Rotations, 1);			// Odsylamy warrtosc obrotow
 	Rotations[0] = 0;										// resetujemy zmienna obrotow
@@ -51,12 +51,12 @@ void Application_Init(UART_HandleTypeDef *_huart){
 
 void ScotterProgram(){
 	Break = 0;
-	if (HAL_GPIO_ReadPin(D1_INPUT_GPIO_Port, D1_INPUT_Pin) == 1){
-		Break += 1;
-	}
-	if (HAL_GPIO_ReadPin(D2_INPUT_GPIO_Port, D2_INPUT_Pin) == 1){
-		Break += 1;
-	}
+	//if (HAL_GPIO_ReadPin(D1_INPUT_GPIO_Port, D1_INPUT_Pin) == 1){
+	//	Break += 1;
+	//}
+	//if (HAL_GPIO_ReadPin(D2_INPUT_GPIO_Port, D2_INPUT_Pin) == 1){
+	//	Break += 1;
+	//}
 	if (Break > 0){
 		IsBreaking = 1;
 		Power = 0;
@@ -96,7 +96,7 @@ void ScotterProgram(){
 	if (Power > 0){
 		// Kręcimy normalnie								// Kręcimy do przodu
 		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
-		ticks = BEMF_SixStep_TEST(Power, ticks);
+		//ticks = BEMF_SixStep_TEST(Power, ticks);
 		IsRunning = 1;
 	}else {
 		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
@@ -146,11 +146,14 @@ void CollectData(){
 
 void NormalControl(){
 	if(Power == 0){								// wartosc = 0, stop
+		Set_PWM(0);
+		Six_Step_Block(0);
 		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
 		SetFloating_A();
 		SetFloating_B();
 		SetFloating_C();
 		IsRunning = 0;
+		Rotations[0] = 0;
 		ticks = MIN_TICKS;
 		//Function = rx_buffer[0];				// Zmiana funkcji jest mzliwa jedynie gdy silnik stoi
 	}else if(Function >= 64){					// Jezeli to funkcja z jakas wartoscia
@@ -215,22 +218,37 @@ void NormalControl(){
 			}
 			}
 		}
-		// Kręcimy normalnie
-		if(Function % 2 == 1){					// Kręcimy do tylu
-			ticks = BEMF_SixStep(pwm, ticks,step_delay/16);
+		//if(rx_buffer[0] == SCAN_ONE_VARIABLE){
+			// Kręcimy normalnie
+			if(Function % 2 == 1){					// Kręcimy do tylu
+				//ticks = BEMF_SixStep(pwm, ticks,step_delay/8);
+				//ticks = HALL_SixStep(pwm, ticks,step_delay/16);
+				Set_PWM(pwm);
+				Set_Observer_Div(step_delay/8);
+				Six_Step_Block(pwm);
+				Rotations[0] = pwm;
+			}else{									// Kręcimy do przodu
+				//ticks = BEMF_SixStep(pwm, ticks,step_delay/8);
+				//ticks = HALL_SixStep(pwm, ticks,step_delay/16);
+				Set_PWM(pwm);
+				Set_Observer_Div(step_delay/8);
+				Rotations[0] = pwm;
+				Six_Step_Block(pwm);
+			}
+		//}
 
-		}else{									// Kręcimy do przodu
-			ticks = BEMF_SixStep(pwm, ticks,step_delay/16);
-		}
-		Rotations[0] += 1;
+		//Rotations[0] += 1;
 
 		IsRunning = 1;
 	}else {								// Nie funkcja z wartoscia -> Bład
+		Set_PWM(0);
+		Six_Step_Block(0);
 		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
 		SetFloating_A();
 		SetFloating_B();
 		SetFloating_C();
 		IsRunning = 0;
+		Rotations[0] = 0;
 		ticks = MIN_TICKS;
 	}
 	if (IsScanReady() == 1){

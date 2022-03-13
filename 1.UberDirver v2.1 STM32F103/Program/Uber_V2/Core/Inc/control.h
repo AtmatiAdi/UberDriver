@@ -19,6 +19,10 @@
 
 #define MIN_TICKS  		0x0000000f
 #define MAX_TICKS  		0x000fffff
+#define MAX_ADC_TICKS 	5000			// 50khz -> 0.1sec
+#define ADC_CHANNEL_A	ADC_CHANNEL_4
+#define ADC_CHANNEL_B	ADC_CHANNEL_3
+#define ADC_CHANNEL_C	ADC_CHANNEL_2
 
 #include "DRV8305.h"
 #include "main.h"
@@ -42,18 +46,25 @@ void SixStep(uint32_t Speed, uint16_t Value);
 void SixStep_rev(uint32_t Speed, uint16_t Value);
 uint32_t WaitForCross(uint8_t num, uint8_t val);
 uint32_t WaitForCross2(uint8_t num, uint8_t val);
-uint32_t BEMF_SixStep(uint16_t Value, uint32_t LastTicks, float ticks);
-void WaitForRise(uint8_t Phase);
-void WaitForFall(uint8_t Phase);
+uint32_t WaitForHall(uint8_t compare);
+uint32_t WaitForBemf(uint8_t compare);
+uint32_t BEMF_SixStep(uint16_t Value, uint32_t BeforeCross_Ticks, float ticks);
+uint32_t HALL_SixStep(uint16_t Value, uint32_t BeforeCross_Ticks, float div);
 uint32_t WaitForCross2(uint8_t num, uint8_t val);
 uint32_t WaitForCross(uint8_t num, uint8_t val);
-uint32_t WaitOneStep(uint32_t ticks, float div);
+uint32_t WaitOneStep(uint32_t LastTicks, float div);
+uint32_t HALL_WaitOneStep(uint32_t BeforeCross_Ticks, float div);
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
-void Accelerate_01(uint8_t Value, uint8_t Speed);
 void Delay_Tick(uint32_t val);
-void BEMF_Observer();
+void Delay_20us(uint32_t ticks);
+void BEMF_Observer_Block();
+void HALL_Observer_Block();
+void Six_Step_Block(uint16_t PWM_Value);
+void Set_PWM(uint16_t value);
+void Set_Observer_Div(uint8_t div);
 void EnableScan();
 uint8_t IsScanReady();
 uint8_t* GetScanData();
-void ADC_Change_Order(char channel);
+void ADC_Change_Order(uint32_t channel);
+void Hall_Change_Active(uint32_t pin);
 #endif /* INC_CONTROL_H_ */

@@ -296,54 +296,54 @@ void Six_Step_Block(uint16_t PWM_Value){
 		Old_Step = Step_Num;
 	}
 }
-//uint16_t DupkoSin[360] = {553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,548,542,536,530,523,517,510,504,497,490,482,475,467,460,452,444,436,428,419,411,402,393,385,376,367,357,348,339,329,320,310,300,290,280,270,260,250,239,229,219,208,197,187,176,165,155,144,133,122,111,100,89,78,67,56,45,33,22,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,22,33,45,56,67,78,89,100,111,122,133,144,155,165,176,187,197,208,219,229,239,250,260,270,280,290,300,310,319,329,339,348,357,367,376,385,393,402,411,419,428,436,444,452,460,467,475,482,490,497,504,510,517,523,530,536,542,548};
-//uint16_t OldAngle = 0xffff;
-//
-//void Sin_Block(uint16_t PWM_Value){
-//	uint16_t tmpAngle = 0;
-//	// REMEMBER THAT MAXIMUM PWM VALUE IS 640
-//	if(PWM_Value == 0){
-//		SetFloating_A();
-//		SetFloating_B();
-//		SetFloating_C();
-//		Step_Num = 0;
-//		Old_Step = 0;
-//		OldAngle = 0xffff;
-//		return;
-//	}
-//	if(Angle != OldAngle){
-//		OldAngle = Angle;
-//		tmpAngle = Angle;
-//
-//		SetPulse_CH((((uint32_t)DupkoSin[tmpAngle])*PWM_Value)/640);
-//
-//		tmpAngle += 120;
-//		if(tmpAngle >= 360) tmpAngle -= 360;
-//		SetPulse_AH((((uint32_t)DupkoSin[tmpAngle])*PWM_Value)/640);
-//
-//		tmpAngle += 120;
-//		if(tmpAngle >= 360) tmpAngle -= 360;
-//		SetPulse_BH((((uint32_t)DupkoSin[tmpAngle])*PWM_Value)/640);
-//	}
-//	Step_Num = (Angle/60)+1;
-//	if(Step_Num != Old_Step){
-//		if(Step_Num == 1){
-//			ADC_Change_Order(ADC_CHANNEL_A);
-//		}else if(Step_Num == 2){
-//			ADC_Change_Order(ADC_CHANNEL_B);
-//		}else if(Step_Num == 3){
-//			ADC_Change_Order(ADC_CHANNEL_C);
-//		}else if(Step_Num == 4){
-//			ADC_Change_Order(ADC_CHANNEL_A);
-//		}else if(Step_Num == 5){
-//			SetPulse_AH(PWM_Value);
-//			ADC_Change_Order(ADC_CHANNEL_B);
-//		}else if(Step_Num == 6){
-//			ADC_Change_Order(ADC_CHANNEL_C);
-//		}
-//		Old_Step = Step_Num;
-//	}
-//}
+uint16_t DupkoSin[360] = {553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,548,542,536,530,523,517,510,504,497,490,482,475,467,460,452,444,436,428,419,411,402,393,385,376,367,357,348,339,329,320,310,300,290,280,270,260,250,239,229,219,208,197,187,176,165,155,144,133,122,111,100,89,78,67,56,45,33,22,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,22,33,45,56,67,78,89,100,111,122,133,144,155,165,176,187,197,208,219,229,239,250,260,270,280,290,300,310,319,329,339,348,357,367,376,385,393,402,411,419,428,436,444,452,460,467,475,482,490,497,504,510,517,523,530,536,542,548};
+uint16_t OldAngle = 0xffff;
+
+void Sin_Block(uint16_t PWM_Value){
+	uint16_t tmpAngle = 0;
+	// REMEMBER THAT MAXIMUM PWM VALUE IS 640
+	if(PWM_Value == 0){
+		SetFloating_A();
+		SetFloating_B();
+		SetFloating_C();
+		Step_Num = 0;
+		Old_Step = 0;
+		OldAngle = 0xffff;
+		return;
+	}
+	if(Angle != OldAngle){
+		OldAngle = Angle;
+		tmpAngle = Angle;
+
+		SetPulse_CH((((uint32_t)DupkoSin[tmpAngle])*PWM_Value)/640);
+
+		tmpAngle += 120;
+		if(tmpAngle >= 360) tmpAngle -= 360;
+		SetPulse_AH((((uint32_t)DupkoSin[tmpAngle])*PWM_Value)/640);
+
+		tmpAngle += 120;
+		if(tmpAngle >= 360) tmpAngle -= 360;
+		SetPulse_BH((((uint32_t)DupkoSin[tmpAngle])*PWM_Value)/640);
+	}
+	Step_Num = (Angle/60)+1;
+	if(Step_Num != Old_Step){
+		if(Step_Num == 1){
+			ADC_Change_Order(ADC_CHANNEL_A);
+		}else if(Step_Num == 2){
+			ADC_Change_Order(ADC_CHANNEL_B);
+		}else if(Step_Num == 3){
+			ADC_Change_Order(ADC_CHANNEL_C);
+		}else if(Step_Num == 4){
+			ADC_Change_Order(ADC_CHANNEL_A);
+		}else if(Step_Num == 5){
+			SetPulse_AH(PWM_Value);
+			ADC_Change_Order(ADC_CHANNEL_B);
+		}else if(Step_Num == 6){
+			ADC_Change_Order(ADC_CHANNEL_C);
+		}
+		Old_Step = Step_Num;
+	}
+}
 
 void Set_PWM(uint16_t value){
 	PWM_Value = value;

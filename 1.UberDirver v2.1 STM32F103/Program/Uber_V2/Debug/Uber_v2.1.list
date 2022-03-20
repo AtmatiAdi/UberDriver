@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000029  00000000  00000000  0002001c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   000108bc  00000000  00000000  00020045  2**0
+ 12 .debug_info   0001092b  00000000  00000000  00020045  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00002764  00000000  00000000  00030901  2**0
+ 13 .debug_abbrev 00002777  00000000  00000000  00030970  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 000010d0  00000000  00000000  00033068  2**3
+ 14 .debug_aranges 000010d8  00000000  00000000  000330e8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 00000fd8  00000000  00000000  00034138  2**3
+ 15 .debug_ranges 00000fe0  00000000  00000000  000341c0  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00018784  00000000  00000000  00035110  2**0
+ 16 .debug_macro  00018784  00000000  00000000  000351a0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   000119a5  00000000  00000000  0004d894  2**0
+ 17 .debug_line   00011a63  00000000  00000000  0004d924  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0008dfc1  00000000  00000000  0005f239  2**0
+ 18 .debug_str    0008dfe6  00000000  00000000  0005f387  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000053  00000000  00000000  000ed1fa  2**0
+ 19 .comment      00000053  00000000  00000000  000ed36d  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  0000466c  00000000  00000000  000ed250  2**2
+ 20 .debug_frame  00004690  00000000  00000000  000ed3c0  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1358,10 +1358,10 @@ void Six_Step_Block(uint16_t PWM_Value){
  80009ac:	88888889 	.word	0x88888889
 
 080009b0 <Set_PWM>:
-//		}
-//		Old_Step = Step_Num;
-//	}
-//}
+		}
+		Old_Step = Step_Num;
+	}
+}
 
 void Set_PWM(uint16_t value){
  80009b0:	b480      	push	{r7}

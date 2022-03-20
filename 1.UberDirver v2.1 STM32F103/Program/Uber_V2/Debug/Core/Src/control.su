@@ -5,6 +5,7 @@ control.c:67:6:BEMF_Observer_Block	16	static
 control.c:155:6:Set_Observer_Div	16	static
 control.c:171:6:HALL_Observer_Block	8	static
 control.c:253:6:Six_Step_Block	16	static
+control.c:302:6:Sin_Block	24	static
 control.c:348:6:Set_PWM	16	static
 control.c:352:6:HAL_ADC_ConvCpltCallback	24	static
 control.c:382:6:Control_Init	24	static

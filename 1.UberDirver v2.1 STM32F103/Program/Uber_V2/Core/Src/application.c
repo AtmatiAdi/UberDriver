@@ -226,14 +226,16 @@ void NormalControl(){
 				Set_PWM(pwm);
 				Set_Observer_Div(step_delay/8);
 				Six_Step_Block(pwm);
+				//Sin_Block(pwm);
 				Rotations[0] = pwm;
 			}else{									// Kręcimy do przodu
 				//ticks = BEMF_SixStep(pwm, ticks,step_delay/8);
 				//ticks = HALL_SixStep(pwm, ticks,step_delay/16);
 				Set_PWM(pwm);
 				Set_Observer_Div(step_delay/8);
-				Rotations[0] = pwm;
 				Six_Step_Block(pwm);
+				//Sin_Block(pwm);
+				Rotations[0] = pwm;
 			}
 		//}
 

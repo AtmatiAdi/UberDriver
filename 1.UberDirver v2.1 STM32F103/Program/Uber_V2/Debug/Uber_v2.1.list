@@ -21,29 +21,29 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, DATA
   8 .data         0000001c  20000000  08005c54  00020000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  9 .bss          00001380  2000001c  08005c70  0002001c  2**2
+  9 .bss          0000137c  2000001c  08005c70  0002001c  2**2
                   ALLOC
- 10 ._user_heap_stack 00000604  2000139c  08005c70  0002139c  2**0
+ 10 ._user_heap_stack 00000600  20001398  08005c70  00021398  2**0
                   ALLOC
  11 .ARM.attributes 00000029  00000000  00000000  0002001c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   000108e4  00000000  00000000  00020045  2**0
+ 12 .debug_info   000108bc  00000000  00000000  00020045  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00002764  00000000  00000000  00030929  2**0
+ 13 .debug_abbrev 00002764  00000000  00000000  00030901  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 000010d8  00000000  00000000  00033090  2**3
+ 14 .debug_aranges 000010d0  00000000  00000000  00033068  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 00000fe0  00000000  00000000  00034168  2**3
+ 15 .debug_ranges 00000fd8  00000000  00000000  00034138  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00018784  00000000  00000000  00035148  2**0
+ 16 .debug_macro  00018784  00000000  00000000  00035110  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   000119cb  00000000  00000000  0004d8cc  2**0
+ 17 .debug_line   000119a5  00000000  00000000  0004d894  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0008dfcb  00000000  00000000  0005f297  2**0
+ 18 .debug_str    0008dfc1  00000000  00000000  0005f239  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000053  00000000  00000000  000ed262  2**0
+ 19 .comment      00000053  00000000  00000000  000ed1fa  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00004690  00000000  00000000  000ed2b8  2**2
+ 20 .debug_frame  0000466c  00000000  00000000  000ed250  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -480,11 +480,12 @@ void NormalControl(){
  80003dc:	08db      	lsrs	r3, r3, #3
  80003de:	b2db      	uxtb	r3, r3
  80003e0:	4618      	mov	r0, r3
- 80003e2:	f000 f897 	bl	8000514 <Set_Observer_Div>
+ 80003e2:	f000 fa39 	bl	8000858 <Set_Observer_Div>
 				Six_Step_Block(pwm);
  80003e6:	89fb      	ldrh	r3, [r7, #14]
  80003e8:	4618      	mov	r0, r3
  80003ea:	f000 fa4b 	bl	8000884 <Six_Step_Block>
+				//Sin_Block(pwm);
 				Rotations[0] = pwm;
  80003ee:	89fb      	ldrh	r3, [r7, #14]
  80003f0:	b2da      	uxtb	r2, r3
@@ -504,16 +505,17 @@ void NormalControl(){
  8000404:	08db      	lsrs	r3, r3, #3
  8000406:	b2db      	uxtb	r3, r3
  8000408:	4618      	mov	r0, r3
- 800040a:	f000 f883 	bl	8000514 <Set_Observer_Div>
-				Rotations[0] = pwm;
- 800040e:	89fb      	ldrh	r3, [r7, #14]
- 8000410:	b2da      	uxtb	r2, r3
- 8000412:	4b1f      	ldr	r3, [pc, #124]	; (8000490 <NormalControl+0x248>)
- 8000414:	701a      	strb	r2, [r3, #0]
+ 800040a:	f000 fa25 	bl	8000858 <Set_Observer_Div>
 				Six_Step_Block(pwm);
+ 800040e:	89fb      	ldrh	r3, [r7, #14]
+ 8000410:	4618      	mov	r0, r3
+ 8000412:	f000 fa37 	bl	8000884 <Six_Step_Block>
+				//Sin_Block(pwm);
+				Rotations[0] = pwm;
  8000416:	89fb      	ldrh	r3, [r7, #14]
- 8000418:	4618      	mov	r0, r3
- 800041a:	f000 fa33 	bl	8000884 <Six_Step_Block>
+ 8000418:	b2da      	uxtb	r2, r3
+ 800041a:	4b1d      	ldr	r3, [pc, #116]	; (8000490 <NormalControl+0x248>)
+ 800041c:	701a      	strb	r2, [r3, #0]
 			}
 		//}
 
@@ -673,511 +675,522 @@ uint8_t* GetScanData(){
  8000506:	bf00      	nop
  8000508:	200000ca 	.word	0x200000ca
  800050c:	200000c8 	.word	0x200000c8
- 8000510:	200000e0 	.word	0x200000e0
+ 8000510:	200000dc 	.word	0x200000dc
 
-08000514 <Set_Observer_Div>:
-		V_Floating_Old = 0;
-		BEMF_delay = 32;
-	}
-}
+08000514 <BEMF_Observer_Block>:
+uint8_t Div = 16;
+uint16_t BEMF_Treshold = 0;
+uint16_t PWM_Value = 0;
+uint8_t BEMF_delay = 32;
 
-void Set_Observer_Div(uint8_t div){
- 8000514:	b480      	push	{r7}
- 8000516:	b083      	sub	sp, #12
+void BEMF_Observer_Block(){
+ 8000514:	b580      	push	{r7, lr}
+ 8000516:	b082      	sub	sp, #8
  8000518:	af00      	add	r7, sp, #0
- 800051a:	4603      	mov	r3, r0
- 800051c:	71fb      	strb	r3, [r7, #7]
-	if(div < 1) Div = 1;
- 800051e:	79fb      	ldrb	r3, [r7, #7]
- 8000520:	2b00      	cmp	r3, #0
- 8000522:	d103      	bne.n	800052c <Set_Observer_Div+0x18>
- 8000524:	4b05      	ldr	r3, [pc, #20]	; (800053c <Set_Observer_Div+0x28>)
- 8000526:	2201      	movs	r2, #1
- 8000528:	701a      	strb	r2, [r3, #0]
-	else Div = div;
-}
- 800052a:	e002      	b.n	8000532 <Set_Observer_Div+0x1e>
-	else Div = div;
- 800052c:	4a03      	ldr	r2, [pc, #12]	; (800053c <Set_Observer_Div+0x28>)
- 800052e:	79fb      	ldrb	r3, [r7, #7]
- 8000530:	7013      	strb	r3, [r2, #0]
-}
- 8000532:	bf00      	nop
- 8000534:	370c      	adds	r7, #12
- 8000536:	46bd      	mov	sp, r7
- 8000538:	bc80      	pop	{r7}
- 800053a:	4770      	bx	lr
- 800053c:	2000000a 	.word	0x2000000a
-
-08000540 <HALL_Observer_Block>:
-uint16_t First_Half_Upper = 0;
-uint16_t Second_Half_Upper = 0;
-uint8_t Approx_Angle = 0;
-uint16_t HALL_Treshold = 0;
-
-void HALL_Observer_Block(){
- 8000540:	b580      	push	{r7, lr}
- 8000542:	af00      	add	r7, sp, #0
 // Input Block
-	Hall = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin);
- 8000544:	4b4c      	ldr	r3, [pc, #304]	; (8000678 <HALL_Observer_Block+0x138>)
- 8000546:	681b      	ldr	r3, [r3, #0]
- 8000548:	4a4c      	ldr	r2, [pc, #304]	; (800067c <HALL_Observer_Block+0x13c>)
- 800054a:	8812      	ldrh	r2, [r2, #0]
- 800054c:	4611      	mov	r1, r2
- 800054e:	4618      	mov	r0, r3
- 8000550:	f002 fe64 	bl	800321c <HAL_GPIO_ReadPin>
- 8000554:	4603      	mov	r3, r0
- 8000556:	461a      	mov	r2, r3
- 8000558:	4b49      	ldr	r3, [pc, #292]	; (8000680 <HALL_Observer_Block+0x140>)
- 800055a:	701a      	strb	r2, [r3, #0]
+	uint16_t V_Floating = ADC_data[0];
+ 800051a:	4b45      	ldr	r3, [pc, #276]	; (8000630 <BEMF_Observer_Block+0x11c>)
+ 800051c:	881b      	ldrh	r3, [r3, #0]
+ 800051e:	80fb      	strh	r3, [r7, #6]
+	uint16_t V_DC = ADC_data[1];
+ 8000520:	4b43      	ldr	r3, [pc, #268]	; (8000630 <BEMF_Observer_Block+0x11c>)
+ 8000522:	885b      	ldrh	r3, [r3, #2]
+ 8000524:	80bb      	strh	r3, [r7, #4]
+	uint16_t V_Floating_Diff = 4095;
+ 8000526:	f640 73ff 	movw	r3, #4095	; 0xfff
+ 800052a:	807b      	strh	r3, [r7, #2]
+// 0 Cross Detection Block
+	// differentiate BEMF to obtain value and sign of changes
+	V_Floating_Diff = (4095 + V_Floating) - V_Floating_Old;
+ 800052c:	4b41      	ldr	r3, [pc, #260]	; (8000634 <BEMF_Observer_Block+0x120>)
+ 800052e:	881b      	ldrh	r3, [r3, #0]
+ 8000530:	88fa      	ldrh	r2, [r7, #6]
+ 8000532:	1ad3      	subs	r3, r2, r3
+ 8000534:	b29b      	uxth	r3, r3
+ 8000536:	f603 73ff 	addw	r3, r3, #4095	; 0xfff
+ 800053a:	807b      	strh	r3, [r7, #2]
+	V_Floating_Old = V_Floating;
+ 800053c:	4a3d      	ldr	r2, [pc, #244]	; (8000634 <BEMF_Observer_Block+0x120>)
+ 800053e:	88fb      	ldrh	r3, [r7, #6]
+ 8000540:	8013      	strh	r3, [r2, #0]
+	if((Cross == 0) && (BEMF_cnt_sign == 1) && (BEMF_time_cnt > BEMF_delay)){
+ 8000542:	4b3d      	ldr	r3, [pc, #244]	; (8000638 <BEMF_Observer_Block+0x124>)
+ 8000544:	781b      	ldrb	r3, [r3, #0]
+ 8000546:	2b00      	cmp	r3, #0
+ 8000548:	d13f      	bne.n	80005ca <BEMF_Observer_Block+0xb6>
+ 800054a:	4b3c      	ldr	r3, [pc, #240]	; (800063c <BEMF_Observer_Block+0x128>)
+ 800054c:	781b      	ldrb	r3, [r3, #0]
+ 800054e:	2b01      	cmp	r3, #1
+ 8000550:	d13b      	bne.n	80005ca <BEMF_Observer_Block+0xb6>
+ 8000552:	4b3b      	ldr	r3, [pc, #236]	; (8000640 <BEMF_Observer_Block+0x12c>)
+ 8000554:	781a      	ldrb	r2, [r3, #0]
+ 8000556:	4b3b      	ldr	r3, [pc, #236]	; (8000644 <BEMF_Observer_Block+0x130>)
+ 8000558:	781b      	ldrb	r3, [r3, #0]
+ 800055a:	429a      	cmp	r2, r3
+ 800055c:	d935      	bls.n	80005ca <BEMF_Observer_Block+0xb6>
+		if((Step_Num == 1) || (Step_Num == 3) || (Step_Num == 5)){
+ 800055e:	4b3a      	ldr	r3, [pc, #232]	; (8000648 <BEMF_Observer_Block+0x134>)
+ 8000560:	781b      	ldrb	r3, [r3, #0]
+ 8000562:	2b01      	cmp	r3, #1
+ 8000564:	d007      	beq.n	8000576 <BEMF_Observer_Block+0x62>
+ 8000566:	4b38      	ldr	r3, [pc, #224]	; (8000648 <BEMF_Observer_Block+0x134>)
+ 8000568:	781b      	ldrb	r3, [r3, #0]
+ 800056a:	2b03      	cmp	r3, #3
+ 800056c:	d003      	beq.n	8000576 <BEMF_Observer_Block+0x62>
+ 800056e:	4b36      	ldr	r3, [pc, #216]	; (8000648 <BEMF_Observer_Block+0x134>)
+ 8000570:	781b      	ldrb	r3, [r3, #0]
+ 8000572:	2b05      	cmp	r3, #5
+ 8000574:	d10e      	bne.n	8000594 <BEMF_Observer_Block+0x80>
+			// BEMF voltage will be decreasing -> '\'
+			if (V_Floating_Diff < 4095){
+ 8000576:	887b      	ldrh	r3, [r7, #2]
+ 8000578:	f640 72fe 	movw	r2, #4094	; 0xffe
+ 800057c:	4293      	cmp	r3, r2
+ 800057e:	d823      	bhi.n	80005c8 <BEMF_Observer_Block+0xb4>
+				// If BEMF actually '\'
+				if (V_Floating < V_DC/2 ) Cross = 1;
+ 8000580:	88bb      	ldrh	r3, [r7, #4]
+ 8000582:	085b      	lsrs	r3, r3, #1
+ 8000584:	b29b      	uxth	r3, r3
+ 8000586:	88fa      	ldrh	r2, [r7, #6]
+ 8000588:	429a      	cmp	r2, r3
+ 800058a:	d21d      	bcs.n	80005c8 <BEMF_Observer_Block+0xb4>
+ 800058c:	4b2a      	ldr	r3, [pc, #168]	; (8000638 <BEMF_Observer_Block+0x124>)
+ 800058e:	2201      	movs	r2, #1
+ 8000590:	701a      	strb	r2, [r3, #0]
+			if (V_Floating_Diff < 4095){
+ 8000592:	e019      	b.n	80005c8 <BEMF_Observer_Block+0xb4>
+			}
+		}else if((Step_Num == 2) || (Step_Num == 4) || (Step_Num == 6)){
+ 8000594:	4b2c      	ldr	r3, [pc, #176]	; (8000648 <BEMF_Observer_Block+0x134>)
+ 8000596:	781b      	ldrb	r3, [r3, #0]
+ 8000598:	2b02      	cmp	r3, #2
+ 800059a:	d007      	beq.n	80005ac <BEMF_Observer_Block+0x98>
+ 800059c:	4b2a      	ldr	r3, [pc, #168]	; (8000648 <BEMF_Observer_Block+0x134>)
+ 800059e:	781b      	ldrb	r3, [r3, #0]
+ 80005a0:	2b04      	cmp	r3, #4
+ 80005a2:	d003      	beq.n	80005ac <BEMF_Observer_Block+0x98>
+ 80005a4:	4b28      	ldr	r3, [pc, #160]	; (8000648 <BEMF_Observer_Block+0x134>)
+ 80005a6:	781b      	ldrb	r3, [r3, #0]
+ 80005a8:	2b06      	cmp	r3, #6
+ 80005aa:	d10e      	bne.n	80005ca <BEMF_Observer_Block+0xb6>
+			// Bemf voltage will be increasing -> '/'
+			if (V_Floating_Diff > 4095){
+ 80005ac:	887b      	ldrh	r3, [r7, #2]
+ 80005ae:	f5b3 5f80 	cmp.w	r3, #4096	; 0x1000
+ 80005b2:	d30a      	bcc.n	80005ca <BEMF_Observer_Block+0xb6>
+				// If BEMF actually '/'
+				if (V_Floating > V_DC/2 ) Cross = 1;
+ 80005b4:	88bb      	ldrh	r3, [r7, #4]
+ 80005b6:	085b      	lsrs	r3, r3, #1
+ 80005b8:	b29b      	uxth	r3, r3
+ 80005ba:	88fa      	ldrh	r2, [r7, #6]
+ 80005bc:	429a      	cmp	r2, r3
+ 80005be:	d904      	bls.n	80005ca <BEMF_Observer_Block+0xb6>
+ 80005c0:	4b1d      	ldr	r3, [pc, #116]	; (8000638 <BEMF_Observer_Block+0x124>)
+ 80005c2:	2201      	movs	r2, #1
+ 80005c4:	701a      	strb	r2, [r3, #0]
+ 80005c6:	e000      	b.n	80005ca <BEMF_Observer_Block+0xb6>
+			if (V_Floating_Diff < 4095){
+ 80005c8:	bf00      	nop
+			}
+		}
+	}
 // 0 Cross Counter Block
 	// Change counting sign when 0-cross is detected
-	if (Hall != OldHall){
- 800055c:	4b48      	ldr	r3, [pc, #288]	; (8000680 <HALL_Observer_Block+0x140>)
- 800055e:	781a      	ldrb	r2, [r3, #0]
- 8000560:	4b48      	ldr	r3, [pc, #288]	; (8000684 <HALL_Observer_Block+0x144>)
- 8000562:	781b      	ldrb	r3, [r3, #0]
- 8000564:	429a      	cmp	r2, r3
- 8000566:	d028      	beq.n	80005ba <HALL_Observer_Block+0x7a>
-		HALL_cnt_sign = 0;
- 8000568:	4b47      	ldr	r3, [pc, #284]	; (8000688 <HALL_Observer_Block+0x148>)
- 800056a:	2200      	movs	r2, #0
- 800056c:	701a      	strb	r2, [r3, #0]
-		HALL_Angle  += 30;
- 800056e:	4b47      	ldr	r3, [pc, #284]	; (800068c <HALL_Observer_Block+0x14c>)
- 8000570:	881b      	ldrh	r3, [r3, #0]
- 8000572:	331e      	adds	r3, #30
- 8000574:	b29a      	uxth	r2, r3
- 8000576:	4b45      	ldr	r3, [pc, #276]	; (800068c <HALL_Observer_Block+0x14c>)
- 8000578:	801a      	strh	r2, [r3, #0]
-		if (Div > 30) HALL_Treshold = 0;
- 800057a:	4b45      	ldr	r3, [pc, #276]	; (8000690 <HALL_Observer_Block+0x150>)
- 800057c:	781b      	ldrb	r3, [r3, #0]
- 800057e:	2b1e      	cmp	r3, #30
- 8000580:	d903      	bls.n	800058a <HALL_Observer_Block+0x4a>
- 8000582:	4b44      	ldr	r3, [pc, #272]	; (8000694 <HALL_Observer_Block+0x154>)
- 8000584:	2200      	movs	r2, #0
- 8000586:	801a      	strh	r2, [r3, #0]
- 8000588:	e009      	b.n	800059e <HALL_Observer_Block+0x5e>
-		else HALL_Treshold = HALL_time_cnt/Div;
- 800058a:	4b43      	ldr	r3, [pc, #268]	; (8000698 <HALL_Observer_Block+0x158>)
- 800058c:	781a      	ldrb	r2, [r3, #0]
- 800058e:	4b40      	ldr	r3, [pc, #256]	; (8000690 <HALL_Observer_Block+0x150>)
- 8000590:	781b      	ldrb	r3, [r3, #0]
- 8000592:	fbb2 f3f3 	udiv	r3, r2, r3
- 8000596:	b2db      	uxtb	r3, r3
- 8000598:	b29a      	uxth	r2, r3
- 800059a:	4b3e      	ldr	r3, [pc, #248]	; (8000694 <HALL_Observer_Block+0x154>)
- 800059c:	801a      	strh	r2, [r3, #0]
-		// For angle aproximation
-		First_Half_Upper = HALL_time_cnt;
- 800059e:	4b3e      	ldr	r3, [pc, #248]	; (8000698 <HALL_Observer_Block+0x158>)
- 80005a0:	781b      	ldrb	r3, [r3, #0]
- 80005a2:	b29a      	uxth	r2, r3
- 80005a4:	4b3d      	ldr	r3, [pc, #244]	; (800069c <HALL_Observer_Block+0x15c>)
- 80005a6:	801a      	strh	r2, [r3, #0]
-		Second_Half_Upper = HALL_time_cnt - HALL_Treshold;
- 80005a8:	4b3b      	ldr	r3, [pc, #236]	; (8000698 <HALL_Observer_Block+0x158>)
- 80005aa:	781b      	ldrb	r3, [r3, #0]
- 80005ac:	b29a      	uxth	r2, r3
- 80005ae:	4b39      	ldr	r3, [pc, #228]	; (8000694 <HALL_Observer_Block+0x154>)
- 80005b0:	881b      	ldrh	r3, [r3, #0]
- 80005b2:	1ad3      	subs	r3, r2, r3
- 80005b4:	b29a      	uxth	r2, r3
- 80005b6:	4b3a      	ldr	r3, [pc, #232]	; (80006a0 <HALL_Observer_Block+0x160>)
- 80005b8:	801a      	strh	r2, [r3, #0]
-	}
-	OldHall = Hall;
- 80005ba:	4b31      	ldr	r3, [pc, #196]	; (8000680 <HALL_Observer_Block+0x140>)
- 80005bc:	781a      	ldrb	r2, [r3, #0]
- 80005be:	4b31      	ldr	r3, [pc, #196]	; (8000684 <HALL_Observer_Block+0x144>)
- 80005c0:	701a      	strb	r2, [r3, #0]
-	// Countter
-	if(HALL_cnt_sign){
- 80005c2:	4b31      	ldr	r3, [pc, #196]	; (8000688 <HALL_Observer_Block+0x148>)
- 80005c4:	781b      	ldrb	r3, [r3, #0]
- 80005c6:	2b00      	cmp	r3, #0
- 80005c8:	d006      	beq.n	80005d8 <HALL_Observer_Block+0x98>
-		HALL_time_cnt++;
- 80005ca:	4b33      	ldr	r3, [pc, #204]	; (8000698 <HALL_Observer_Block+0x158>)
+	if (Cross == 1) {
+ 80005ca:	4b1b      	ldr	r3, [pc, #108]	; (8000638 <BEMF_Observer_Block+0x124>)
  80005cc:	781b      	ldrb	r3, [r3, #0]
- 80005ce:	3301      	adds	r3, #1
- 80005d0:	b2da      	uxtb	r2, r3
- 80005d2:	4b31      	ldr	r3, [pc, #196]	; (8000698 <HALL_Observer_Block+0x158>)
- 80005d4:	701a      	strb	r2, [r3, #0]
- 80005d6:	e009      	b.n	80005ec <HALL_Observer_Block+0xac>
-	} else {
-		if (HALL_time_cnt > 0) HALL_time_cnt--;
- 80005d8:	4b2f      	ldr	r3, [pc, #188]	; (8000698 <HALL_Observer_Block+0x158>)
+ 80005ce:	2b01      	cmp	r3, #1
+ 80005d0:	d123      	bne.n	800061a <BEMF_Observer_Block+0x106>
+		BEMF_cnt_sign = 0;
+ 80005d2:	4b1a      	ldr	r3, [pc, #104]	; (800063c <BEMF_Observer_Block+0x128>)
+ 80005d4:	2200      	movs	r2, #0
+ 80005d6:	701a      	strb	r2, [r3, #0]
+		BEMF_delay = BEMF_time_cnt/4;
+ 80005d8:	4b19      	ldr	r3, [pc, #100]	; (8000640 <BEMF_Observer_Block+0x12c>)
  80005da:	781b      	ldrb	r3, [r3, #0]
- 80005dc:	2b00      	cmp	r3, #0
- 80005de:	d005      	beq.n	80005ec <HALL_Observer_Block+0xac>
- 80005e0:	4b2d      	ldr	r3, [pc, #180]	; (8000698 <HALL_Observer_Block+0x158>)
- 80005e2:	781b      	ldrb	r3, [r3, #0]
- 80005e4:	3b01      	subs	r3, #1
- 80005e6:	b2da      	uxtb	r2, r3
- 80005e8:	4b2b      	ldr	r3, [pc, #172]	; (8000698 <HALL_Observer_Block+0x158>)
- 80005ea:	701a      	strb	r2, [r3, #0]
+ 80005dc:	089b      	lsrs	r3, r3, #2
+ 80005de:	b2da      	uxtb	r2, r3
+ 80005e0:	4b18      	ldr	r3, [pc, #96]	; (8000644 <BEMF_Observer_Block+0x130>)
+ 80005e2:	701a      	strb	r2, [r3, #0]
+		Cross = 0;
+ 80005e4:	4b14      	ldr	r3, [pc, #80]	; (8000638 <BEMF_Observer_Block+0x124>)
+ 80005e6:	2200      	movs	r2, #0
+ 80005e8:	701a      	strb	r2, [r3, #0]
+		BEMF_Angle += 30;
+ 80005ea:	4b18      	ldr	r3, [pc, #96]	; (800064c <BEMF_Observer_Block+0x138>)
+ 80005ec:	881b      	ldrh	r3, [r3, #0]
+ 80005ee:	331e      	adds	r3, #30
+ 80005f0:	b29a      	uxth	r2, r3
+ 80005f2:	4b16      	ldr	r3, [pc, #88]	; (800064c <BEMF_Observer_Block+0x138>)
+ 80005f4:	801a      	strh	r2, [r3, #0]
+		if (Div > 30) BEMF_Treshold = 0;
+ 80005f6:	4b16      	ldr	r3, [pc, #88]	; (8000650 <BEMF_Observer_Block+0x13c>)
+ 80005f8:	781b      	ldrb	r3, [r3, #0]
+ 80005fa:	2b1e      	cmp	r3, #30
+ 80005fc:	d903      	bls.n	8000606 <BEMF_Observer_Block+0xf2>
+ 80005fe:	4b15      	ldr	r3, [pc, #84]	; (8000654 <BEMF_Observer_Block+0x140>)
+ 8000600:	2200      	movs	r2, #0
+ 8000602:	801a      	strh	r2, [r3, #0]
+ 8000604:	e009      	b.n	800061a <BEMF_Observer_Block+0x106>
+		else BEMF_Treshold = BEMF_time_cnt/Div;
+ 8000606:	4b0e      	ldr	r3, [pc, #56]	; (8000640 <BEMF_Observer_Block+0x12c>)
+ 8000608:	781a      	ldrb	r2, [r3, #0]
+ 800060a:	4b11      	ldr	r3, [pc, #68]	; (8000650 <BEMF_Observer_Block+0x13c>)
+ 800060c:	781b      	ldrb	r3, [r3, #0]
+ 800060e:	fbb2 f3f3 	udiv	r3, r2, r3
+ 8000612:	b2db      	uxtb	r3, r3
+ 8000614:	b29a      	uxth	r2, r3
+ 8000616:	4b0f      	ldr	r3, [pc, #60]	; (8000654 <BEMF_Observer_Block+0x140>)
+ 8000618:	801a      	strh	r2, [r3, #0]
+	}
+	//Old_Cross = Cross;
+	// Counter
+	if (BEMF_cnt_sign) {
+ 800061a:	4b08      	ldr	r3, [pc, #32]	; (800063c <BEMF_Observer_Block+0x128>)
+ 800061c:	781b      	ldrb	r3, [r3, #0]
+ 800061e:	2b00      	cmp	r3, #0
+ 8000620:	d01a      	beq.n	8000658 <BEMF_Observer_Block+0x144>
+		BEMF_time_cnt ++;
+ 8000622:	4b07      	ldr	r3, [pc, #28]	; (8000640 <BEMF_Observer_Block+0x12c>)
+ 8000624:	781b      	ldrb	r3, [r3, #0]
+ 8000626:	3301      	adds	r3, #1
+ 8000628:	b2da      	uxtb	r2, r3
+ 800062a:	4b05      	ldr	r3, [pc, #20]	; (8000640 <BEMF_Observer_Block+0x12c>)
+ 800062c:	701a      	strb	r2, [r3, #0]
+ 800062e:	e01d      	b.n	800066c <BEMF_Observer_Block+0x158>
+ 8000630:	200000b4 	.word	0x200000b4
+ 8000634:	200000d2 	.word	0x200000d2
+ 8000638:	200000d5 	.word	0x200000d5
+ 800063c:	2000000a 	.word	0x2000000a
+ 8000640:	2000000b 	.word	0x2000000b
+ 8000644:	2000000f 	.word	0x2000000f
+ 8000648:	200000d0 	.word	0x200000d0
+ 800064c:	2000000c 	.word	0x2000000c
+ 8000650:	2000000e 	.word	0x2000000e
+ 8000654:	200000d6 	.word	0x200000d6
+	}else {
+		if (BEMF_time_cnt > 0) BEMF_time_cnt --;
+ 8000658:	4b70      	ldr	r3, [pc, #448]	; (800081c <BEMF_Observer_Block+0x308>)
+ 800065a:	781b      	ldrb	r3, [r3, #0]
+ 800065c:	2b00      	cmp	r3, #0
+ 800065e:	d005      	beq.n	800066c <BEMF_Observer_Block+0x158>
+ 8000660:	4b6e      	ldr	r3, [pc, #440]	; (800081c <BEMF_Observer_Block+0x308>)
+ 8000662:	781b      	ldrb	r3, [r3, #0]
+ 8000664:	3b01      	subs	r3, #1
+ 8000666:	b2da      	uxtb	r2, r3
+ 8000668:	4b6c      	ldr	r3, [pc, #432]	; (800081c <BEMF_Observer_Block+0x308>)
+ 800066a:	701a      	strb	r2, [r3, #0]
 	}
 	// When Counter reached TRESHOLD then change sign and update BEMF_Angle
-	if((HALL_time_cnt <= HALL_Treshold) && (HALL_cnt_sign == 0)){
- 80005ec:	4b2a      	ldr	r3, [pc, #168]	; (8000698 <HALL_Observer_Block+0x158>)
- 80005ee:	781b      	ldrb	r3, [r3, #0]
- 80005f0:	b29a      	uxth	r2, r3
- 80005f2:	4b28      	ldr	r3, [pc, #160]	; (8000694 <HALL_Observer_Block+0x154>)
- 80005f4:	881b      	ldrh	r3, [r3, #0]
- 80005f6:	429a      	cmp	r2, r3
- 80005f8:	d80f      	bhi.n	800061a <HALL_Observer_Block+0xda>
- 80005fa:	4b23      	ldr	r3, [pc, #140]	; (8000688 <HALL_Observer_Block+0x148>)
- 80005fc:	781b      	ldrb	r3, [r3, #0]
- 80005fe:	2b00      	cmp	r3, #0
- 8000600:	d10b      	bne.n	800061a <HALL_Observer_Block+0xda>
-		HALL_Angle += 30;
- 8000602:	4b22      	ldr	r3, [pc, #136]	; (800068c <HALL_Observer_Block+0x14c>)
- 8000604:	881b      	ldrh	r3, [r3, #0]
- 8000606:	331e      	adds	r3, #30
- 8000608:	b29a      	uxth	r2, r3
- 800060a:	4b20      	ldr	r3, [pc, #128]	; (800068c <HALL_Observer_Block+0x14c>)
- 800060c:	801a      	strh	r2, [r3, #0]
-		HALL_cnt_sign = 1;
- 800060e:	4b1e      	ldr	r3, [pc, #120]	; (8000688 <HALL_Observer_Block+0x148>)
- 8000610:	2201      	movs	r2, #1
- 8000612:	701a      	strb	r2, [r3, #0]
-		HALL_time_cnt = 0;
- 8000614:	4b20      	ldr	r3, [pc, #128]	; (8000698 <HALL_Observer_Block+0x158>)
- 8000616:	2200      	movs	r2, #0
- 8000618:	701a      	strb	r2, [r3, #0]
+	if((BEMF_time_cnt <= BEMF_Treshold) && (BEMF_cnt_sign == 0)){
+ 800066c:	4b6b      	ldr	r3, [pc, #428]	; (800081c <BEMF_Observer_Block+0x308>)
+ 800066e:	781b      	ldrb	r3, [r3, #0]
+ 8000670:	b29a      	uxth	r2, r3
+ 8000672:	4b6b      	ldr	r3, [pc, #428]	; (8000820 <BEMF_Observer_Block+0x30c>)
+ 8000674:	881b      	ldrh	r3, [r3, #0]
+ 8000676:	429a      	cmp	r2, r3
+ 8000678:	d80f      	bhi.n	800069a <BEMF_Observer_Block+0x186>
+ 800067a:	4b6a      	ldr	r3, [pc, #424]	; (8000824 <BEMF_Observer_Block+0x310>)
+ 800067c:	781b      	ldrb	r3, [r3, #0]
+ 800067e:	2b00      	cmp	r3, #0
+ 8000680:	d10b      	bne.n	800069a <BEMF_Observer_Block+0x186>
+		BEMF_Angle += 30;
+ 8000682:	4b69      	ldr	r3, [pc, #420]	; (8000828 <BEMF_Observer_Block+0x314>)
+ 8000684:	881b      	ldrh	r3, [r3, #0]
+ 8000686:	331e      	adds	r3, #30
+ 8000688:	b29a      	uxth	r2, r3
+ 800068a:	4b67      	ldr	r3, [pc, #412]	; (8000828 <BEMF_Observer_Block+0x314>)
+ 800068c:	801a      	strh	r2, [r3, #0]
+		BEMF_cnt_sign = 1;
+ 800068e:	4b65      	ldr	r3, [pc, #404]	; (8000824 <BEMF_Observer_Block+0x310>)
+ 8000690:	2201      	movs	r2, #1
+ 8000692:	701a      	strb	r2, [r3, #0]
+		BEMF_time_cnt = 0;
+ 8000694:	4b61      	ldr	r3, [pc, #388]	; (800081c <BEMF_Observer_Block+0x308>)
+ 8000696:	2200      	movs	r2, #0
+ 8000698:	701a      	strb	r2, [r3, #0]
 	}
 	// Counter buffor reset before overflow
-	if(HALL_time_cnt == 255){
- 800061a:	4b1f      	ldr	r3, [pc, #124]	; (8000698 <HALL_Observer_Block+0x158>)
- 800061c:	781b      	ldrb	r3, [r3, #0]
- 800061e:	2bff      	cmp	r3, #255	; 0xff
- 8000620:	d10e      	bne.n	8000640 <HALL_Observer_Block+0x100>
-		HALL_Angle += 60;
- 8000622:	4b1a      	ldr	r3, [pc, #104]	; (800068c <HALL_Observer_Block+0x14c>)
- 8000624:	881b      	ldrh	r3, [r3, #0]
- 8000626:	333c      	adds	r3, #60	; 0x3c
- 8000628:	b29a      	uxth	r2, r3
- 800062a:	4b18      	ldr	r3, [pc, #96]	; (800068c <HALL_Observer_Block+0x14c>)
- 800062c:	801a      	strh	r2, [r3, #0]
-		HALL_cnt_sign = 1;
- 800062e:	4b16      	ldr	r3, [pc, #88]	; (8000688 <HALL_Observer_Block+0x148>)
- 8000630:	2201      	movs	r2, #1
- 8000632:	701a      	strb	r2, [r3, #0]
-		HALL_time_cnt = 0;
- 8000634:	4b18      	ldr	r3, [pc, #96]	; (8000698 <HALL_Observer_Block+0x158>)
- 8000636:	2200      	movs	r2, #0
- 8000638:	701a      	strb	r2, [r3, #0]
-		First_Half_Upper = 0;
- 800063a:	4b18      	ldr	r3, [pc, #96]	; (800069c <HALL_Observer_Block+0x15c>)
- 800063c:	2200      	movs	r2, #0
- 800063e:	801a      	strh	r2, [r3, #0]
+	if(BEMF_time_cnt == 255){
+ 800069a:	4b60      	ldr	r3, [pc, #384]	; (800081c <BEMF_Observer_Block+0x308>)
+ 800069c:	781b      	ldrb	r3, [r3, #0]
+ 800069e:	2bff      	cmp	r3, #255	; 0xff
+ 80006a0:	d10b      	bne.n	80006ba <BEMF_Observer_Block+0x1a6>
+		BEMF_Angle += 60;
+ 80006a2:	4b61      	ldr	r3, [pc, #388]	; (8000828 <BEMF_Observer_Block+0x314>)
+ 80006a4:	881b      	ldrh	r3, [r3, #0]
+ 80006a6:	333c      	adds	r3, #60	; 0x3c
+ 80006a8:	b29a      	uxth	r2, r3
+ 80006aa:	4b5f      	ldr	r3, [pc, #380]	; (8000828 <BEMF_Observer_Block+0x314>)
+ 80006ac:	801a      	strh	r2, [r3, #0]
+		BEMF_cnt_sign = 1;
+ 80006ae:	4b5d      	ldr	r3, [pc, #372]	; (8000824 <BEMF_Observer_Block+0x310>)
+ 80006b0:	2201      	movs	r2, #1
+ 80006b2:	701a      	strb	r2, [r3, #0]
+		BEMF_time_cnt = 0;
+ 80006b4:	4b59      	ldr	r3, [pc, #356]	; (800081c <BEMF_Observer_Block+0x308>)
+ 80006b6:	2200      	movs	r2, #0
+ 80006b8:	701a      	strb	r2, [r3, #0]
 	}
-	if(HALL_cnt_sign){
- 8000640:	4b11      	ldr	r3, [pc, #68]	; (8000688 <HALL_Observer_Block+0x148>)
- 8000642:	781b      	ldrb	r3, [r3, #0]
- 8000644:	2b00      	cmp	r3, #0
- 8000646:	d02f      	beq.n	80006a8 <HALL_Observer_Block+0x168>
-		// cnt is increasing
-		Approx_Angle = ((uint16_t)(HALL_time_cnt)*30)/First_Half_Upper;
- 8000648:	4b13      	ldr	r3, [pc, #76]	; (8000698 <HALL_Observer_Block+0x158>)
- 800064a:	781b      	ldrb	r3, [r3, #0]
- 800064c:	461a      	mov	r2, r3
- 800064e:	4613      	mov	r3, r2
- 8000650:	011b      	lsls	r3, r3, #4
- 8000652:	1a9b      	subs	r3, r3, r2
- 8000654:	005b      	lsls	r3, r3, #1
- 8000656:	461a      	mov	r2, r3
- 8000658:	4b10      	ldr	r3, [pc, #64]	; (800069c <HALL_Observer_Block+0x15c>)
- 800065a:	881b      	ldrh	r3, [r3, #0]
- 800065c:	fb92 f3f3 	sdiv	r3, r2, r3
- 8000660:	b2da      	uxtb	r2, r3
- 8000662:	4b10      	ldr	r3, [pc, #64]	; (80006a4 <HALL_Observer_Block+0x164>)
- 8000664:	701a      	strb	r2, [r3, #0]
-		if(Approx_Angle > 30 ) Approx_Angle = 30;
- 8000666:	4b0f      	ldr	r3, [pc, #60]	; (80006a4 <HALL_Observer_Block+0x164>)
- 8000668:	781b      	ldrb	r3, [r3, #0]
- 800066a:	2b1e      	cmp	r3, #30
- 800066c:	d937      	bls.n	80006de <HALL_Observer_Block+0x19e>
- 800066e:	4b0d      	ldr	r3, [pc, #52]	; (80006a4 <HALL_Observer_Block+0x164>)
- 8000670:	221e      	movs	r2, #30
- 8000672:	701a      	strb	r2, [r3, #0]
- 8000674:	e033      	b.n	80006de <HALL_Observer_Block+0x19e>
- 8000676:	bf00      	nop
- 8000678:	20000004 	.word	0x20000004
- 800067c:	20000008 	.word	0x20000008
- 8000680:	200000d4 	.word	0x200000d4
- 8000684:	2000000b 	.word	0x2000000b
- 8000688:	200000d5 	.word	0x200000d5
- 800068c:	2000000e 	.word	0x2000000e
- 8000690:	2000000a 	.word	0x2000000a
- 8000694:	200000de 	.word	0x200000de
- 8000698:	2000000c 	.word	0x2000000c
- 800069c:	200000d8 	.word	0x200000d8
- 80006a0:	200000da 	.word	0x200000da
- 80006a4:	200000dc 	.word	0x200000dc
-	}else{
-		// cnt is decreasing
-		Approx_Angle = ((uint16_t)(HALL_time_cnt-HALL_Treshold)*30)/Second_Half_Upper;
- 80006a8:	4b68      	ldr	r3, [pc, #416]	; (800084c <HALL_Observer_Block+0x30c>)
- 80006aa:	781b      	ldrb	r3, [r3, #0]
- 80006ac:	b29a      	uxth	r2, r3
- 80006ae:	4b68      	ldr	r3, [pc, #416]	; (8000850 <HALL_Observer_Block+0x310>)
- 80006b0:	881b      	ldrh	r3, [r3, #0]
- 80006b2:	1ad3      	subs	r3, r2, r3
- 80006b4:	b29b      	uxth	r3, r3
- 80006b6:	461a      	mov	r2, r3
- 80006b8:	4613      	mov	r3, r2
- 80006ba:	011b      	lsls	r3, r3, #4
- 80006bc:	1a9b      	subs	r3, r3, r2
- 80006be:	005b      	lsls	r3, r3, #1
- 80006c0:	461a      	mov	r2, r3
- 80006c2:	4b64      	ldr	r3, [pc, #400]	; (8000854 <HALL_Observer_Block+0x314>)
- 80006c4:	881b      	ldrh	r3, [r3, #0]
- 80006c6:	fb92 f3f3 	sdiv	r3, r2, r3
- 80006ca:	b2da      	uxtb	r2, r3
- 80006cc:	4b62      	ldr	r3, [pc, #392]	; (8000858 <HALL_Observer_Block+0x318>)
- 80006ce:	701a      	strb	r2, [r3, #0]
-		Approx_Angle = 30 - Approx_Angle;
- 80006d0:	4b61      	ldr	r3, [pc, #388]	; (8000858 <HALL_Observer_Block+0x318>)
- 80006d2:	781b      	ldrb	r3, [r3, #0]
- 80006d4:	f1c3 031e 	rsb	r3, r3, #30
- 80006d8:	b2da      	uxtb	r2, r3
- 80006da:	4b5f      	ldr	r3, [pc, #380]	; (8000858 <HALL_Observer_Block+0x318>)
- 80006dc:	701a      	strb	r2, [r3, #0]
-//		HALL_Angle += 30;
-//		HALL_cnt_sign = 1;
-//		HALL_time_cnt = 0;
-//	}
-
-	if(HALL_Angle >= 360) HALL_Angle = 0;
- 80006de:	4b5f      	ldr	r3, [pc, #380]	; (800085c <HALL_Observer_Block+0x31c>)
- 80006e0:	881b      	ldrh	r3, [r3, #0]
- 80006e2:	f5b3 7fb4 	cmp.w	r3, #360	; 0x168
- 80006e6:	d302      	bcc.n	80006ee <HALL_Observer_Block+0x1ae>
- 80006e8:	4b5c      	ldr	r3, [pc, #368]	; (800085c <HALL_Observer_Block+0x31c>)
- 80006ea:	2200      	movs	r2, #0
- 80006ec:	801a      	strh	r2, [r3, #0]
-	Angle = HALL_Angle + Approx_Angle;
- 80006ee:	4b5a      	ldr	r3, [pc, #360]	; (8000858 <HALL_Observer_Block+0x318>)
- 80006f0:	781b      	ldrb	r3, [r3, #0]
- 80006f2:	b29a      	uxth	r2, r3
- 80006f4:	4b59      	ldr	r3, [pc, #356]	; (800085c <HALL_Observer_Block+0x31c>)
- 80006f6:	881b      	ldrh	r3, [r3, #0]
- 80006f8:	4413      	add	r3, r2
- 80006fa:	b29a      	uxth	r2, r3
- 80006fc:	4b58      	ldr	r3, [pc, #352]	; (8000860 <HALL_Observer_Block+0x320>)
- 80006fe:	801a      	strh	r2, [r3, #0]
+	//Old_Step = Step_Num;
+	if (BEMF_Angle >= 360) BEMF_Angle = 0;
+ 80006ba:	4b5b      	ldr	r3, [pc, #364]	; (8000828 <BEMF_Observer_Block+0x314>)
+ 80006bc:	881b      	ldrh	r3, [r3, #0]
+ 80006be:	f5b3 7fb4 	cmp.w	r3, #360	; 0x168
+ 80006c2:	d302      	bcc.n	80006ca <BEMF_Observer_Block+0x1b6>
+ 80006c4:	4b58      	ldr	r3, [pc, #352]	; (8000828 <BEMF_Observer_Block+0x314>)
+ 80006c6:	2200      	movs	r2, #0
+ 80006c8:	801a      	strh	r2, [r3, #0]
 
 	if (Scan_Is_enabled > 0){
- 8000700:	4b58      	ldr	r3, [pc, #352]	; (8000864 <HALL_Observer_Block+0x324>)
- 8000702:	781b      	ldrb	r3, [r3, #0]
- 8000704:	2b00      	cmp	r3, #0
- 8000706:	f000 808e 	beq.w	8000826 <HALL_Observer_Block+0x2e6>
-		Scan_Data[Scan_iter] = Hall*64;
- 800070a:	4b57      	ldr	r3, [pc, #348]	; (8000868 <HALL_Observer_Block+0x328>)
- 800070c:	781b      	ldrb	r3, [r3, #0]
- 800070e:	4a57      	ldr	r2, [pc, #348]	; (800086c <HALL_Observer_Block+0x32c>)
- 8000710:	8812      	ldrh	r2, [r2, #0]
- 8000712:	019b      	lsls	r3, r3, #6
- 8000714:	b2d9      	uxtb	r1, r3
- 8000716:	4b56      	ldr	r3, [pc, #344]	; (8000870 <HALL_Observer_Block+0x330>)
- 8000718:	5499      	strb	r1, [r3, r2]
+ 80006ca:	4b58      	ldr	r3, [pc, #352]	; (800082c <BEMF_Observer_Block+0x318>)
+ 80006cc:	781b      	ldrb	r3, [r3, #0]
+ 80006ce:	2b00      	cmp	r3, #0
+ 80006d0:	f000 8085 	beq.w	80007de <BEMF_Observer_Block+0x2ca>
+		Scan_Data[Scan_iter] = V_Floating/16;
+ 80006d4:	88fb      	ldrh	r3, [r7, #6]
+ 80006d6:	091b      	lsrs	r3, r3, #4
+ 80006d8:	b299      	uxth	r1, r3
+ 80006da:	4b55      	ldr	r3, [pc, #340]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 80006dc:	881b      	ldrh	r3, [r3, #0]
+ 80006de:	461a      	mov	r2, r3
+ 80006e0:	b2c9      	uxtb	r1, r1
+ 80006e2:	4b54      	ldr	r3, [pc, #336]	; (8000834 <BEMF_Observer_Block+0x320>)
+ 80006e4:	5499      	strb	r1, [r3, r2]
 		Scan_iter ++ ;
- 800071a:	4b54      	ldr	r3, [pc, #336]	; (800086c <HALL_Observer_Block+0x32c>)
- 800071c:	881b      	ldrh	r3, [r3, #0]
- 800071e:	3301      	adds	r3, #1
- 8000720:	b29a      	uxth	r2, r3
- 8000722:	4b52      	ldr	r3, [pc, #328]	; (800086c <HALL_Observer_Block+0x32c>)
- 8000724:	801a      	strh	r2, [r3, #0]
-		Scan_Data[Scan_iter] = Angle/2;
- 8000726:	4b4e      	ldr	r3, [pc, #312]	; (8000860 <HALL_Observer_Block+0x320>)
- 8000728:	881b      	ldrh	r3, [r3, #0]
- 800072a:	085b      	lsrs	r3, r3, #1
- 800072c:	b299      	uxth	r1, r3
- 800072e:	4b4f      	ldr	r3, [pc, #316]	; (800086c <HALL_Observer_Block+0x32c>)
- 8000730:	881b      	ldrh	r3, [r3, #0]
- 8000732:	461a      	mov	r2, r3
- 8000734:	b2c9      	uxtb	r1, r1
- 8000736:	4b4e      	ldr	r3, [pc, #312]	; (8000870 <HALL_Observer_Block+0x330>)
+ 80006e6:	4b52      	ldr	r3, [pc, #328]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 80006e8:	881b      	ldrh	r3, [r3, #0]
+ 80006ea:	3301      	adds	r3, #1
+ 80006ec:	b29a      	uxth	r2, r3
+ 80006ee:	4b50      	ldr	r3, [pc, #320]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 80006f0:	801a      	strh	r2, [r3, #0]
+		Scan_Data[Scan_iter] = V_DC/16;
+ 80006f2:	88bb      	ldrh	r3, [r7, #4]
+ 80006f4:	091b      	lsrs	r3, r3, #4
+ 80006f6:	b299      	uxth	r1, r3
+ 80006f8:	4b4d      	ldr	r3, [pc, #308]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 80006fa:	881b      	ldrh	r3, [r3, #0]
+ 80006fc:	461a      	mov	r2, r3
+ 80006fe:	b2c9      	uxtb	r1, r1
+ 8000700:	4b4c      	ldr	r3, [pc, #304]	; (8000834 <BEMF_Observer_Block+0x320>)
+ 8000702:	5499      	strb	r1, [r3, r2]
+		Scan_iter ++ ;
+ 8000704:	4b4a      	ldr	r3, [pc, #296]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 8000706:	881b      	ldrh	r3, [r3, #0]
+ 8000708:	3301      	adds	r3, #1
+ 800070a:	b29a      	uxth	r2, r3
+ 800070c:	4b48      	ldr	r3, [pc, #288]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 800070e:	801a      	strh	r2, [r3, #0]
+		Scan_Data[Scan_iter] = Step_Num * 8;
+ 8000710:	4b49      	ldr	r3, [pc, #292]	; (8000838 <BEMF_Observer_Block+0x324>)
+ 8000712:	781b      	ldrb	r3, [r3, #0]
+ 8000714:	4a46      	ldr	r2, [pc, #280]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 8000716:	8812      	ldrh	r2, [r2, #0]
+ 8000718:	00db      	lsls	r3, r3, #3
+ 800071a:	b2d9      	uxtb	r1, r3
+ 800071c:	4b45      	ldr	r3, [pc, #276]	; (8000834 <BEMF_Observer_Block+0x320>)
+ 800071e:	5499      	strb	r1, [r3, r2]
+		Scan_iter ++ ;
+ 8000720:	4b43      	ldr	r3, [pc, #268]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 8000722:	881b      	ldrh	r3, [r3, #0]
+ 8000724:	3301      	adds	r3, #1
+ 8000726:	b29a      	uxth	r2, r3
+ 8000728:	4b41      	ldr	r3, [pc, #260]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 800072a:	801a      	strh	r2, [r3, #0]
+		Scan_Data[Scan_iter] = BEMF_time_cnt;
+ 800072c:	4b40      	ldr	r3, [pc, #256]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 800072e:	881b      	ldrh	r3, [r3, #0]
+ 8000730:	461a      	mov	r2, r3
+ 8000732:	4b3a      	ldr	r3, [pc, #232]	; (800081c <BEMF_Observer_Block+0x308>)
+ 8000734:	7819      	ldrb	r1, [r3, #0]
+ 8000736:	4b3f      	ldr	r3, [pc, #252]	; (8000834 <BEMF_Observer_Block+0x320>)
  8000738:	5499      	strb	r1, [r3, r2]
 		Scan_iter ++ ;
- 800073a:	4b4c      	ldr	r3, [pc, #304]	; (800086c <HALL_Observer_Block+0x32c>)
+ 800073a:	4b3d      	ldr	r3, [pc, #244]	; (8000830 <BEMF_Observer_Block+0x31c>)
  800073c:	881b      	ldrh	r3, [r3, #0]
  800073e:	3301      	adds	r3, #1
  8000740:	b29a      	uxth	r2, r3
- 8000742:	4b4a      	ldr	r3, [pc, #296]	; (800086c <HALL_Observer_Block+0x32c>)
+ 8000742:	4b3b      	ldr	r3, [pc, #236]	; (8000830 <BEMF_Observer_Block+0x31c>)
  8000744:	801a      	strh	r2, [r3, #0]
-		Scan_Data[Scan_iter] = Step_Num * 30;
- 8000746:	4b4b      	ldr	r3, [pc, #300]	; (8000874 <HALL_Observer_Block+0x334>)
- 8000748:	7819      	ldrb	r1, [r3, #0]
- 800074a:	4b48      	ldr	r3, [pc, #288]	; (800086c <HALL_Observer_Block+0x32c>)
+
+		Scan_Data[Scan_iter] = BEMF_Treshold;
+ 8000746:	4b36      	ldr	r3, [pc, #216]	; (8000820 <BEMF_Observer_Block+0x30c>)
+ 8000748:	8819      	ldrh	r1, [r3, #0]
+ 800074a:	4b39      	ldr	r3, [pc, #228]	; (8000830 <BEMF_Observer_Block+0x31c>)
  800074c:	881b      	ldrh	r3, [r3, #0]
  800074e:	461a      	mov	r2, r3
- 8000750:	460b      	mov	r3, r1
- 8000752:	4619      	mov	r1, r3
- 8000754:	0109      	lsls	r1, r1, #4
- 8000756:	1acb      	subs	r3, r1, r3
- 8000758:	005b      	lsls	r3, r3, #1
- 800075a:	b2d9      	uxtb	r1, r3
- 800075c:	4b44      	ldr	r3, [pc, #272]	; (8000870 <HALL_Observer_Block+0x330>)
- 800075e:	5499      	strb	r1, [r3, r2]
+ 8000750:	b2c9      	uxtb	r1, r1
+ 8000752:	4b38      	ldr	r3, [pc, #224]	; (8000834 <BEMF_Observer_Block+0x320>)
+ 8000754:	5499      	strb	r1, [r3, r2]
 		Scan_iter ++ ;
- 8000760:	4b42      	ldr	r3, [pc, #264]	; (800086c <HALL_Observer_Block+0x32c>)
- 8000762:	881b      	ldrh	r3, [r3, #0]
- 8000764:	3301      	adds	r3, #1
- 8000766:	b29a      	uxth	r2, r3
- 8000768:	4b40      	ldr	r3, [pc, #256]	; (800086c <HALL_Observer_Block+0x32c>)
- 800076a:	801a      	strh	r2, [r3, #0]
-		Scan_Data[Scan_iter] = HALL_time_cnt;
- 800076c:	4b3f      	ldr	r3, [pc, #252]	; (800086c <HALL_Observer_Block+0x32c>)
- 800076e:	881b      	ldrh	r3, [r3, #0]
- 8000770:	461a      	mov	r2, r3
- 8000772:	4b36      	ldr	r3, [pc, #216]	; (800084c <HALL_Observer_Block+0x30c>)
- 8000774:	7819      	ldrb	r1, [r3, #0]
- 8000776:	4b3e      	ldr	r3, [pc, #248]	; (8000870 <HALL_Observer_Block+0x330>)
- 8000778:	5499      	strb	r1, [r3, r2]
+ 8000756:	4b36      	ldr	r3, [pc, #216]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 8000758:	881b      	ldrh	r3, [r3, #0]
+ 800075a:	3301      	adds	r3, #1
+ 800075c:	b29a      	uxth	r2, r3
+ 800075e:	4b34      	ldr	r3, [pc, #208]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 8000760:	801a      	strh	r2, [r3, #0]
+		Scan_Data[Scan_iter] = BEMF_Angle/4;
+ 8000762:	4b31      	ldr	r3, [pc, #196]	; (8000828 <BEMF_Observer_Block+0x314>)
+ 8000764:	881b      	ldrh	r3, [r3, #0]
+ 8000766:	089b      	lsrs	r3, r3, #2
+ 8000768:	b299      	uxth	r1, r3
+ 800076a:	4b31      	ldr	r3, [pc, #196]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 800076c:	881b      	ldrh	r3, [r3, #0]
+ 800076e:	461a      	mov	r2, r3
+ 8000770:	b2c9      	uxtb	r1, r1
+ 8000772:	4b30      	ldr	r3, [pc, #192]	; (8000834 <BEMF_Observer_Block+0x320>)
+ 8000774:	5499      	strb	r1, [r3, r2]
 		Scan_iter ++ ;
- 800077a:	4b3c      	ldr	r3, [pc, #240]	; (800086c <HALL_Observer_Block+0x32c>)
- 800077c:	881b      	ldrh	r3, [r3, #0]
- 800077e:	3301      	adds	r3, #1
- 8000780:	b29a      	uxth	r2, r3
- 8000782:	4b3a      	ldr	r3, [pc, #232]	; (800086c <HALL_Observer_Block+0x32c>)
- 8000784:	801a      	strh	r2, [r3, #0]
+ 8000776:	4b2e      	ldr	r3, [pc, #184]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 8000778:	881b      	ldrh	r3, [r3, #0]
+ 800077a:	3301      	adds	r3, #1
+ 800077c:	b29a      	uxth	r2, r3
+ 800077e:	4b2c      	ldr	r3, [pc, #176]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 8000780:	801a      	strh	r2, [r3, #0]
+		Scan_Data[Scan_iter] = Step_Num * 8;
+ 8000782:	4b2d      	ldr	r3, [pc, #180]	; (8000838 <BEMF_Observer_Block+0x324>)
+ 8000784:	781b      	ldrb	r3, [r3, #0]
+ 8000786:	4a2a      	ldr	r2, [pc, #168]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 8000788:	8812      	ldrh	r2, [r2, #0]
+ 800078a:	00db      	lsls	r3, r3, #3
+ 800078c:	b2d9      	uxtb	r1, r3
+ 800078e:	4b29      	ldr	r3, [pc, #164]	; (8000834 <BEMF_Observer_Block+0x320>)
+ 8000790:	5499      	strb	r1, [r3, r2]
+		Scan_iter ++ ;
+ 8000792:	4b27      	ldr	r3, [pc, #156]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 8000794:	881b      	ldrh	r3, [r3, #0]
+ 8000796:	3301      	adds	r3, #1
+ 8000798:	b29a      	uxth	r2, r3
+ 800079a:	4b25      	ldr	r3, [pc, #148]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 800079c:	801a      	strh	r2, [r3, #0]
+		Scan_Data[Scan_iter] = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin)*64;
+ 800079e:	4b27      	ldr	r3, [pc, #156]	; (800083c <BEMF_Observer_Block+0x328>)
+ 80007a0:	681b      	ldr	r3, [r3, #0]
+ 80007a2:	4a27      	ldr	r2, [pc, #156]	; (8000840 <BEMF_Observer_Block+0x32c>)
+ 80007a4:	8812      	ldrh	r2, [r2, #0]
+ 80007a6:	4611      	mov	r1, r2
+ 80007a8:	4618      	mov	r0, r3
+ 80007aa:	f002 fd37 	bl	800321c <HAL_GPIO_ReadPin>
+ 80007ae:	4603      	mov	r3, r0
+ 80007b0:	4619      	mov	r1, r3
+ 80007b2:	4b1f      	ldr	r3, [pc, #124]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 80007b4:	881b      	ldrh	r3, [r3, #0]
+ 80007b6:	461a      	mov	r2, r3
+ 80007b8:	018b      	lsls	r3, r1, #6
+ 80007ba:	b2d9      	uxtb	r1, r3
+ 80007bc:	4b1d      	ldr	r3, [pc, #116]	; (8000834 <BEMF_Observer_Block+0x320>)
+ 80007be:	5499      	strb	r1, [r3, r2]
+		Scan_iter ++ ;
+ 80007c0:	4b1b      	ldr	r3, [pc, #108]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 80007c2:	881b      	ldrh	r3, [r3, #0]
+ 80007c4:	3301      	adds	r3, #1
+ 80007c6:	b29a      	uxth	r2, r3
+ 80007c8:	4b19      	ldr	r3, [pc, #100]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 80007ca:	801a      	strh	r2, [r3, #0]
 		if (Scan_iter >= 4095) Scan_Is_enabled = 0;
- 8000786:	4b39      	ldr	r3, [pc, #228]	; (800086c <HALL_Observer_Block+0x32c>)
- 8000788:	881b      	ldrh	r3, [r3, #0]
- 800078a:	f640 72fe 	movw	r2, #4094	; 0xffe
- 800078e:	4293      	cmp	r3, r2
- 8000790:	d902      	bls.n	8000798 <HALL_Observer_Block+0x258>
- 8000792:	4b34      	ldr	r3, [pc, #208]	; (8000864 <HALL_Observer_Block+0x324>)
- 8000794:	2200      	movs	r2, #0
- 8000796:	701a      	strb	r2, [r3, #0]
-
-		Scan_Data[Scan_iter] = Hall*64;
- 8000798:	4b33      	ldr	r3, [pc, #204]	; (8000868 <HALL_Observer_Block+0x328>)
- 800079a:	781b      	ldrb	r3, [r3, #0]
- 800079c:	4a33      	ldr	r2, [pc, #204]	; (800086c <HALL_Observer_Block+0x32c>)
- 800079e:	8812      	ldrh	r2, [r2, #0]
- 80007a0:	019b      	lsls	r3, r3, #6
- 80007a2:	b2d9      	uxtb	r1, r3
- 80007a4:	4b32      	ldr	r3, [pc, #200]	; (8000870 <HALL_Observer_Block+0x330>)
- 80007a6:	5499      	strb	r1, [r3, r2]
-		Scan_iter ++ ;
- 80007a8:	4b30      	ldr	r3, [pc, #192]	; (800086c <HALL_Observer_Block+0x32c>)
- 80007aa:	881b      	ldrh	r3, [r3, #0]
- 80007ac:	3301      	adds	r3, #1
- 80007ae:	b29a      	uxth	r2, r3
- 80007b0:	4b2e      	ldr	r3, [pc, #184]	; (800086c <HALL_Observer_Block+0x32c>)
- 80007b2:	801a      	strh	r2, [r3, #0]
-		Scan_Data[Scan_iter] = HALL_Angle/2;
- 80007b4:	4b29      	ldr	r3, [pc, #164]	; (800085c <HALL_Observer_Block+0x31c>)
- 80007b6:	881b      	ldrh	r3, [r3, #0]
- 80007b8:	085b      	lsrs	r3, r3, #1
- 80007ba:	b299      	uxth	r1, r3
- 80007bc:	4b2b      	ldr	r3, [pc, #172]	; (800086c <HALL_Observer_Block+0x32c>)
- 80007be:	881b      	ldrh	r3, [r3, #0]
- 80007c0:	461a      	mov	r2, r3
- 80007c2:	b2c9      	uxtb	r1, r1
- 80007c4:	4b2a      	ldr	r3, [pc, #168]	; (8000870 <HALL_Observer_Block+0x330>)
- 80007c6:	5499      	strb	r1, [r3, r2]
-		Scan_iter ++ ;
- 80007c8:	4b28      	ldr	r3, [pc, #160]	; (800086c <HALL_Observer_Block+0x32c>)
- 80007ca:	881b      	ldrh	r3, [r3, #0]
- 80007cc:	3301      	adds	r3, #1
- 80007ce:	b29a      	uxth	r2, r3
- 80007d0:	4b26      	ldr	r3, [pc, #152]	; (800086c <HALL_Observer_Block+0x32c>)
- 80007d2:	801a      	strh	r2, [r3, #0]
-		Scan_Data[Scan_iter] = Step_Num * 30;
- 80007d4:	4b27      	ldr	r3, [pc, #156]	; (8000874 <HALL_Observer_Block+0x334>)
- 80007d6:	7819      	ldrb	r1, [r3, #0]
- 80007d8:	4b24      	ldr	r3, [pc, #144]	; (800086c <HALL_Observer_Block+0x32c>)
- 80007da:	881b      	ldrh	r3, [r3, #0]
- 80007dc:	461a      	mov	r2, r3
- 80007de:	460b      	mov	r3, r1
- 80007e0:	4619      	mov	r1, r3
- 80007e2:	0109      	lsls	r1, r1, #4
- 80007e4:	1acb      	subs	r3, r1, r3
- 80007e6:	005b      	lsls	r3, r3, #1
- 80007e8:	b2d9      	uxtb	r1, r3
- 80007ea:	4b21      	ldr	r3, [pc, #132]	; (8000870 <HALL_Observer_Block+0x330>)
- 80007ec:	5499      	strb	r1, [r3, r2]
-		Scan_iter ++ ;
- 80007ee:	4b1f      	ldr	r3, [pc, #124]	; (800086c <HALL_Observer_Block+0x32c>)
- 80007f0:	881b      	ldrh	r3, [r3, #0]
- 80007f2:	3301      	adds	r3, #1
- 80007f4:	b29a      	uxth	r2, r3
- 80007f6:	4b1d      	ldr	r3, [pc, #116]	; (800086c <HALL_Observer_Block+0x32c>)
- 80007f8:	801a      	strh	r2, [r3, #0]
-		Scan_Data[Scan_iter] = HALL_time_cnt;
- 80007fa:	4b1c      	ldr	r3, [pc, #112]	; (800086c <HALL_Observer_Block+0x32c>)
- 80007fc:	881b      	ldrh	r3, [r3, #0]
- 80007fe:	461a      	mov	r2, r3
- 8000800:	4b12      	ldr	r3, [pc, #72]	; (800084c <HALL_Observer_Block+0x30c>)
- 8000802:	7819      	ldrb	r1, [r3, #0]
- 8000804:	4b1a      	ldr	r3, [pc, #104]	; (8000870 <HALL_Observer_Block+0x330>)
- 8000806:	5499      	strb	r1, [r3, r2]
-		Scan_iter ++ ;
- 8000808:	4b18      	ldr	r3, [pc, #96]	; (800086c <HALL_Observer_Block+0x32c>)
- 800080a:	881b      	ldrh	r3, [r3, #0]
- 800080c:	3301      	adds	r3, #1
- 800080e:	b29a      	uxth	r2, r3
- 8000810:	4b16      	ldr	r3, [pc, #88]	; (800086c <HALL_Observer_Block+0x32c>)
- 8000812:	801a      	strh	r2, [r3, #0]
-		if (Scan_iter >= 4095) Scan_Is_enabled = 0;
- 8000814:	4b15      	ldr	r3, [pc, #84]	; (800086c <HALL_Observer_Block+0x32c>)
- 8000816:	881b      	ldrh	r3, [r3, #0]
- 8000818:	f640 72fe 	movw	r2, #4094	; 0xffe
- 800081c:	4293      	cmp	r3, r2
- 800081e:	d902      	bls.n	8000826 <HALL_Observer_Block+0x2e6>
- 8000820:	4b10      	ldr	r3, [pc, #64]	; (8000864 <HALL_Observer_Block+0x324>)
- 8000822:	2200      	movs	r2, #0
- 8000824:	701a      	strb	r2, [r3, #0]
+ 80007cc:	4b18      	ldr	r3, [pc, #96]	; (8000830 <BEMF_Observer_Block+0x31c>)
+ 80007ce:	881b      	ldrh	r3, [r3, #0]
+ 80007d0:	f640 72fe 	movw	r2, #4094	; 0xffe
+ 80007d4:	4293      	cmp	r3, r2
+ 80007d6:	d902      	bls.n	80007de <BEMF_Observer_Block+0x2ca>
+ 80007d8:	4b14      	ldr	r3, [pc, #80]	; (800082c <BEMF_Observer_Block+0x318>)
+ 80007da:	2200      	movs	r2, #0
+ 80007dc:	701a      	strb	r2, [r3, #0]
 	}
 	// Do nothing if pwm is ste to 0
 	if(PWM_Value == 0){
- 8000826:	4b14      	ldr	r3, [pc, #80]	; (8000878 <HALL_Observer_Block+0x338>)
- 8000828:	881b      	ldrh	r3, [r3, #0]
- 800082a:	2b00      	cmp	r3, #0
- 800082c:	d10c      	bne.n	8000848 <HALL_Observer_Block+0x308>
-		OldHall = 0xff;
- 800082e:	4b13      	ldr	r3, [pc, #76]	; (800087c <HALL_Observer_Block+0x33c>)
- 8000830:	22ff      	movs	r2, #255	; 0xff
- 8000832:	701a      	strb	r2, [r3, #0]
-		HALL_cnt_sign = 0;
- 8000834:	4b12      	ldr	r3, [pc, #72]	; (8000880 <HALL_Observer_Block+0x340>)
- 8000836:	2200      	movs	r2, #0
- 8000838:	701a      	strb	r2, [r3, #0]
-		HALL_time_cnt = 1;
- 800083a:	4b04      	ldr	r3, [pc, #16]	; (800084c <HALL_Observer_Block+0x30c>)
- 800083c:	2201      	movs	r2, #1
- 800083e:	701a      	strb	r2, [r3, #0]
-		HALL_Angle = 300;	// UWAZAC Z GOWNO PRZESUNIECIAMI
- 8000840:	4b06      	ldr	r3, [pc, #24]	; (800085c <HALL_Observer_Block+0x31c>)
- 8000842:	f44f 7296 	mov.w	r2, #300	; 0x12c
- 8000846:	801a      	strh	r2, [r3, #0]
+ 80007de:	4b19      	ldr	r3, [pc, #100]	; (8000844 <BEMF_Observer_Block+0x330>)
+ 80007e0:	881b      	ldrh	r3, [r3, #0]
+ 80007e2:	2b00      	cmp	r3, #0
+ 80007e4:	d115      	bne.n	8000812 <BEMF_Observer_Block+0x2fe>
+		Old_Cross = 0;
+ 80007e6:	4b18      	ldr	r3, [pc, #96]	; (8000848 <BEMF_Observer_Block+0x334>)
+ 80007e8:	2200      	movs	r2, #0
+ 80007ea:	701a      	strb	r2, [r3, #0]
+		Cross = 0;
+ 80007ec:	4b17      	ldr	r3, [pc, #92]	; (800084c <BEMF_Observer_Block+0x338>)
+ 80007ee:	2200      	movs	r2, #0
+ 80007f0:	701a      	strb	r2, [r3, #0]
+		BEMF_cnt_sign = 0;
+ 80007f2:	4b0c      	ldr	r3, [pc, #48]	; (8000824 <BEMF_Observer_Block+0x310>)
+ 80007f4:	2200      	movs	r2, #0
+ 80007f6:	701a      	strb	r2, [r3, #0]
+		BEMF_time_cnt = 1;
+ 80007f8:	4b08      	ldr	r3, [pc, #32]	; (800081c <BEMF_Observer_Block+0x308>)
+ 80007fa:	2201      	movs	r2, #1
+ 80007fc:	701a      	strb	r2, [r3, #0]
+		BEMF_Angle = 330;
+ 80007fe:	4b0a      	ldr	r3, [pc, #40]	; (8000828 <BEMF_Observer_Block+0x314>)
+ 8000800:	f44f 72a5 	mov.w	r2, #330	; 0x14a
+ 8000804:	801a      	strh	r2, [r3, #0]
+		V_Floating_Old = 0;
+ 8000806:	4b12      	ldr	r3, [pc, #72]	; (8000850 <BEMF_Observer_Block+0x33c>)
+ 8000808:	2200      	movs	r2, #0
+ 800080a:	801a      	strh	r2, [r3, #0]
+		BEMF_delay = 32;
+ 800080c:	4b11      	ldr	r3, [pc, #68]	; (8000854 <BEMF_Observer_Block+0x340>)
+ 800080e:	2220      	movs	r2, #32
+ 8000810:	701a      	strb	r2, [r3, #0]
 	}
 }
- 8000848:	bf00      	nop
- 800084a:	bd80      	pop	{r7, pc}
- 800084c:	2000000c 	.word	0x2000000c
- 8000850:	200000de 	.word	0x200000de
- 8000854:	200000da 	.word	0x200000da
- 8000858:	200000dc 	.word	0x200000dc
- 800085c:	2000000e 	.word	0x2000000e
- 8000860:	200000d6 	.word	0x200000d6
- 8000864:	200000c8 	.word	0x200000c8
- 8000868:	200000d4 	.word	0x200000d4
- 800086c:	200000ca 	.word	0x200000ca
- 8000870:	200000e0 	.word	0x200000e0
- 8000874:	200000d0 	.word	0x200000d0
- 8000878:	200000d2 	.word	0x200000d2
- 800087c:	2000000b 	.word	0x2000000b
- 8000880:	200000d5 	.word	0x200000d5
+ 8000812:	bf00      	nop
+ 8000814:	3708      	adds	r7, #8
+ 8000816:	46bd      	mov	sp, r7
+ 8000818:	bd80      	pop	{r7, pc}
+ 800081a:	bf00      	nop
+ 800081c:	2000000b 	.word	0x2000000b
+ 8000820:	200000d6 	.word	0x200000d6
+ 8000824:	2000000a 	.word	0x2000000a
+ 8000828:	2000000c 	.word	0x2000000c
+ 800082c:	200000c8 	.word	0x200000c8
+ 8000830:	200000ca 	.word	0x200000ca
+ 8000834:	200000dc 	.word	0x200000dc
+ 8000838:	200000d0 	.word	0x200000d0
+ 800083c:	20000004 	.word	0x20000004
+ 8000840:	20000008 	.word	0x20000008
+ 8000844:	200000d8 	.word	0x200000d8
+ 8000848:	200000d4 	.word	0x200000d4
+ 800084c:	200000d5 	.word	0x200000d5
+ 8000850:	200000d2 	.word	0x200000d2
+ 8000854:	2000000f 	.word	0x2000000f
+
+08000858 <Set_Observer_Div>:
+
+void Set_Observer_Div(uint8_t div){
+ 8000858:	b480      	push	{r7}
+ 800085a:	b083      	sub	sp, #12
+ 800085c:	af00      	add	r7, sp, #0
+ 800085e:	4603      	mov	r3, r0
+ 8000860:	71fb      	strb	r3, [r7, #7]
+	if(div < 1) Div = 1;
+ 8000862:	79fb      	ldrb	r3, [r7, #7]
+ 8000864:	2b00      	cmp	r3, #0
+ 8000866:	d103      	bne.n	8000870 <Set_Observer_Div+0x18>
+ 8000868:	4b05      	ldr	r3, [pc, #20]	; (8000880 <Set_Observer_Div+0x28>)
+ 800086a:	2201      	movs	r2, #1
+ 800086c:	701a      	strb	r2, [r3, #0]
+	else Div = div;
+}
+ 800086e:	e002      	b.n	8000876 <Set_Observer_Div+0x1e>
+	else Div = div;
+ 8000870:	4a03      	ldr	r2, [pc, #12]	; (8000880 <Set_Observer_Div+0x28>)
+ 8000872:	79fb      	ldrb	r3, [r7, #7]
+ 8000874:	7013      	strb	r3, [r2, #0]
+}
+ 8000876:	bf00      	nop
+ 8000878:	370c      	adds	r7, #12
+ 800087a:	46bd      	mov	sp, r7
+ 800087c:	bc80      	pop	{r7}
+ 800087e:	4770      	bx	lr
+ 8000880:	2000000e 	.word	0x2000000e
 
 08000884 <Six_Step_Block>:
+		HALL_time_cnt = 1;
+		HALL_Angle = 300;	// UWAZAC Z GOWNO PRZESUNIECIAMI
+	}
+}
 
 void Six_Step_Block(uint16_t PWM_Value){
  8000884:	b580      	push	{r7, lr}
@@ -1341,14 +1354,14 @@ void Six_Step_Block(uint16_t PWM_Value){
  800099e:	bf00      	nop
  80009a0:	200000d0 	.word	0x200000d0
  80009a4:	200000d1 	.word	0x200000d1
- 80009a8:	200000d6 	.word	0x200000d6
+ 80009a8:	200000da 	.word	0x200000da
  80009ac:	88888889 	.word	0x88888889
 
 080009b0 <Set_PWM>:
-		return;
-	}
-}
-
+//		}
+//		Old_Step = Step_Num;
+//	}
+//}
 
 void Set_PWM(uint16_t value){
  80009b0:	b480      	push	{r7}
@@ -1367,7 +1380,7 @@ void Set_PWM(uint16_t value){
  80009c6:	bc80      	pop	{r7}
  80009c8:	4770      	bx	lr
  80009ca:	bf00      	nop
- 80009cc:	200000d2 	.word	0x200000d2
+ 80009cc:	200000d8 	.word	0x200000d8
 
 080009d0 <HAL_ADC_ConvCpltCallback>:
 
@@ -1376,9 +1389,9 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
  80009d2:	b084      	sub	sp, #16
  80009d4:	af00      	add	r7, sp, #0
  80009d6:	6078      	str	r0, [r7, #4]
-	//BEMF_Observer_Block();
-	HALL_Observer_Block();
- 80009d8:	f7ff fdb2 	bl	8000540 <HALL_Observer_Block>
+	BEMF_Observer_Block();
+ 80009d8:	f7ff fd9c 	bl	8000514 <BEMF_Observer_Block>
+	//HALL_Observer_Block();
 	// Collect data
 	uint8_t div = 1;
  80009dc:	2301      	movs	r3, #1
@@ -2353,13 +2366,13 @@ while (1){
  8000fc8:	f7ff fa6c 	bl	80004a4 <Application_Update>
  8000fcc:	e7fc      	b.n	8000fc8 <main+0x70>
  8000fce:	bf00      	nop
- 8000fd0:	200012f8 	.word	0x200012f8
- 8000fd4:	200011b4 	.word	0x200011b4
- 8000fd8:	200010e0 	.word	0x200010e0
- 8000fdc:	20001128 	.word	0x20001128
- 8000fe0:	20001350 	.word	0x20001350
- 8000fe4:	200012b0 	.word	0x200012b0
- 8000fe8:	20001228 	.word	0x20001228
+ 8000fd0:	200012f4 	.word	0x200012f4
+ 8000fd4:	200011b0 	.word	0x200011b0
+ 8000fd8:	200010dc 	.word	0x200010dc
+ 8000fdc:	20001124 	.word	0x20001124
+ 8000fe0:	2000134c 	.word	0x2000134c
+ 8000fe4:	200012ac 	.word	0x200012ac
+ 8000fe8:	20001224 	.word	0x20001224
  8000fec:	40011400 	.word	0x40011400
 
 08000ff0 <SystemClock_Config>:
@@ -2598,7 +2611,7 @@ static void MX_ADC1_Init(void)
  800112e:	46bd      	mov	sp, r7
  8001130:	bd80      	pop	{r7, pc}
  8001132:	bf00      	nop
- 8001134:	200011b4 	.word	0x200011b4
+ 8001134:	200011b0 	.word	0x200011b0
  8001138:	40012400 	.word	0x40012400
 
 0800113c <MX_SPI1_Init>:
@@ -2681,7 +2694,7 @@ static void MX_SPI1_Init(void)
  800119e:	bf00      	nop
  80011a0:	bd80      	pop	{r7, pc}
  80011a2:	bf00      	nop
- 80011a4:	200012f8 	.word	0x200012f8
+ 80011a4:	200012f4 	.word	0x200012f4
  80011a8:	40013000 	.word	0x40013000
 
 080011ac <MX_TIM1_Init>:
@@ -2923,7 +2936,7 @@ static void MX_TIM1_Init(void)
  8001316:	3758      	adds	r7, #88	; 0x58
  8001318:	46bd      	mov	sp, r7
  800131a:	bd80      	pop	{r7, pc}
- 800131c:	200012b0 	.word	0x200012b0
+ 800131c:	200012ac 	.word	0x200012ac
  8001320:	40012c00 	.word	0x40012c00
 
 08001324 <MX_TIM2_Init>:
@@ -3097,7 +3110,7 @@ static void MX_TIM2_Init(void)
  800141e:	3738      	adds	r7, #56	; 0x38
  8001420:	46bd      	mov	sp, r7
  8001422:	bd80      	pop	{r7, pc}
- 8001424:	20001350 	.word	0x20001350
+ 8001424:	2000134c 	.word	0x2000134c
 
 08001428 <MX_TIM3_Init>:
   * @brief TIM3 Initialization Function
@@ -3271,7 +3284,7 @@ static void MX_TIM3_Init(void)
  8001522:	46bd      	mov	sp, r7
  8001524:	bd80      	pop	{r7, pc}
  8001526:	bf00      	nop
- 8001528:	20001128 	.word	0x20001128
+ 8001528:	20001124 	.word	0x20001124
  800152c:	40000400 	.word	0x40000400
 
 08001530 <MX_TIM4_Init>:
@@ -3382,7 +3395,7 @@ static void MX_TIM4_Init(void)
  80015be:	46bd      	mov	sp, r7
  80015c0:	bd80      	pop	{r7, pc}
  80015c2:	bf00      	nop
- 80015c4:	200010e0 	.word	0x200010e0
+ 80015c4:	200010dc 	.word	0x200010dc
  80015c8:	40000800 	.word	0x40000800
 
 080015cc <MX_USART1_UART_Init>:
@@ -3449,7 +3462,7 @@ static void MX_USART1_UART_Init(void)
  8001612:	bf00      	nop
  8001614:	bd80      	pop	{r7, pc}
  8001616:	bf00      	nop
- 8001618:	20001228 	.word	0x20001228
+ 8001618:	20001224 	.word	0x20001224
  800161c:	40013800 	.word	0x40013800
 
 08001620 <MX_DMA_Init>:
@@ -3922,7 +3935,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
  80018ec:	40021000 	.word	0x40021000
  80018f0:	40010800 	.word	0x40010800
  80018f4:	40010c00 	.word	0x40010c00
- 80018f8:	2000126c 	.word	0x2000126c
+ 80018f8:	20001268 	.word	0x20001268
  80018fc:	40020008 	.word	0x40020008
 
 08001900 <HAL_SPI_MspInit>:
@@ -4561,9 +4574,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
  8001d0c:	40021000 	.word	0x40021000
  8001d10:	40010c00 	.word	0x40010c00
  8001d14:	40010000 	.word	0x40010000
- 8001d18:	200011e4 	.word	0x200011e4
+ 8001d18:	200011e0 	.word	0x200011e0
  8001d1c:	40020058 	.word	0x40020058
- 8001d20:	20001170 	.word	0x20001170
+ 8001d20:	2000116c 	.word	0x2000116c
  8001d24:	40020044 	.word	0x40020044
 
 08001d28 <NMI_Handler>:
@@ -4749,7 +4762,7 @@ void DMA1_Channel1_IRQHandler(void)
  8001d86:	bf00      	nop
  8001d88:	bd80      	pop	{r7, pc}
  8001d8a:	bf00      	nop
- 8001d8c:	2000126c 	.word	0x2000126c
+ 8001d8c:	20001268 	.word	0x20001268
 
 08001d90 <DMA1_Channel4_IRQHandler>:
 
@@ -4773,7 +4786,7 @@ void DMA1_Channel4_IRQHandler(void)
  8001d9a:	bf00      	nop
  8001d9c:	bd80      	pop	{r7, pc}
  8001d9e:	bf00      	nop
- 8001da0:	20001170 	.word	0x20001170
+ 8001da0:	2000116c 	.word	0x2000116c
 
 08001da4 <DMA1_Channel5_IRQHandler>:
 
@@ -4797,7 +4810,7 @@ void DMA1_Channel5_IRQHandler(void)
  8001dae:	bf00      	nop
  8001db0:	bd80      	pop	{r7, pc}
  8001db2:	bf00      	nop
- 8001db4:	200011e4 	.word	0x200011e4
+ 8001db4:	200011e0 	.word	0x200011e0
 
 08001db8 <TIM1_UP_IRQHandler>:
 
@@ -4821,7 +4834,7 @@ void TIM1_UP_IRQHandler(void)
  8001dc2:	bf00      	nop
  8001dc4:	bd80      	pop	{r7, pc}
  8001dc6:	bf00      	nop
- 8001dc8:	200012b0 	.word	0x200012b0
+ 8001dc8:	200012ac 	.word	0x200012ac
 
 08001dcc <USART1_IRQHandler>:
 
@@ -4845,7 +4858,7 @@ void USART1_IRQHandler(void)
  8001dd6:	bf00      	nop
  8001dd8:	bd80      	pop	{r7, pc}
  8001dda:	bf00      	nop
- 8001ddc:	20001228 	.word	0x20001228
+ 8001ddc:	20001224 	.word	0x20001224
 
 08001de0 <SystemInit>:
   * @note   This function should be used only after reset.
@@ -5009,7 +5022,7 @@ LoopFillZerobss:
   ldr r2, =_sbss
  8001e88:	2000001c 	.word	0x2000001c
   ldr r3, = _ebss
- 8001e8c:	2000139c 	.word	0x2000139c
+ 8001e8c:	20001398 	.word	0x20001398
 
 08001e90 <ADC1_2_IRQHandler>:
  * @retval : None
@@ -5157,7 +5170,7 @@ __weak void HAL_IncTick(void)
  8001f38:	bc80      	pop	{r7}
  8001f3a:	4770      	bx	lr
  8001f3c:	20000018 	.word	0x20000018
- 8001f40:	20001398 	.word	0x20001398
+ 8001f40:	20001394 	.word	0x20001394
 
 08001f44 <HAL_GetTick>:
   * @note  This function is declared as __weak to be overwritten in case of other
@@ -5176,7 +5189,7 @@ __weak uint32_t HAL_GetTick(void)
  8001f4e:	46bd      	mov	sp, r7
  8001f50:	bc80      	pop	{r7}
  8001f52:	4770      	bx	lr
- 8001f54:	20001398 	.word	0x20001398
+ 8001f54:	20001394 	.word	0x20001394
 
 08001f58 <HAL_Delay>:
   *       implementations in user file.

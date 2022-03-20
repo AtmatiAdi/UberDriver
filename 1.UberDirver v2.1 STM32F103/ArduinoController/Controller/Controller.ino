@@ -22,7 +22,7 @@
 
 void setup() {
   Serial.begin(115200);
-  Serial1.begin(9600);
+  Serial1.begin(57600);
   pinMode(3,INPUT);
 }
 
@@ -30,8 +30,9 @@ uint8_t power = 0;
 uint8_t com_delay = 0;
 uint8_t old_power = 0;
 int delay_ms = 50;
-int scan_data_size = 4095;
-int scan_pack_size = 8;
+int scan_data_size = 15000;
+int scan_pack_size = 6;
+int scan_traces = 5;
 bool display_RPM = true;
 // the loop function runs over and over again forever
 void loop() {
@@ -55,17 +56,15 @@ void loop() {
     buf[2] = 0;
     Serial1.write(buf, 3);
     while(scan_cnt < scan_data_size){
-      if(Serial1.available() >= scan_pack_size){
-        for (int i = 0; i <= scan_pack_size - 2; i ++ ){
-          int treshold = 0;
-          if(i >= 3){
-            treshold = 256;
-          }
+      if(Serial1.available() >= scan_pack_size * scan_traces){
+        for (int i = 1; i < scan_pack_size * scan_traces; i ++ ){
+          int treshold = ((30-i)%scan_traces) * 256;
+        
           Serial.print((uint16_t)Serial1.read() + treshold);
           Serial.print("\t");
         }
-        Serial.println(Serial1.read());
-        scan_cnt += scan_pack_size;
+        Serial.println((uint16_t)Serial1.read());
+        scan_cnt += scan_pack_size * scan_traces;
       }
     }
   }
@@ -80,8 +79,9 @@ void loop() {
     if(Serial1.available()){
         uint8_t Rotations = Serial1.read();
         float RPM = ((float)Rotations / 4) * (1000/delay_ms) * 60;
-        for (int i = 0; i <= scan_pack_size - 2; i ++ ){
-          Serial.print(RPM);
+        for (int i = 1; i < scan_pack_size * scan_traces; i ++ ){
+          int treshold = ((30-i)%scan_traces) * 256;
+          Serial.print(treshold);
           Serial.print("\t");
         }
         Serial.println(255);

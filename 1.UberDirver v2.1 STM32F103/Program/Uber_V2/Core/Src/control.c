@@ -10,6 +10,11 @@
 #define COLLECT_DATA	0	// 1 - Collection wil be performed, otherwise not.
 #define PWM_COUNTER     639	// 640-1 = 639
 
+#define SCAN_VARIABLES	6
+#define SCAN_TRACES		5
+#define SCAN_WINDOW		500
+uint16_t SCAN_SIZE = SCAN_WINDOW*SCAN_VARIABLES*SCAN_TRACES;
+
 static TIM_HandleTypeDef *htim1;
 static TIM_HandleTypeDef *htim2;
 static TIM_HandleTypeDef *htim3;
@@ -17,16 +22,16 @@ static TIM_HandleTypeDef *htim4;
 static ADC_HandleTypeDef *hadc1;
 
 uint16_t ADC_data[7] = {0,0,0,0,0,0,0};	// try 16bit
-uint8_t IsNewVal = 0;
 uint16_t data_num = 0;
 uint8_t tim_num = 0;
-int cnt = 0;
 uint16_t Value = 8;
 
 uint8_t Scan_Is_enabled = 0;
-uint8_t Scan_Data[4096];
+uint8_t Scan_Data[SCAN_WINDOW*SCAN_VARIABLES*SCAN_TRACES];
+uint8_t Scan_Ready = 0;
 uint16_t Scan_iter = 0;
-
+uint16_t Pack_iter = 0;
+uint16_t Trace_iter = 0;
 
 uint32_t ADC_Ticks = 0;
 uint32_t BeforeCross_Ticks = 0;
@@ -37,15 +42,18 @@ uint16_t Hall_GPIO_Pin = HALL_A_Pin;
 
 void EnableScan(){
 	Scan_Is_enabled = 1;
+	Scan_iter = 0;
+	Pack_iter = 0;
+	Trace_iter = 0;
+	Scan_Ready = 0;
 }
 
 uint8_t IsScanReady(){
-	if (Scan_iter >= 4095) return 1;
-	else return 0;
+	return Scan_Ready;
 }
 
 uint8_t* GetScanData(){
-	Scan_iter = 0;
+
 	Scan_Is_enabled = 0;
 	return Scan_Data;
 }
@@ -57,12 +65,13 @@ uint8_t Old_Cross = 0;
 uint8_t Cross = 0;
 uint8_t BEMF_cnt_sign = 1;
 uint8_t res = 0;
-uint8_t BEMF_time_cnt = 1;
+uint16_t BEMF_time_cnt = 1;
 uint16_t BEMF_Angle = 330;
 uint8_t Div = 16;
 uint16_t BEMF_Treshold = 0;
 uint16_t PWM_Value = 0;
-uint8_t BEMF_delay = 32;
+uint16_t BEMF_delay = 32;
+uint16_t Angle = 0;
 
 void BEMF_Observer_Block(){
 // Input Block
@@ -112,33 +121,46 @@ void BEMF_Observer_Block(){
 		BEMF_time_cnt = 0;
 	}
 	// Counter buffor reset before overflow
-	if(BEMF_time_cnt == 255){
-		BEMF_Angle += 60;
+	if(BEMF_time_cnt >= 1028){
+		BEMF_delay = BEMF_time_cnt/8;
+		BEMF_Angle += 30;
 		BEMF_cnt_sign = 1;
 		BEMF_time_cnt = 0;
 	}
 	//Old_Step = Step_Num;
 	if (BEMF_Angle >= 360) BEMF_Angle = 0;
+	Angle = BEMF_Angle;
 
 	if (Scan_Is_enabled > 0){
-		Scan_Data[Scan_iter] = V_Floating/16;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = V_DC/16;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = Step_Num * 8;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = BEMF_time_cnt;
-		Scan_iter ++ ;
+		uint16_t Var_iter =  Pack_iter * SCAN_VARIABLES;	// First element of Pack
+		// VARIABLE 1
+		Scan_Data[Var_iter] = V_Floating/16;
+		Var_iter ++ ;
+		// VARIABLE 2
+		Scan_Data[Var_iter] = V_DC/16;
+		Var_iter ++ ;
+		// VARIABLE 3
+		Scan_Data[Var_iter] = Step_Num * 8;
+		Var_iter ++ ;
+		// VARIABLE 4
+		Scan_Data[Var_iter] = BEMF_time_cnt;
+		Var_iter ++ ;
+		// VARIABLE 5
+		Scan_Data[Var_iter] = BEMF_Angle/4;
+		Var_iter ++ ;
+		// VARIABLE 6
+		Scan_Data[Var_iter] = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin)*64;
+		Var_iter ++ ;
 
-		Scan_Data[Scan_iter] = BEMF_Treshold;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = BEMF_Angle/4;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = Step_Num * 8;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin)*64;
-		Scan_iter ++ ;
-		if (Scan_iter >= 4095) Scan_Is_enabled = 0;
+		Pack_iter += SCAN_TRACES;	// Next Pack of Trace
+		if (Pack_iter * SCAN_VARIABLES >= SCAN_SIZE) {
+			Trace_iter ++;
+			Pack_iter = Trace_iter;
+		}
+		if (Var_iter == SCAN_SIZE) {
+			Scan_Is_enabled = 0;
+			Scan_Ready = 1;
+		}
 	}
 	// Do nothing if pwm is ste to 0
 	if(PWM_Value == 0){
@@ -162,7 +184,7 @@ uint8_t OldHall = 0xff;			// Starting state
 uint8_t HALL_cnt_sign = 0;		// Starting state
 uint8_t HALL_time_cnt = 1;		// Starting state
 uint16_t HALL_Angle = 300;	// UWAZAC Z GOWNO PRZESUNIECIAMI
-uint16_t Angle = 0;
+
 uint16_t First_Half_Upper = 0;
 uint16_t Second_Half_Upper = 0;
 uint8_t Approx_Angle = 0;
@@ -352,30 +374,7 @@ void Set_PWM(uint16_t value){
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
 	BEMF_Observer_Block();
 	//HALL_Observer_Block();
-	// Collect data
-	uint8_t div = 1;
-	if(COLLECT_DATA == 1){
-		if((data_num < (4096-4)) && cnt >= div){
 
-			//data[data_num] = ADC_data[0];
-			data_num++;
-			//data[data_num] = ADC_data[1];
-			data_num++;
-			//data[data_num] = ADC_data[2];
-			data_num++;
-			//data[data_num] = ADC_data[3];
-			data_num++;
-			cnt = 0;
-		}
-		if((tim_num < (64-4))){
-			//TIM_B[tim_num] = __HAL_TIM_GET_COUNTER(htim3);
-			//TIM_C[tim_num] = __HAL_TIM_GET_COUNTER(htim1);
-			//TIM_A[tim_num] = __HAL_TIM_GET_COUNTER(htim2);
-			tim_num++;
-		}
-	}
-	IsNewVal = 1;
-	cnt ++;
 	ADC_Ticks ++;
 }
 

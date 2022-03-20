@@ -254,7 +254,7 @@ void NormalControl(){
 		ticks = MIN_TICKS;
 	}
 	if (IsScanReady() == 1){
-		HAL_UART_Transmit_DMA(huart, GetScanData(), 4096);
+		HAL_UART_Transmit_DMA(huart, GetScanData(), 15000);
 	}
 }
 

@@ -54,6 +54,8 @@ legend(["D","Q"]);
 ylim([-1,1]);
 
                                                     % DUPKOSINUS CONTROL
+
+% PHASE TO GROUND VOLTAGES
 sin_a = sin(deg2rad(ang));
 sin_b = sin(deg2rad(ang+120));
 sin_c = sin(deg2rad(ang+240));
@@ -76,7 +78,6 @@ for i = 1:1:360
     end
 end
 
-% PHASE TO GROUND VOLTAGES
 subplot(5,5,6);
 hold on;
 plot(svmA_GND);

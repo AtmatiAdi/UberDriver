@@ -10,11 +10,6 @@
 #define COLLECT_DATA	0	// 1 - Collection wil be performed, otherwise not.
 #define PWM_COUNTER     639	// 640-1 = 639
 
-#define SCAN_VARIABLES	6
-#define SCAN_TRACES		5
-#define SCAN_WINDOW		500
-uint16_t SCAN_SIZE = SCAN_WINDOW*SCAN_VARIABLES*SCAN_TRACES;
-
 static TIM_HandleTypeDef *htim1;
 static TIM_HandleTypeDef *htim2;
 static TIM_HandleTypeDef *htim3;
@@ -27,11 +22,9 @@ uint8_t tim_num = 0;
 uint16_t Value = 8;
 
 uint8_t Scan_Is_enabled = 0;
-uint8_t Scan_Data[SCAN_WINDOW*SCAN_VARIABLES*SCAN_TRACES];
-uint8_t Scan_Ready = 0;
+uint8_t Scan_Data[SCAN_SIZE];
 uint16_t Scan_iter = 0;
-uint16_t Pack_iter = 0;
-uint16_t Trace_iter = 0;
+uint8_t trace_num = 0;
 
 uint32_t ADC_Ticks = 0;
 uint32_t BeforeCross_Ticks = 0;
@@ -42,19 +35,17 @@ uint16_t Hall_GPIO_Pin = HALL_A_Pin;
 
 void EnableScan(){
 	Scan_Is_enabled = 1;
-	Scan_iter = 0;
-	Pack_iter = 0;
-	Trace_iter = 0;
-	Scan_Ready = 0;
 }
 
 uint8_t IsScanReady(){
-	return Scan_Ready;
+	if (Scan_iter >= SCAN_SIZE) return 1;
+	else return 0;
 }
 
 uint8_t* GetScanData(){
-
+	Scan_iter = 0;
 	Scan_Is_enabled = 0;
+	trace_num = 0;
 	return Scan_Data;
 }
 uint8_t ADC_Meas_Enabled = 0;
@@ -102,6 +93,7 @@ void BEMF_Observer_Block(){
 	if (Cross == 1) {
 		BEMF_cnt_sign = 0;
 		BEMF_delay = BEMF_time_cnt/4;
+		if(BEMF_delay > 32) BEMF_delay = 32;
 		Cross = 0;
 		BEMF_Angle += 30;
 		if (Div > 30) BEMF_Treshold = 0;
@@ -121,9 +113,9 @@ void BEMF_Observer_Block(){
 		BEMF_time_cnt = 0;
 	}
 	// Counter buffor reset before overflow
-	if(BEMF_time_cnt >= 1028){
-		BEMF_delay = BEMF_time_cnt/8;
-		BEMF_Angle += 30;
+	if(BEMF_time_cnt >= 255){
+		BEMF_delay = BEMF_time_cnt/4;
+		BEMF_Angle += 60;
 		BEMF_cnt_sign = 1;
 		BEMF_time_cnt = 0;
 	}
@@ -132,34 +124,23 @@ void BEMF_Observer_Block(){
 	Angle = BEMF_Angle;
 
 	if (Scan_Is_enabled > 0){
-		uint16_t Var_iter =  Pack_iter * SCAN_VARIABLES;	// First element of Pack
-		// VARIABLE 1
-		Scan_Data[Var_iter] = V_Floating/16;
-		Var_iter ++ ;
-		// VARIABLE 2
-		Scan_Data[Var_iter] = V_DC/16;
-		Var_iter ++ ;
-		// VARIABLE 3
-		Scan_Data[Var_iter] = Step_Num * 8;
-		Var_iter ++ ;
-		// VARIABLE 4
-		Scan_Data[Var_iter] = BEMF_time_cnt;
-		Var_iter ++ ;
-		// VARIABLE 5
-		Scan_Data[Var_iter] = BEMF_Angle/4;
-		Var_iter ++ ;
-		// VARIABLE 6
-		Scan_Data[Var_iter] = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin)*64;
-		Var_iter ++ ;
+		Scan_iter += trace_num * 4;
 
-		Pack_iter += SCAN_TRACES;	// Next Pack of Trace
-		if (Pack_iter * SCAN_VARIABLES >= SCAN_SIZE) {
-			Trace_iter ++;
-			Pack_iter = Trace_iter;
-		}
-		if (Var_iter == SCAN_SIZE) {
-			Scan_Is_enabled = 0;
-			Scan_Ready = 1;
+		Scan_Data[Scan_iter] = V_Floating/8;
+		Scan_iter ++ ;
+		Scan_Data[Scan_iter] = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin)*64;
+		Scan_iter ++ ;
+		Scan_Data[Scan_iter] = Step_Num * 16;
+		Scan_iter ++ ;
+		Scan_Data[Scan_iter] = BEMF_time_cnt;
+		Scan_iter ++ ;
+
+		Scan_iter += (MORE_TRACES-trace_num) * 4;
+		if (Scan_iter >= SCAN_SIZE) {
+			trace_num++;
+			if(trace_num > MORE_TRACES){
+				Scan_Is_enabled = 0;
+			} else Scan_iter = 0;
 		}
 	}
 	// Do nothing if pwm is ste to 0

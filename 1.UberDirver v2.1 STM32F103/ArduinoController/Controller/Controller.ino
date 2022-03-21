@@ -30,9 +30,10 @@ uint8_t power = 0;
 uint8_t com_delay = 0;
 uint8_t old_power = 0;
 int delay_ms = 50;
-int scan_data_size = 15000;
-int scan_pack_size = 6;
-int scan_traces = 5;
+int scan_data_size = 4096*4;
+uint8_t scan_pack_size = 4;
+uint8_t scan_traces = 8;
+uint8_t scan_col_size = scan_pack_size * scan_traces;
 bool display_RPM = true;
 // the loop function runs over and over again forever
 void loop() {
@@ -56,15 +57,22 @@ void loop() {
     buf[2] = 0;
     Serial1.write(buf, 3);
     while(scan_cnt < scan_data_size){
-      if(Serial1.available() >= scan_pack_size * scan_traces){
-        for (int i = 1; i < scan_pack_size * scan_traces; i ++ ){
-          int treshold = ((30-i)%scan_traces) * 256;
-        
+      if(Serial1.available() >= scan_col_size){
+        for (int i = 1; i <= scan_col_size; i ++ ){
+          int treshold = ((scan_col_size - i)/4) * 256;
+//          if(i > 8){
+//            treshold = 256 * 2;
+//          } else if(i > 4){
+//            treshold = 256;
+//          }
           Serial.print((uint16_t)Serial1.read() + treshold);
-          Serial.print("\t");
+          
+          if(i == scan_col_size) Serial.print("\n");
+          else Serial.print("\t");
         }
-        Serial.println((uint16_t)Serial1.read());
-        scan_cnt += scan_pack_size * scan_traces;
+        //Serial.println(Serial1.read());
+
+        scan_cnt += scan_col_size;
       }
     }
   }
@@ -78,13 +86,12 @@ void loop() {
   if (display_RPM){
     if(Serial1.available()){
         uint8_t Rotations = Serial1.read();
-        float RPM = ((float)Rotations / 4) * (1000/delay_ms) * 60;
-        for (int i = 1; i < scan_pack_size * scan_traces; i ++ ){
-          int treshold = ((30-i)%scan_traces) * 256;
-          Serial.print(treshold);
-          Serial.print("\t");
-        }
-        Serial.println(255);
+//        float RPM = ((float)Rotations / 4) * (1000/delay_ms) * 60;
+//        for (int i = 0; i <= scan_pack_size - 2; i ++ ){
+//          Serial.print(RPM);
+//          Serial.print("\t");
+//        }
+//        Serial.println(255);
     }
   }
 }

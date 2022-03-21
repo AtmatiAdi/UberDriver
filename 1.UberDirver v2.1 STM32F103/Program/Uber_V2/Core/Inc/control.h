@@ -24,6 +24,9 @@
 #define ADC_CHANNEL_B	ADC_CHANNEL_3
 #define ADC_CHANNEL_C	ADC_CHANNEL_2
 
+#define SCAN_SIZE		4096*4
+#define MORE_TRACES		7
+
 #include "DRV8305.h"
 #include "main.h"
 

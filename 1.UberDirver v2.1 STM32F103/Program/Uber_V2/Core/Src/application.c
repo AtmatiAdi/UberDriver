@@ -165,62 +165,62 @@ void NormalControl(){
 		if (pwm < 8) pwm = 8;				// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik
 		else if (pwm > (640-1)-8) pwm = (640-1);	// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik
 
-		if (IsRunning == 0){					// Startujemy
-			int Speed;
-			int cnt = 0;
-			int val = 8;
-			switch (Function){
-			case SET_MOTOR_1_SPEED_FORWAD_SEQ_1: {
-				// Sekwencja rozruchowa dla silnika: TAROT_SZYBKI
-				Speed = 0x00070000;
-				for (; Speed > 0x00030000; Speed -= 0x00001fff){		// 1
-					SixStep(Speed, val);
-					++cnt;
-					if (cnt == 4){
-						++val;
-						cnt = 0;
-					}
-				}
-
-				for (; Speed > 0x00006000; Speed = Speed - 0x00000fff){		// 1
-					SixStep(Speed, val);
-				}
-				break;
-			}
-			case SET_MOTOR_1_SPEED_BACK_SEQ_1: {
-				// Sekwencja rozruchowa dla silnika: TAROT_SZYBKI
-				Speed = 0x00070000;
-				for (; Speed > 0x00030000; Speed -= 0x00001fff){		// 1
-					SixStep_rev(Speed, val);
-					++cnt;
-					if (cnt == 4){
-						++val;
-						cnt = 0;
-					}
-				}
-
-				for (; Speed > 0x00006000; Speed = Speed - 0x00000fff){		// 1
-					SixStep_rev(Speed, val);
-				}
-				break;
-			}
-			case SET_MOTOR_1_SPEED_FORWAD_SEQ_2: {
-				break;
-			}
-			case SET_MOTOR_1_SPEED_BACK_SEQ_2: {
-				break;
-			}
-			case SET_MOTOR_1_SPEED_FORWAD_SEQ_3: {
-				break;
-			}
-			case SET_MOTOR_1_SPEED_BACK_SEQ_3: {
-				break;
-			}
-			default: {
-				// Błąd
-			}
-			}
-		}
+//		if (IsRunning == 0){					// Startujemy
+//			int Speed;
+//			int cnt = 0;
+//			int val = 8;
+//			switch (Function){
+//			case SET_MOTOR_1_SPEED_FORWAD_SEQ_1: {
+//				// Sekwencja rozruchowa dla silnika: TAROT_SZYBKI
+//				Speed = 0x00070000;
+//				for (; Speed > 0x00030000; Speed -= 0x00001fff){		// 1
+//					SixStep(Speed, val);
+//					++cnt;
+//					if (cnt == 4){
+//						++val;
+//						cnt = 0;
+//					}
+//				}
+//
+//				for (; Speed > 0x00006000; Speed = Speed - 0x00000fff){		// 1
+//					SixStep(Speed, val);
+//				}
+//				break;
+//			}
+//			case SET_MOTOR_1_SPEED_BACK_SEQ_1: {
+//				// Sekwencja rozruchowa dla silnika: TAROT_SZYBKI
+//				Speed = 0x00070000;
+//				for (; Speed > 0x00030000; Speed -= 0x00001fff){		// 1
+//					SixStep_rev(Speed, val);
+//					++cnt;
+//					if (cnt == 4){
+//						++val;
+//						cnt = 0;
+//					}
+//				}
+//
+//				for (; Speed > 0x00006000; Speed = Speed - 0x00000fff){		// 1
+//					SixStep_rev(Speed, val);
+//				}
+//				break;
+//			}
+//			case SET_MOTOR_1_SPEED_FORWAD_SEQ_2: {
+//				break;
+//			}
+//			case SET_MOTOR_1_SPEED_BACK_SEQ_2: {
+//				break;
+//			}
+//			case SET_MOTOR_1_SPEED_FORWAD_SEQ_3: {
+//				break;
+//			}
+//			case SET_MOTOR_1_SPEED_BACK_SEQ_3: {
+//				break;
+//			}
+//			default: {
+//				// Błąd
+//			}
+//			}
+//		}
 		//if(rx_buffer[0] == SCAN_ONE_VARIABLE){
 			// Kręcimy normalnie
 			if(Function % 2 == 1){					// Kręcimy do tylu
@@ -228,7 +228,7 @@ void NormalControl(){
 				//ticks = HALL_SixStep(pwm, ticks,step_delay/16);
 				Set_PWM(pwm);
 				Set_Observer_Div(step_delay/8);
-				Six_Step_Block(pwm);
+				//Six_Step_Block(pwm);
 				//Sin_Block(pwm);
 				Rotations[0] = pwm;
 			}else{									// Kręcimy do przodu
@@ -236,7 +236,7 @@ void NormalControl(){
 				//ticks = HALL_SixStep(pwm, ticks,step_delay/16);
 				Set_PWM(pwm);
 				Set_Observer_Div(step_delay/8);
-				Six_Step_Block(pwm);
+				//Six_Step_Block(pwm);
 				//Sin_Block(pwm);
 				Rotations[0] = pwm;
 			}
@@ -262,23 +262,7 @@ void NormalControl(){
 }
 
 void Application_Update(){
-
-	if(COLLECT_DATA ){
-		CollectData();
-	}
-	else if(SCOTTER_PROGRAM){
-		ScotterProgram();
-	}
-	else if(NORMAL_CONTROL){
-		NormalControl();
-	}
-	else {
-
-		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
-		SetZero_A();
-		SetZero_B();
-		SetZero_C();
-	}
+	NormalControl();
 }
 
 void Test_Sequence_01(){

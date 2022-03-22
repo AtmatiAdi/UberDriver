@@ -63,16 +63,17 @@ uint16_t BEMF_Treshold = 0;
 uint16_t PWM_Value = 0;
 uint16_t BEMF_delay = 32;
 uint16_t Angle = 0;
-
+uint16_t Ticks_Diff = 0;
 void BEMF_Observer_Block(){
+	uint16_t Ticks = htim1->Instance->CNT;
 // Input Block
 	uint16_t V_Floating = ADC_data[0];
 	uint16_t V_DC = ADC_data[1];
-	uint16_t V_Floating_Diff = 4095;
+	//uint16_t V_Floating_Diff = 4095;
 	uint8_t MeasEnabled = 0;
 // 0 Cross Detection Block
 	// differentiate BEMF to obtain value and sign of changes
-	V_Floating_Diff = (4095 + V_Floating) - V_Floating_Old;
+	//V_Floating_Diff = (4095 + V_Floating) - V_Floating_Old;
 	if((Cross == 0) && (BEMF_cnt_sign == 1) && (BEMF_time_cnt > BEMF_delay)){
 		if((Step_Num == 1) || (Step_Num == 3) || (Step_Num == 5)){
 			// BEMF voltage will be decreasing -> '\'
@@ -90,7 +91,7 @@ void BEMF_Observer_Block(){
 			//}
 		}
 	}
-	V_Floating_Old = V_Floating;
+	//V_Floating_Old = V_Floating;
 // 0 Cross Counter Block
 	// Change counting sign when 0-cross is detected
 	if (Cross == 1) {
@@ -117,7 +118,7 @@ void BEMF_Observer_Block(){
 	}
 	// Counter buffor reset before overflow
 	uint8_t overflow = 0;
-	if(BEMF_time_cnt >= 255){
+	if(BEMF_time_cnt >= 1024){
 		BEMF_delay = BEMF_time_cnt/4;
 		BEMF_Angle += 60;
 		BEMF_cnt_sign = 1;
@@ -132,30 +133,30 @@ void BEMF_Observer_Block(){
 	if (BEMF_Angle >= 360) BEMF_Angle = 0;
 	Angle = BEMF_Angle;
 
-	Scan_Is_enabled = 1;
-	if (Scan_Is_enabled > 0){
-		Scan_iter += trace_num * 4;
-
-		Scan_Data[Scan_iter] = V_Floating/8;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin)*64;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = Step_Num * 16;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = BEMF_time_cnt;
-		Scan_iter ++ ;
-
-		Scan_iter += (MORE_TRACES-trace_num) * 4;
-		if (Scan_iter >= SCAN_SIZE) {
-			trace_num++;
-			if(trace_num > MORE_TRACES){
-				if(overflow == 0){
-					Scan_iter = 0;
-					trace_num = 0;
-				}else ;//Scan_Is_enabled = 0;
-			} else Scan_iter = 0;
-		}
-	}
+//	Scan_Is_enabled = 1;
+//	if (Scan_Is_enabled > 0){
+//		Scan_iter += trace_num * 4;
+//
+//		Scan_Data[Scan_iter] = V_Floating/8;
+//		Scan_iter ++ ;
+//		Scan_Data[Scan_iter] = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin)*64;
+//		Scan_iter ++ ;
+//		Scan_Data[Scan_iter] = Step_Num * 16;
+//		Scan_iter ++ ;
+//		Scan_Data[Scan_iter] = BEMF_time_cnt;
+//		Scan_iter ++ ;
+//
+//		Scan_iter += (MORE_TRACES-trace_num) * 4;
+//		if (Scan_iter >= SCAN_SIZE) {
+//			trace_num++;
+//			if(trace_num > MORE_TRACES){
+//				if(overflow == 0){
+//					Scan_iter = 0;
+//					trace_num = 0;
+//				}else ;//Scan_Is_enabled = 0;
+//			} else Scan_iter = 0;
+//		}
+//	}
 	// Do nothing if pwm is ste to 0
 	if(PWM_Value == 0){
 		Old_Cross = 0;
@@ -166,6 +167,9 @@ void BEMF_Observer_Block(){
 		V_Floating_Old = 0;
 		BEMF_delay = 32;
 	}
+	Ticks_Diff = htim1->Instance->CNT - Ticks;
+
+	Six_Step_Block(PWM_Value);
 }
 
 void Set_Observer_Div(uint8_t div){

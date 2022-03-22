@@ -69,31 +69,34 @@ void BEMF_Observer_Block(){
 	uint16_t V_Floating = ADC_data[0];
 	uint16_t V_DC = ADC_data[1];
 	uint16_t V_Floating_Diff = 4095;
+	uint8_t MeasEnabled = 0;
 // 0 Cross Detection Block
 	// differentiate BEMF to obtain value and sign of changes
 	V_Floating_Diff = (4095 + V_Floating) - V_Floating_Old;
-	V_Floating_Old = V_Floating;
 	if((Cross == 0) && (BEMF_cnt_sign == 1) && (BEMF_time_cnt > BEMF_delay)){
 		if((Step_Num == 1) || (Step_Num == 3) || (Step_Num == 5)){
 			// BEMF voltage will be decreasing -> '\'
-			if (V_Floating_Diff < 4095){
+			//if (V_Floating_Diff < 4095){
 				// If BEMF actually '\'
+
 				if (V_Floating < V_DC/2 ) Cross = 1;
-			}
+			//}
 		}else if((Step_Num == 2) || (Step_Num == 4) || (Step_Num == 6)){
 			// Bemf voltage will be increasing -> '/'
-			if (V_Floating_Diff > 4095){
+			//if (V_Floating_Diff > 4095){
 				// If BEMF actually '/'
+				//if (V_Floating > 0 && V_Floating_Old) BEMF_delay = BEMF_time_cnt * 1.5;
 				if (V_Floating > V_DC/2 ) Cross = 1;
-			}
+			//}
 		}
 	}
+	V_Floating_Old = V_Floating;
 // 0 Cross Counter Block
 	// Change counting sign when 0-cross is detected
 	if (Cross == 1) {
 		BEMF_cnt_sign = 0;
 		BEMF_delay = BEMF_time_cnt/4;
-		if(BEMF_delay > 32) BEMF_delay = 32;
+		//if(BEMF_delay > 32) BEMF_delay = 32;
 		Cross = 0;
 		BEMF_Angle += 30;
 		if (Div > 30) BEMF_Treshold = 0;
@@ -113,16 +116,23 @@ void BEMF_Observer_Block(){
 		BEMF_time_cnt = 0;
 	}
 	// Counter buffor reset before overflow
+	uint8_t overflow = 0;
 	if(BEMF_time_cnt >= 255){
 		BEMF_delay = BEMF_time_cnt/4;
 		BEMF_Angle += 60;
 		BEMF_cnt_sign = 1;
 		BEMF_time_cnt = 0;
+		// JEzeli overflow jest na poczatku saknu to reset
+		if( Scan_iter < SCAN_SIZE/2){
+			Scan_iter = 0;
+			trace_num = 0;
+		}else overflow = 1;
 	}
 	//Old_Step = Step_Num;
 	if (BEMF_Angle >= 360) BEMF_Angle = 0;
 	Angle = BEMF_Angle;
 
+	Scan_Is_enabled = 1;
 	if (Scan_Is_enabled > 0){
 		Scan_iter += trace_num * 4;
 
@@ -139,7 +149,10 @@ void BEMF_Observer_Block(){
 		if (Scan_iter >= SCAN_SIZE) {
 			trace_num++;
 			if(trace_num > MORE_TRACES){
-				Scan_Is_enabled = 0;
+				if(overflow == 0){
+					Scan_iter = 0;
+					trace_num = 0;
+				}else ;//Scan_Is_enabled = 0;
 			} else Scan_iter = 0;
 		}
 	}

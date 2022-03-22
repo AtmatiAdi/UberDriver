@@ -25,6 +25,7 @@ uint8_t step_delay = 255;	// (255+1)/32 = 8 times shorter t3 = (t1+t2)/8
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *_huart){
 	//HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 	HAL_UART_Receive_DMA(huart, rx_buffer, 3);		// Chcemy obierac dalej
+
 	HAL_UART_Transmit_DMA(huart, Rotations, 1);			// Odsylamy warrtosc obrotow
 	Rotations[0] = 0;										// resetujemy zmienna obrotow
 	// DONT UPDATE FUNCTION WHEN WE GET SPECIAL FUNCTION
@@ -35,6 +36,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *_huart){
 		Function = rx_buffer[0];
 		Power = rx_buffer[1];
 		step_delay = rx_buffer[2];
+		//if (Power > 64) HAL_NVIC_DisableIRQ(DMA1_Channel5_IRQn);
+
 	}
 	if ((Function == 0) || Power == 0){		// Zatrzymanie awaryjne
 		SetFloating_A();

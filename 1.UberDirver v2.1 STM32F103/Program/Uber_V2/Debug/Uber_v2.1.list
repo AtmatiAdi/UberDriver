@@ -3382,13 +3382,13 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
  8001522:	4b15      	ldr	r3, [pc, #84]	; (8001578 <HAL_ADC_MspInit+0xf8>)
  8001524:	2280      	movs	r2, #128	; 0x80
  8001526:	60da      	str	r2, [r3, #12]
-    hdma_adc1.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+    hdma_adc1.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
  8001528:	4b13      	ldr	r3, [pc, #76]	; (8001578 <HAL_ADC_MspInit+0xf8>)
- 800152a:	f44f 7280 	mov.w	r2, #256	; 0x100
+ 800152a:	f44f 7200 	mov.w	r2, #512	; 0x200
  800152e:	611a      	str	r2, [r3, #16]
-    hdma_adc1.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+    hdma_adc1.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
  8001530:	4b11      	ldr	r3, [pc, #68]	; (8001578 <HAL_ADC_MspInit+0xf8>)
- 8001532:	f44f 6280 	mov.w	r2, #1024	; 0x400
+ 8001532:	f44f 6200 	mov.w	r2, #2048	; 0x800
  8001536:	615a      	str	r2, [r3, #20]
     hdma_adc1.Init.Mode = DMA_CIRCULAR;
  8001538:	4b0f      	ldr	r3, [pc, #60]	; (8001578 <HAL_ADC_MspInit+0xf8>)

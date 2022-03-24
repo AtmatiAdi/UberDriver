@@ -65,44 +65,28 @@ uint16_t BEMF_delay = 32;
 uint16_t Angle = 0;
 //uint16_t Ticks_Diff = 0;
 void BEMF_Observer_Block(){
-	//uint16_t Ticks = htim1->Instance->CNT;
+	//HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 0);
 // Input Block
 	uint16_t V_Floating = ADC_data[0];
 	uint16_t V_DC = ADC_data[1];
-	//uint16_t V_Floating_Diff = 4095;
 // 0 Cross Detection Block
-	// differentiate BEMF to obtain value and sign of changes
-	//V_Floating_Diff = (4095 + V_Floating) - V_Floating_Old;
 	if((Cross == 0) && (BEMF_cnt_sign == 1) && (BEMF_time_cnt > BEMF_delay)){
 		if((Step_Num == 1) || (Step_Num == 3) || (Step_Num == 5)){
-			// BEMF voltage will be decreasing -> '\'
-			//if (V_Floating_Diff < 4095){
-				// If BEMF actually '\'
-
-				if (V_Floating < V_DC/2 ) Cross = 1;
-			//}
+			if (V_Floating < V_DC/2 ) Cross = 1;
 		}else if((Step_Num == 2) || (Step_Num == 4) || (Step_Num == 6)){
-			// Bemf voltage will be increasing -> '/'
-			//if (V_Floating_Diff > 4095){
-				// If BEMF actually '/'
-				//if (V_Floating > 0 && V_Floating_Old) BEMF_delay = BEMF_time_cnt * 1.5;
-				if (V_Floating > V_DC/2 ) Cross = 1;
-			//}
+			if (V_Floating > V_DC/2 ) Cross = 1;
 		}
 	}
-	//V_Floating_Old = V_Floating;
 // 0 Cross Counter Block
 	// Change counting sign when 0-cross is detected
 	if (Cross == 1) {
 		BEMF_cnt_sign = 0;
 		BEMF_delay = BEMF_time_cnt/4;
-		//if(BEMF_delay > 32) BEMF_delay = 32;
 		Cross = 0;
 		BEMF_Angle += 30;
 		if (Div > 30) BEMF_Treshold = 0;
 		else BEMF_Treshold = BEMF_time_cnt/Div;
 	}
-	//Old_Cross = Cross;
 	// Counter
 	if (BEMF_cnt_sign) {
 		BEMF_time_cnt ++;
@@ -123,10 +107,9 @@ void BEMF_Observer_Block(){
 		BEMF_time_cnt = 0;
 
 	}
-	//Old_Step = Step_Num;
 	if (BEMF_Angle >= 360) BEMF_Angle = 0;
 	Angle = BEMF_Angle;
-
+	// Scan functionality
 	if (Scan_Is_enabled > 0){
 		Scan_iter += trace_num * 4;
 
@@ -159,7 +142,7 @@ void BEMF_Observer_Block(){
 	}
 
 	Six_Step_Block(PWM_Value);
-	//Ticks_Diff = Ticks -  htim1->Instance->CNT;
+	//HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 1);
 }
 
 void Set_Observer_Div(uint8_t div){
@@ -283,6 +266,7 @@ void HALL_Observer_Block(){
 }
 
 void Six_Step_Block(uint16_t PWM_Value){
+
 	// Do nothing if pwm is ste to 0
 	if(PWM_Value == 0){
 		SetFloating_A();
@@ -327,6 +311,7 @@ void Six_Step_Block(uint16_t PWM_Value){
 		}
 		Old_Step = Step_Num;
 	}
+
 }
 
 uint16_t DupkoSin[360] = {553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,548,542,536,530,523,517,510,504,497,490,482,475,467,460,452,444,436,428,419,411,402,393,385,376,367,357,348,339,329,320,310,300,290,280,270,260,250,239,229,219,208,197,187,176,165,155,144,133,122,111,100,89,78,67,56,45,33,22,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,22,33,45,56,67,78,89,100,111,122,133,144,155,165,176,187,197,208,219,229,239,250,260,270,280,290,300,310,319,329,339,348,357,367,376,385,393,402,411,419,428,436,444,452,460,467,475,482,490,497,504,510,517,523,530,536,542,548};
@@ -653,17 +638,12 @@ void Hall_Change_Active(uint32_t pin){
 void ADC_Change_Order(uint32_t channel){
 	ADC_ChannelConfTypeDef sConfig = {0};
 	// Stop timer what triggers ADC conversions
-	HAL_TIM_PWM_Stop_IT(htim1, TIM_CHANNEL_3);
-	// Stop ADC DMA
-	HAL_ADC_Stop_DMA(hadc1);
+	HAL_TIM_PWM_Stop_IT(htim1, TIM_CHANNEL_3);	// 4us
 	// Change order of conversions
 	sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
 	sConfig.Rank = ADC_REGULAR_RANK_1;
 	sConfig.Channel = channel;
-
 	if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)  Error_Handler();
-	// Start ADC DMA
-	HAL_ADC_Start_DMA(hadc1, ADC_data, 2);
 	// Start timer what triggers ADC conversions
 	HAL_TIM_PWM_Start_IT(htim1, TIM_CHANNEL_3);
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, 1);
@@ -671,7 +651,7 @@ void ADC_Change_Order(uint32_t channel){
 	htim1->Instance->CNT = 0;
 	htim2->Instance->CNT = 0;
 	htim3->Instance->CNT = 0;
-	Hall_Change_Active(channel);
+	//Hall_Change_Active(channel);
 }
 
 uint32_t WaitOneStep(uint32_t LastTicks, float div){

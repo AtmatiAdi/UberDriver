@@ -610,6 +610,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : ENGATE_Pin */
   GPIO_InitStruct.Pin = ENGATE_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -630,11 +633,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(SPI_CS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : HALL_B_Pin HALL_A_Pin HALL_C_Pin */
-  GPIO_InitStruct.Pin = HALL_B_Pin|HALL_A_Pin|HALL_C_Pin;
+  /*Configure GPIO pins : HALL_B_Pin HALL_C_Pin */
+  GPIO_InitStruct.Pin = HALL_B_Pin|HALL_C_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : HALL_A_Pin */
+  GPIO_InitStruct.Pin = HALL_A_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(HALL_A_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure peripheral I/O remapping */
   __HAL_AFIO_REMAP_PD01_ENABLE();

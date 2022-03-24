@@ -23,9 +23,9 @@ uint8_t Rotations[1] = {0};
 uint8_t step_delay = 255;	// (255+1)/32 = 8 times shorter t3 = (t1+t2)/8
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *_huart){
-	//HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-	HAL_UART_Receive_DMA(huart, rx_buffer, 3);		// Chcemy obierac dalej
+	HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 0);
 
+	HAL_UART_Receive_DMA(huart, rx_buffer, 3);		// Chcemy obierac dalej
 	HAL_UART_Transmit_DMA(huart, Rotations, 1);			// Odsylamy warrtosc obrotow
 	Rotations[0] = 0;										// resetujemy zmienna obrotow
 	// DONT UPDATE FUNCTION WHEN WE GET SPECIAL FUNCTION
@@ -47,6 +47,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *_huart){
 	}else {
 		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
 	}
+
+	HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 1);
 }
 
 void Application_Init(UART_HandleTypeDef *_huart){
@@ -164,9 +166,9 @@ void NormalControl(){
 		//Function = rx_buffer[0];				// Zmiana funkcji jest mzliwa jedynie gdy silnik stoi
 	}else if(Function >= 64){					// Jezeli to funkcja z jakas wartoscia
 		//HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
-		uint16_t pwm = Power*3;
+		uint16_t pwm = Power*2;
 		if (pwm < 8) pwm = 8;				// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik
-		else if (pwm > (640-1)-8) pwm = (640-1);	// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik
+		else if (pwm > (512-1)-8) pwm = (512-1);	// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik
 
 //		if (IsRunning == 0){					// Startujemy
 //			int Speed;

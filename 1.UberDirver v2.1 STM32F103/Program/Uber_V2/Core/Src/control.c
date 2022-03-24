@@ -16,7 +16,7 @@ static TIM_HandleTypeDef *htim3;
 static TIM_HandleTypeDef *htim4;
 static ADC_HandleTypeDef *hadc1;
 
-uint16_t ADC_data[7] = {0,0,0,0,0,0,0};	// try 16bit
+uint32_t ADC_data[7] = {0,0,0,0,0,0,0};	// try 16bit
 uint16_t data_num = 0;
 uint8_t tim_num = 0;
 uint16_t Value = 8;
@@ -63,14 +63,13 @@ uint16_t BEMF_Treshold = 0;
 uint16_t PWM_Value = 0;
 uint16_t BEMF_delay = 32;
 uint16_t Angle = 0;
-uint16_t Ticks_Diff = 0;
+//uint16_t Ticks_Diff = 0;
 void BEMF_Observer_Block(){
-	uint16_t Ticks = htim1->Instance->CNT;
+	//uint16_t Ticks = htim1->Instance->CNT;
 // Input Block
 	uint16_t V_Floating = ADC_data[0];
 	uint16_t V_DC = ADC_data[1];
 	//uint16_t V_Floating_Diff = 4095;
-	uint8_t MeasEnabled = 0;
 // 0 Cross Detection Block
 	// differentiate BEMF to obtain value and sign of changes
 	//V_Floating_Diff = (4095 + V_Floating) - V_Floating_Old;
@@ -117,46 +116,37 @@ void BEMF_Observer_Block(){
 		BEMF_time_cnt = 0;
 	}
 	// Counter buffor reset before overflow
-	uint8_t overflow = 0;
 	if(BEMF_time_cnt >= 1024){
 		BEMF_delay = BEMF_time_cnt/4;
 		BEMF_Angle += 60;
 		BEMF_cnt_sign = 1;
 		BEMF_time_cnt = 0;
-		// JEzeli overflow jest na poczatku saknu to reset
-		if( Scan_iter < SCAN_SIZE/2){
-			Scan_iter = 0;
-			trace_num = 0;
-		}else overflow = 1;
+
 	}
 	//Old_Step = Step_Num;
 	if (BEMF_Angle >= 360) BEMF_Angle = 0;
 	Angle = BEMF_Angle;
 
-//	Scan_Is_enabled = 1;
-//	if (Scan_Is_enabled > 0){
-//		Scan_iter += trace_num * 4;
-//
-//		Scan_Data[Scan_iter] = V_Floating/8;
-//		Scan_iter ++ ;
-//		Scan_Data[Scan_iter] = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin)*64;
-//		Scan_iter ++ ;
-//		Scan_Data[Scan_iter] = Step_Num * 16;
-//		Scan_iter ++ ;
-//		Scan_Data[Scan_iter] = BEMF_time_cnt;
-//		Scan_iter ++ ;
-//
-//		Scan_iter += (MORE_TRACES-trace_num) * 4;
-//		if (Scan_iter >= SCAN_SIZE) {
-//			trace_num++;
-//			if(trace_num > MORE_TRACES){
-//				if(overflow == 0){
-//					Scan_iter = 0;
-//					trace_num = 0;
-//				}else ;//Scan_Is_enabled = 0;
-//			} else Scan_iter = 0;
-//		}
-//	}
+	if (Scan_Is_enabled > 0){
+		Scan_iter += trace_num * 4;
+
+		Scan_Data[Scan_iter] = V_Floating/8;
+		Scan_iter ++ ;
+		Scan_Data[Scan_iter] = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin)*64;
+		Scan_iter ++ ;
+		Scan_Data[Scan_iter] = Step_Num * 16;
+		Scan_iter ++ ;
+		Scan_Data[Scan_iter] = BEMF_time_cnt;
+		Scan_iter ++ ;
+
+		Scan_iter += (MORE_TRACES-trace_num) * 4;
+		if (Scan_iter >= SCAN_SIZE) {
+			trace_num++;
+			if(trace_num > MORE_TRACES){
+				Scan_Is_enabled = 0;
+			} else Scan_iter = 0;
+		}
+	}
 	// Do nothing if pwm is ste to 0
 	if(PWM_Value == 0){
 		Old_Cross = 0;
@@ -167,9 +157,9 @@ void BEMF_Observer_Block(){
 		V_Floating_Old = 0;
 		BEMF_delay = 32;
 	}
-	Ticks_Diff = htim1->Instance->CNT - Ticks;
 
 	Six_Step_Block(PWM_Value);
+	//Ticks_Diff = Ticks -  htim1->Instance->CNT;
 }
 
 void Set_Observer_Div(uint8_t div){
@@ -180,17 +170,44 @@ void Set_Observer_Div(uint8_t div){
 uint8_t Hall = 0;
 uint8_t OldHall = 0xff;			// Starting state
 uint8_t HALL_cnt_sign = 0;		// Starting state
-uint8_t HALL_time_cnt = 1;		// Starting state
-uint16_t HALL_Angle = 300;	// UWAZAC Z GOWNO PRZESUNIECIAMI
+uint16_t HALL_time_cnt = 1;		// Starting state
+uint16_t HALL_Angle = 0;	// UWAZAC Z GOWNO PRZESUNIECIAMI
 
-uint16_t First_Half_Upper = 0;
+uint16_t First_Half_Upper = 1;
 uint16_t Second_Half_Upper = 0;
 uint8_t Approx_Angle = 0;
 uint16_t HALL_Treshold = 0;
+uint8_t HALL_Is_Running = 0;
+uint16_t HALL_Angles[7] = {0,300,180,240,60,0,120};
+uint8_t HALL_Start_Pos = 0;
 
 void HALL_Observer_Block(){
-// Input Block
+	if(PWM_Value == 0){
+		HALL_Is_Running = 0;
+		OldHall = 0xff;
+		HALL_cnt_sign = 1;
+		HALL_time_cnt = 0;
+		First_Half_Upper = 0;
+		HALL_Angle = 0;	// UWAZAC Z GOWNO PRZESUNIECIAMI
+		DupkoSin_Block(PWM_Value);
+		return;
+	}
+	// Input Block
 	Hall = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin);
+	if (HALL_Is_Running == 0){
+		HALL_Is_Running = 1;
+		//OldHall = Hall;
+		HALL_Start_Pos = HAL_GPIO_ReadPin(HALL_A_GPIO_Port,HALL_A_Pin)
+						+ (HAL_GPIO_ReadPin(HALL_B_GPIO_Port,HALL_B_Pin) << 1)
+						+ (HAL_GPIO_ReadPin(HALL_C_GPIO_Port, HALL_C_Pin) << 2);
+		HALL_Angle = HALL_Angles[HALL_Start_Pos];
+		Angle = HALL_Angle;
+		HALL_cnt_sign = 1;
+		DupkoSin_Block(PWM_Value);	// it sets up hall pin
+		OldHall = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin);
+		return;
+	}
+
 // 0 Cross Counter Block
 	// Change counting sign when 0-cross is detected
 	if (Hall != OldHall){
@@ -216,31 +233,32 @@ void HALL_Observer_Block(){
 		HALL_time_cnt = 0;
 	}
 	// Counter buffor reset before overflow
-	if(HALL_time_cnt == 255){
-		HALL_Angle += 60;
+	if(HALL_time_cnt == 1024){
+//		HALL_Angle += 60;
 		HALL_cnt_sign = 1;
 		HALL_time_cnt = 0;
 		First_Half_Upper = 0;
+		HALL_Is_Running = 0;
+		return;
 	}
-	if(HALL_cnt_sign){
-		// cnt is increasing
-		Approx_Angle = ((uint16_t)(HALL_time_cnt)*30)/First_Half_Upper;
-		if(Approx_Angle > 30 ) Approx_Angle = 30;
-	}else{
-		// cnt is decreasing
-		Approx_Angle = ((uint16_t)(HALL_time_cnt-HALL_Treshold)*30)/Second_Half_Upper;
-		Approx_Angle = 30 - Approx_Angle;
+	if(First_Half_Upper){
+		if(HALL_cnt_sign){
+			// cnt is increasing
+			Approx_Angle = ((uint16_t)(HALL_time_cnt)*30)/First_Half_Upper;
+			if(Approx_Angle > 30 ) Approx_Angle = 30;
+		}else{
+			// cnt is decreasing
+			Approx_Angle = ((uint16_t)(HALL_time_cnt-HALL_Treshold)*30)/Second_Half_Upper;
+			Approx_Angle = 30 - Approx_Angle;
+		}
 	}
-//	if (Old_Step != Step_Num) {
-//		HALL_Angle += 30;
-//		HALL_cnt_sign = 1;
-//		HALL_time_cnt = 0;
-//	}
 
 	if(HALL_Angle >= 360) HALL_Angle = 0;
 	Angle = HALL_Angle + Approx_Angle;
 
 	if (Scan_Is_enabled > 0){
+		Scan_iter += trace_num * 4;
+
 		Scan_Data[Scan_iter] = Hall*64;
 		Scan_iter ++ ;
 		Scan_Data[Scan_iter] = Angle/2;
@@ -249,25 +267,19 @@ void HALL_Observer_Block(){
 		Scan_iter ++ ;
 		Scan_Data[Scan_iter] = HALL_time_cnt;
 		Scan_iter ++ ;
-		if (Scan_iter >= 4095) Scan_Is_enabled = 0;
 
-		Scan_Data[Scan_iter] = Hall*64;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = HALL_Angle/2;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = Step_Num * 30;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = HALL_time_cnt;
-		Scan_iter ++ ;
-		if (Scan_iter >= 4095) Scan_Is_enabled = 0;
+		Scan_iter += (MORE_TRACES-trace_num) * 4;
+		if (Scan_iter >= SCAN_SIZE) {
+			trace_num++;
+			if(trace_num > MORE_TRACES){
+				Scan_Is_enabled = 0;
+			} else Scan_iter = 0;
+		}
 	}
+
 	// Do nothing if pwm is ste to 0
-	if(PWM_Value == 0){
-		OldHall = 0xff;
-		HALL_cnt_sign = 0;
-		HALL_time_cnt = 1;
-		HALL_Angle = 300;	// UWAZAC Z GOWNO PRZESUNIECIAMI
-	}
+
+	DupkoSin_Block(PWM_Value);
 }
 
 void Six_Step_Block(uint16_t PWM_Value){
@@ -316,10 +328,11 @@ void Six_Step_Block(uint16_t PWM_Value){
 		Old_Step = Step_Num;
 	}
 }
+
 uint16_t DupkoSin[360] = {553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,548,542,536,530,523,517,510,504,497,490,482,475,467,460,452,444,436,428,419,411,402,393,385,376,367,357,348,339,329,320,310,300,290,280,270,260,250,239,229,219,208,197,187,176,165,155,144,133,122,111,100,89,78,67,56,45,33,22,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,22,33,45,56,67,78,89,100,111,122,133,144,155,165,176,187,197,208,219,229,239,250,260,270,280,290,300,310,319,329,339,348,357,367,376,385,393,402,411,419,428,436,444,452,460,467,475,482,490,497,504,510,517,523,530,536,542,548};
 uint16_t OldAngle = 0xffff;
 
-void Sin_Block(uint16_t PWM_Value){
+void DupkoSin_Block(uint16_t PWM_Value){
 	uint16_t tmpAngle = 0;
 	// REMEMBER THAT MAXIMUM PWM VALUE IS 640
 	if(PWM_Value == 0){
@@ -805,11 +818,11 @@ void Delay_Tick(uint32_t val){
 }
 
 void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim){
-	uint8_t test = __HAL_TIM_GET_COUNTER(htim1);
-	if(htim->Instance == TIM1){
-		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3){
-			test = __HAL_TIM_GET_COUNTER(htim1);
-			test = __HAL_TIM_GET_COUNTER(htim1);
-		}
-	}
+	//uint8_t test = __HAL_TIM_GET_COUNTER(htim1);
+//	if(htim->Instance == TIM1){
+//		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3){
+//			test = __HAL_TIM_GET_COUNTER(htim1);
+//			test = __HAL_TIM_GET_COUNTER(htim1);
+//		}
+//	}
 }

@@ -63,7 +63,7 @@ void Delay_20us(uint32_t ticks);
 void BEMF_Observer_Block();
 void HALL_Observer_Block();
 void Six_Step_Block(uint16_t PWM_Value);
-void Sin_Block(uint16_t PWM_Value);
+void DupkoSin_Block(uint16_t PWM_Value);
 void Set_PWM(uint16_t value);
 void Set_Observer_Div(uint8_t div);
 void EnableScan();

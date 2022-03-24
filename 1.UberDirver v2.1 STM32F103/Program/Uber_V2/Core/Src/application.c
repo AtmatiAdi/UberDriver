@@ -43,6 +43,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *_huart){
 		SetFloating_A();
 		SetFloating_B();
 		SetFloating_C();
+		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
+	}else {
+		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
 	}
 }
 
@@ -150,17 +153,17 @@ void CollectData(){
 void NormalControl(){
 	if(Power == 0){								// wartosc = 0, stop
 		Set_PWM(0);
-		Six_Step_Block(0);
-		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
-		SetFloating_A();
-		SetFloating_B();
-		SetFloating_C();
+		//Six_Step_Block(0);
+		//HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
+//		SetFloating_A();
+//		SetFloating_B();
+//		SetFloating_C();
 		IsRunning = 0;
 		Rotations[0] = 0;
 		ticks = MIN_TICKS;
 		//Function = rx_buffer[0];				// Zmiana funkcji jest mzliwa jedynie gdy silnik stoi
 	}else if(Function >= 64){					// Jezeli to funkcja z jakas wartoscia
-		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
+		//HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
 		uint16_t pwm = Power*3;
 		if (pwm < 8) pwm = 8;				// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik
 		else if (pwm > (640-1)-8) pwm = (640-1);	// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik

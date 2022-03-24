@@ -118,7 +118,7 @@ int main(void)
 
 	//HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, 0);
 
-	DRV_Init(hspi1);
+	DRV_Init(&hspi1);
 	//DRV_Write(SHUNT_AMPLIFIER_CONTROL,
 	//		(GAIN_CS1 & 0xffff) +
 	//		(GAIN_CS2 & 0xffff) +
@@ -132,7 +132,6 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
 while (1){
 	Application_Update();
     /* USER CODE END WHILE */

@@ -10,10 +10,10 @@
 #define SCOTTER_PROGRAM  	0
 #define NORMAL_CONTROL	 	1
 
-static UART_HandleTypeDef *huart;
+//static UART_HandleTypeDef *huart;
 uint8_t rx_buffer[3] = {0,0,0};
 uint8_t Function = 0;
-uint8_t Power = 0;
+uint16_t Power = 0;
 uint32_t Speed = 0x0007ffff;
 uint8_t Break = 0;
 uint8_t IsRunning = 0;
@@ -22,40 +22,74 @@ uint16_t ticks = MIN_TICKS;
 uint8_t Rotations[1] = {0};
 uint8_t step_delay = 255;	// (255+1)/32 = 8 times shorter t3 = (t1+t2)/8
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *_huart){
-	HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 0);
-
-	HAL_UART_Receive_DMA(huart, rx_buffer, 3);		// Chcemy obierac dalej
-	HAL_UART_Transmit_DMA(huart, Rotations, 1);			// Odsylamy warrtosc obrotow
-	Rotations[0] = 0;										// resetujemy zmienna obrotow
-	// DONT UPDATE FUNCTION WHEN WE GET SPECIAL FUNCTION
-	if(rx_buffer[0] == SCAN_ONE_VARIABLE){
-		EnableScan();
-	} else
-	{
-		Function = rx_buffer[0];
-		Power = rx_buffer[1];
-		step_delay = rx_buffer[2];
-		//if (Power > 64) HAL_NVIC_DisableIRQ(DMA1_Channel5_IRQn);
-
+//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *_huart){
+//	HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 0);
+//
+//	HAL_UART_Receive_DMA(huart, rx_buffer, 3);		// Chcemy obierac dalej
+//	HAL_UART_Transmit_DMA(huart, Rotations, 1);			// Odsylamy warrtosc obrotow
+//	Rotations[0] = 0;										// resetujemy zmienna obrotow
+//	// DONT UPDATE FUNCTION WHEN WE GET SPECIAL FUNCTION
+//	if(rx_buffer[0] == SCAN_ONE_VARIABLE){
+//		EnableScan();
+//	} else
+//	{
+//		Function = rx_buffer[0];
+//		Power = rx_buffer[1];
+//		step_delay = rx_buffer[2];
+//		//if (Power > 64) HAL_NVIC_DisableIRQ(DMA1_Channel5_IRQn);
+//
+//	}
+//	if ((Function == 0) || Power == 0){		// Zatrzymanie awaryjne
+//		SetFloating_A();
+//		SetFloating_B();
+//		SetFloating_C();
+//		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
+//	}else {
+//		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
+//	}
+//
+//	HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 1);
+//}
+uint16_t T_PWM = 0;
+uint16_t T_Low = 0;
+uint16_t T_Min = 0;
+uint16_t T_Power = 0;
+uint16_t Old_Power = 0;
+//uint16_t Frequency = 0;
+//float Duty = 0;
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim){			// {5.2us - 4.0us}
+	//HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 0);			// 330ns
+	if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2){					// 170ns
+		T_PWM = htim->Instance->CCR2;								// 280ns
+		T_Low = htim->Instance->CCR1;								// 280ns
+		if (T_PWM != 0){											// {2.1us}
+			T_Min = T_PWM/20; // Czas wartosci minimalnej
+			T_Power = (T_PWM - T_Low) - T_Min;
+			if (T_Power > T_Min) T_Power = T_Min;
+			Power = (511*T_Power)/T_Min;
+			Function = 64;
+		}
 	}
-	if ((Function == 0) || Power == 0){		// Zatrzymanie awaryjne
+	if (Power == 0){		// Zatrzymanie awaryjne
+		Old_Power = 0;
 		SetFloating_A();
 		SetFloating_B();
 		SetFloating_C();
-		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
 	}else {
+		if (Old_Power == 0){
+			Old_Power = Power;
+			Power = 0;
+		}
 		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
 	}
-
-	HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 1);
+	//HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 1);			// 330ns
 }
 
-void Application_Init(UART_HandleTypeDef *_huart){
-	//memcpy(&huart, &_huart, sizeof(_huart)); // This shit does not work
-	huart = _huart;
-	HAL_UART_Receive_DMA(huart, rx_buffer, 3);
-}
+//void Application_Init(UART_HandleTypeDef *_huart){
+//	//memcpy(&huart, &_huart, sizeof(_huart)); // This shit does not work
+//	huart = _huart;
+//	HAL_UART_Receive_DMA(huart, rx_buffer, 3);
+//}
 
 void ScotterProgram(){
 	Break = 0;
@@ -156,19 +190,19 @@ void NormalControl(){
 	if(Power == 0){								// wartosc = 0, stop
 		Set_PWM(0);
 		//Six_Step_Block(0);
-		//HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
-//		SetFloating_A();
-//		SetFloating_B();
-//		SetFloating_C();
+		HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
+		SetFloating_A();
+		SetFloating_B();
+		SetFloating_C();
 		IsRunning = 0;
 		Rotations[0] = 0;
 		ticks = MIN_TICKS;
 		//Function = rx_buffer[0];				// Zmiana funkcji jest mzliwa jedynie gdy silnik stoi
 	}else if(Function >= 64){					// Jezeli to funkcja z jakas wartoscia
 		//HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
-		uint16_t pwm = Power*2;
+		uint16_t pwm = Power;				// It should be scalled from communication block
 		if (pwm < 8) pwm = 8;				// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik
-		else if (pwm > (512-1)-8) pwm = (512-1);	// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik
+		else if (pwm > (511)-8) pwm = (511);	// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik
 
 //		if (IsRunning == 0){					// Startujemy
 //			int Speed;
@@ -262,7 +296,7 @@ void NormalControl(){
 		ticks = MIN_TICKS;
 	}
 	if (IsScanReady() == 1){
-		HAL_UART_Transmit_DMA(huart, GetScanData(), SCAN_SIZE);
+		//HAL_UART_Transmit_DMA(huart, GetScanData(), SCAN_SIZE);
 	}
 }
 

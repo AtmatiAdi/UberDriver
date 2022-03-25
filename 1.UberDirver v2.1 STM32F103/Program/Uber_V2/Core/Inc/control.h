@@ -57,7 +57,7 @@ uint32_t WaitForCross2(uint8_t num, uint8_t val);
 uint32_t WaitForCross(uint8_t num, uint8_t val);
 uint32_t WaitOneStep(uint32_t LastTicks, float div);
 uint32_t HALL_WaitOneStep(uint32_t BeforeCross_Ticks, float div);
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
+//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 void Delay_Tick(uint32_t val);
 void Delay_20us(uint32_t ticks);
 void BEMF_Observer_Block();

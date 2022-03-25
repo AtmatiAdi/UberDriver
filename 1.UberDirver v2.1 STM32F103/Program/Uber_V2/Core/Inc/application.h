@@ -23,7 +23,7 @@
 
 #define SCAN_ONE_VARIABLE               80    // 16
 
-void Application_Init(UART_HandleTypeDef *_huart);
+//void Application_Init(UART_HandleTypeDef *_huart);
 void CollectData();
 void ScotterProgram();
 void NormalControl();

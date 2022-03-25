@@ -64,8 +64,8 @@ uint16_t PWM_Value = 0;
 uint16_t BEMF_delay = 32;
 uint16_t Angle = 0;
 //uint16_t Ticks_Diff = 0;
-void BEMF_Observer_Block(){
-	//HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 0);
+void BEMF_Observer_Block(){										// {7.4us}
+	//HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 0);			// 330ns
 // Input Block
 	uint16_t V_Floating = ADC_data[0];
 	uint16_t V_DC = ADC_data[1];
@@ -140,9 +140,9 @@ void BEMF_Observer_Block(){
 		V_Floating_Old = 0;
 		BEMF_delay = 32;
 	}
-
+	//HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 1);			// 330ns
 	Six_Step_Block(PWM_Value);
-	//HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 1);
+
 }
 
 void Set_Observer_Div(uint8_t div){
@@ -276,6 +276,9 @@ void Six_Step_Block(uint16_t PWM_Value){
 		Old_Step = 0;
 		return;
 	}
+										// {16.6us - 0.9us}
+	//HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 0);			// 330ns
+	__disable_irq();
 	Step_Num = (Angle/60)+1;
 	if(Step_Num != Old_Step){
 		if(Step_Num == 1){
@@ -311,6 +314,8 @@ void Six_Step_Block(uint16_t PWM_Value){
 		}
 		Old_Step = Step_Num;
 	}
+	__enable_irq();
+	//HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 1);			// 330ns
 
 }
 
@@ -636,22 +641,32 @@ void Hall_Change_Active(uint32_t pin){
 }
 
 void ADC_Change_Order(uint32_t channel){
+	HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 0);			// 330ns
+	//__disable_irq();
+
 	ADC_ChannelConfTypeDef sConfig = {0};
+
 	// Stop timer what triggers ADC conversions
 	HAL_TIM_PWM_Stop_IT(htim1, TIM_CHANNEL_3);	// 4us
+
 	// Change order of conversions
 	sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
 	sConfig.Rank = ADC_REGULAR_RANK_1;
 	sConfig.Channel = channel;
 	if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)  Error_Handler();
+
 	// Start timer what triggers ADC conversions
 	HAL_TIM_PWM_Start_IT(htim1, TIM_CHANNEL_3);
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, 1);
+
 	// Timers synchonisation
 	htim1->Instance->CNT = 0;
 	htim2->Instance->CNT = 0;
 	htim3->Instance->CNT = 0;
 	//Hall_Change_Active(channel);
+
+	//__enable_irq();
+	HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 1);			// 330ns
 }
 
 uint32_t WaitOneStep(uint32_t LastTicks, float div){

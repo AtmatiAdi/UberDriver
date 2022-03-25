@@ -66,7 +66,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim){			// {5.2us - 4.0us}
 			T_Min = T_PWM/20; // Czas wartosci minimalnej
 			T_Power = (T_PWM - T_Low) - T_Min;
 			if (T_Power > T_Min) T_Power = T_Min;
-			Power = (511*T_Power)/T_Min;
+			Power = (255*T_Power)/T_Min;
 			Function = 64;
 		}
 	}
@@ -201,8 +201,10 @@ void NormalControl(){
 	}else if(Function >= 64){					// Jezeli to funkcja z jakas wartoscia
 		//HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
 		uint16_t pwm = Power;				// It should be scalled from communication block
-		if (pwm < 8) pwm = 8;				// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik
-		else if (pwm > (511)-8) pwm = (511);	// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik
+		if (pwm < 8) pwm = 0;
+		else pwm += 256;
+		//else if (pwm < 256) pwm = 256;				// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik
+		//else if (pwm > (511)-8) pwm = (511);	// Zabezpieczenie by nie dac sygnalo krotszego niz obsluguje sterownik
 
 //		if (IsRunning == 0){					// Startujemy
 //			int Speed;

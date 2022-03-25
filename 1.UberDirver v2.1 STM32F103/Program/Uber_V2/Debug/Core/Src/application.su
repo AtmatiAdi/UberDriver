@@ -2,5 +2,5 @@ application.c:60:6:HAL_TIM_IC_CaptureCallback	16	static
 application.c:94:6:ScotterProgram	8	static
 application.c:154:6:CollectData	16	static
 application.c:189:6:NormalControl	16	static
-application.c:303:6:Application_Update	8	static
-application.c:307:6:Test_Sequence_01	24	static
+application.c:305:6:Application_Update	8	static
+application.c:309:6:Test_Sequence_01	24	static

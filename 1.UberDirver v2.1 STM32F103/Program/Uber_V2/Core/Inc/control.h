@@ -36,6 +36,7 @@ void Control_Init(
 		TIM_HandleTypeDef *_htim3,
 		TIM_HandleTypeDef *_htim4,
 		ADC_HandleTypeDef *_hadc1);
+
 void SetZero_A();
 void SetZero_B();
 void SetZero_C();
@@ -45,25 +46,13 @@ void SetPulse_CH(uint16_t value);
 void SetFloating_A();
 void SetFloating_B();
 void SetFloating_C();
-void SixStep(uint32_t Speed, uint16_t Value);
-void SixStep_rev(uint32_t Speed, uint16_t Value);
-uint32_t WaitForCross(uint8_t num, uint8_t val);
-uint32_t WaitForCross2(uint8_t num, uint8_t val);
-uint32_t WaitForHall(uint8_t compare);
-uint32_t WaitForBemf(uint8_t compare);
-uint32_t BEMF_SixStep(uint16_t Value, uint32_t BeforeCross_Ticks, float ticks);
-uint32_t HALL_SixStep(uint16_t Value, uint32_t BeforeCross_Ticks, float div);
-uint32_t WaitForCross2(uint8_t num, uint8_t val);
-uint32_t WaitForCross(uint8_t num, uint8_t val);
-uint32_t WaitOneStep(uint32_t LastTicks, float div);
-uint32_t HALL_WaitOneStep(uint32_t BeforeCross_Ticks, float div);
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
-void Delay_Tick(uint32_t val);
-void Delay_20us(uint32_t ticks);
+
 void BEMF_Observer_Block();
 void HALL_Observer_Block();
+
 void Six_Step_Block(uint16_t PWM_Value);
 void DupkoSin_Block(uint16_t PWM_Value);
+
 void Set_PWM(uint16_t value);
 void Set_Observer_Div(uint8_t div);
 void EnableScan();

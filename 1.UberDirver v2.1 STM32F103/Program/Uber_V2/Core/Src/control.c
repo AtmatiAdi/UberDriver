@@ -33,6 +33,57 @@ uint32_t Step_Ticks = 0;
 GPIO_TypeDef* Hall_GPIO_Port = HALL_A_GPIO_Port;
 uint16_t Hall_GPIO_Pin = HALL_A_Pin;
 
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
+	//BEMF_Observer_Block();
+	HALL_Observer_Block();
+
+	ADC_Ticks ++;
+}
+
+void Control_Init(
+		TIM_HandleTypeDef *_htim1,
+		TIM_HandleTypeDef *_htim2,
+		TIM_HandleTypeDef *_htim3,
+		TIM_HandleTypeDef *_htim4,
+		ADC_HandleTypeDef *_hadc1){
+	htim1 = _htim1;
+	htim2 = _htim2;
+	htim3 = _htim3;
+	htim4 = _htim4;
+	hadc1 = _hadc1;
+
+	// Disable gate driver output
+	HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
+
+	// Timer for precise time counting
+	HAL_TIM_Base_Start(htim4);
+
+	// Timers for mosfet control
+	HAL_TIM_PWM_Start(htim2, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(htim2, TIM_CHANNEL_2); 	// LOW POLARITY
+	HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_2);	// LOW POLARITY
+	HAL_TIM_PWM_Start(htim1, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(htim1, TIM_CHANNEL_1);  	// LOW POLARITY
+
+	// Timer for ADC releasing
+	HAL_TIM_PWM_Start(htim1, TIM_CHANNEL_3);
+
+	// Control timers basic synchronisation
+	//htim1->Instance->CNT = 0;
+	//htim2->Instance->CNT = 0;
+	//htim3->Instance->CNT = 0;
+
+
+	// ADC and Timer Configuration
+	HAL_ADC_Start_DMA(hadc1, ADC_data, 2);
+	HAL_TIM_PWM_Start_IT(htim1, TIM_CHANNEL_3);
+	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, 1);
+
+
+	HAL_Delay(1);
+}
+
 void EnableScan(){
 	Scan_Is_enabled = 1;
 }
@@ -382,56 +433,7 @@ void Set_PWM(uint16_t value){
 	PWM_Value = value;
 }
 
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
-	BEMF_Observer_Block();
-	//HALL_Observer_Block();
 
-	ADC_Ticks ++;
-}
-
-void Control_Init(
-		TIM_HandleTypeDef *_htim1,
-		TIM_HandleTypeDef *_htim2,
-		TIM_HandleTypeDef *_htim3,
-		TIM_HandleTypeDef *_htim4,
-		ADC_HandleTypeDef *_hadc1){
-	htim1 = _htim1;
-	htim2 = _htim2;
-	htim3 = _htim3;
-	htim4 = _htim4;
-	hadc1 = _hadc1;
-
-	// Disable gate driver output
-	HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
-
-	// Timer for precise time counting
-	HAL_TIM_Base_Start(htim4);
-
-	// Timers for mosfet control
-	HAL_TIM_PWM_Start(htim2, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Start(htim2, TIM_CHANNEL_2); 	// LOW POLARITY
-	HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_2);	// LOW POLARITY
-	HAL_TIM_PWM_Start(htim1, TIM_CHANNEL_2);
-	HAL_TIM_PWM_Start(htim1, TIM_CHANNEL_1);  	// LOW POLARITY
-
-	// Timer for ADC releasing
-	HAL_TIM_PWM_Start(htim1, TIM_CHANNEL_3);
-
-	// Control timers basic synchronisation
-	//htim1->Instance->CNT = 0;
-	//htim2->Instance->CNT = 0;
-	//htim3->Instance->CNT = 0;
-
-
-	// ADC and Timer Configuration
-	HAL_ADC_Start_DMA(hadc1, ADC_data, 2);
-	HAL_TIM_PWM_Start_IT(htim1, TIM_CHANNEL_3);
-	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, 1);
-
-
-	HAL_Delay(1);
-}
 
 void SetZero_A(){
 	__HAL_TIM_SET_COMPARE(htim2, TIM_CHANNEL_1, 0);
@@ -487,156 +489,6 @@ void SetFloating_C(){
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_1, PWM_COUNTER);
 }
 
-void SixStep(uint32_t Speed, uint16_t Value){
-	// 1
-	SetPulse_AH(Value);
-	SetZero_B();
-	SetFloating_C();
-	Delay_Tick(Speed);
-	//data[ data_num-1] = 0;
-	//2
-	SetPulse_AH(Value);
-	SetFloating_B();
-	SetZero_C();
-	Delay_Tick(Speed);
-	//data[ data_num-1] = 0;
-	//3
-	SetFloating_A();
-	SetPulse_BH(Value);
-	SetZero_C();
-	Delay_Tick(Speed);
-	//data[ data_num-1] = 0;
-	//4
-	SetZero_A();
-	SetPulse_BH(Value);
-	SetFloating_C();
-	Delay_Tick(Speed);
-	//data[ data_num-1] = 0;
-	//5
-	SetZero_A();
-	SetFloating_B();
-	SetPulse_CH(Value);
-	Delay_Tick(Speed);
-	//data[ data_num-1] = 0;
-	//6
-	SetFloating_A();
-	SetZero_B();
-	SetPulse_CH(Value);
-	Delay_Tick(Speed);
-	//data[ data_num-1] = 0;
-}
-
-void SixStep_rev(uint32_t Speed, uint16_t Value){
-	// 1
-	SetPulse_CH(Value);
-	SetZero_B();
-	SetFloating_A();
-	Delay_Tick(Speed);
-	//data[ data_num-1] = 0;
-	//2
-	SetPulse_CH(Value);
-	SetFloating_B();
-	SetZero_A();
-	Delay_Tick(Speed);
-	//data[ data_num-1] = 0;
-	//3
-	SetFloating_C();
-	SetPulse_BH(Value);
-	SetZero_A();
-	Delay_Tick(Speed);
-	//data[ data_num-1] = 0;
-	//4
-	SetZero_C();
-	SetPulse_BH(Value);
-	SetFloating_A();
-	Delay_Tick(Speed);
-	//data[ data_num-1] = 0;
-	//5
-	SetZero_C();
-	SetFloating_B();
-	SetPulse_AH(Value);
-	Delay_Tick(Speed);
-	//data[ data_num-1] = 0;
-	//6
-	SetFloating_C();
-	SetZero_B();
-	SetPulse_AH(Value);
-	Delay_Tick(Speed);
-	//data[ data_num-1] = 0;
-}
-
-uint32_t WaitForCross(uint8_t num, uint8_t val){
-	__HAL_TIM_SET_COUNTER(htim4,0);
-	uint32_t ret_val = 0;
-
-	while(ADC_data[num] > val+ADC_data[1]/2){
-		if (__HAL_TIM_GET_COUNTER(htim4) > 0x7fff){
-			ret_val += __HAL_TIM_GET_COUNTER(htim4);
-			__HAL_TIM_SET_COUNTER(htim4,0);
-		}
-		if((ret_val + __HAL_TIM_GET_COUNTER(htim4) ) > MAX_TICKS){
-			break;
-		}
-	}
-
-	ret_val += __HAL_TIM_GET_COUNTER(htim4);
-	return ret_val;
-}
-
-uint32_t WaitForCross2(uint8_t num, uint8_t val){
-	__HAL_TIM_SET_COUNTER(htim4,0);
-	uint32_t ret_val = 0;
-
-	while(ADC_data[num] < val+ADC_data[1]/2){
-		if (__HAL_TIM_GET_COUNTER(htim4) > 0x7fff){
-			ret_val += __HAL_TIM_GET_COUNTER(htim4);
-			__HAL_TIM_SET_COUNTER(htim4,0);
-		}
-		if((ret_val + __HAL_TIM_GET_COUNTER(htim4) ) > MAX_TICKS){
-			break;
-		}
-	}
-
-	ret_val += __HAL_TIM_GET_COUNTER(htim4);
-	return ret_val;
-}
-
-uint32_t WaitForHall(uint8_t compare){
-	ADC_Ticks = 0;
-
-	while(Hall == compare){
-		if(ADC_Ticks >= MAX_ADC_TICKS){
-			return ADC_Ticks;
-		}
-	}
-	return ADC_Ticks;
-}
-
-
-uint32_t WaitForBemf(uint8_t compare){
-	ADC_Ticks = 0;
-	if (compare == 0){
-		while(ADC_data[0] > ADC_data[1]){
-			if(ADC_Ticks >= MAX_ADC_TICKS){
-				return ADC_Ticks;
-			}
-		}
-	}else {
-		while(ADC_data[0] < ADC_data[1]){
-			if(ADC_Ticks >= MAX_ADC_TICKS){
-				return ADC_Ticks;
-			}
-		}
-	}
-	return ADC_Ticks;
-}
-
-void Delay_20us(uint32_t ticks){
-	ADC_Ticks = 0;
-	while (ADC_Ticks <= ticks){}
-}
-
-
 void Hall_Change_Active(uint32_t pin){
 	if (pin == ADC_CHANNEL_A){
 		Hall_GPIO_Port = HALL_A_GPIO_Port;
@@ -674,155 +526,6 @@ void ADC_Change_Order(uint32_t channel){
 	Hall_Change_Active(channel);
 }
 
-uint32_t WaitOneStep(uint32_t LastTicks, float div){
-	float ticks = 0;
-	ticks = LastTicks/8;	// 1/4
-	Delay_Tick(ticks);
 
-	ADC_Meas_Enabled = 1;
-	if ((Step_Num == 1) || (Step_Num == 3) || (Step_Num == 5)) ticks += WaitForCross(0,0);
-	else ticks += WaitForCross2(0,0);
-	ADC_Meas_Enabled = 0;
 
-	if (div < 10 ) Delay_Tick(ticks/(float)div);
-	ticks += ticks/(float)div;
-	return ticks;
-}
 
-uint32_t HALL_WaitOneStep(uint32_t BeforeCross_Ticks, float div){
-	if  ((Step_Num == 1) || (Step_Num == 3) || (Step_Num == 5)) BeforeCross_Ticks += WaitForHall(1);
-	else BeforeCross_Ticks += WaitForHall(0);
-	BeforeCross_Ticks /= 2;
-	if (div < 30 ) AfterCross_Ticks = BeforeCross_Ticks/div;
-	else AfterCross_Ticks = 0;
-	Step_Ticks = BeforeCross_Ticks + AfterCross_Ticks;
-	Delay_20us(AfterCross_Ticks);
-	return BeforeCross_Ticks;
-}
-
-uint32_t HALL_SixStep(uint16_t Value, uint32_t BeforeCross_Ticks, float div){
-	if (div < 1) div = 1;
-	////////////////////////////////////////////////////////// 1
-	SetPulse_CH(Value);
-	SetZero_B();
-	SetFloating_A();
-	ADC_Change_Order(ADC_CHANNEL_A);
-	Step_Num = 1;
-
-	BeforeCross_Ticks = HALL_WaitOneStep(BeforeCross_Ticks, div);
-	////////////////////////////////////////////////////////// 2
-	SetPulse_CH(Value);
-	SetFloating_B();
-	SetZero_A();
-	ADC_Change_Order(ADC_CHANNEL_B);
-	Step_Num = 2;
-
-	BeforeCross_Ticks = HALL_WaitOneStep(BeforeCross_Ticks, div);
-	////////////////////////////////////////////////////////// 3
-	SetFloating_C();
-	SetPulse_BH(Value);
-	SetZero_A();
-	ADC_Change_Order(ADC_CHANNEL_C);
-	Step_Num = 3;
-
-	BeforeCross_Ticks = HALL_WaitOneStep(BeforeCross_Ticks, div);
-	////////////////////////////////////////////////////////// 4
-	SetZero_C();
-	SetPulse_BH(Value);
-	SetFloating_A();
-	ADC_Change_Order(ADC_CHANNEL_A);
-	Step_Num = 4;
-
-	BeforeCross_Ticks = HALL_WaitOneStep(BeforeCross_Ticks, div);
-	////////////////////////////////////////////////////////// 5
-	SetZero_C();
-	SetFloating_B();
-	SetPulse_AH(Value);
-	ADC_Change_Order(ADC_CHANNEL_B);
-	Step_Num = 5;
-
-	BeforeCross_Ticks = HALL_WaitOneStep(BeforeCross_Ticks, div);
-	////////////////////////////////////////////////////////// 6
-	SetFloating_C();
-	SetZero_B();
-	SetPulse_AH(Value);
-	ADC_Change_Order(ADC_CHANNEL_C);
-	Step_Num = 6;
-
-	BeforeCross_Ticks = HALL_WaitOneStep(BeforeCross_Ticks, div);
-	return BeforeCross_Ticks;
-}
-
-uint32_t BEMF_SixStep(uint16_t Value, uint32_t BeforeCross_Ticks, float div){
-	if (div < 1) div = 1;
-	////////////////////////////////////////////////////////// 1
-	SetPulse_CH(Value);
-	SetZero_B();
-	SetFloating_A();
-	ADC_Change_Order(ADC_CHANNEL_A);
-	Step_Num = 1;
-
-	BeforeCross_Ticks = WaitOneStep(BeforeCross_Ticks, div);
-	////////////////////////////////////////////////////////// 2
-	SetPulse_CH(Value);
-	SetFloating_B();
-	SetZero_A();
-	ADC_Change_Order(ADC_CHANNEL_B);
-	Step_Num = 2;
-
-	BeforeCross_Ticks = WaitOneStep(BeforeCross_Ticks, div);
-	////////////////////////////////////////////////////////// 3
-	SetFloating_C();
-	SetPulse_BH(Value);
-	SetZero_A();
-	ADC_Change_Order(ADC_CHANNEL_C);
-	Step_Num = 3;
-
-	BeforeCross_Ticks = WaitOneStep(BeforeCross_Ticks, div);
-	////////////////////////////////////////////////////////// 4
-	SetZero_C();
-	SetPulse_BH(Value);
-	SetFloating_A();
-	ADC_Change_Order(ADC_CHANNEL_A);
-	Step_Num = 4;
-
-	BeforeCross_Ticks = WaitOneStep(BeforeCross_Ticks, div);
-	////////////////////////////////////////////////////////// 5
-	SetZero_C();
-	SetFloating_B();
-	SetPulse_AH(Value);
-	ADC_Change_Order(ADC_CHANNEL_B);
-	Step_Num = 5;
-
-	BeforeCross_Ticks = WaitOneStep(BeforeCross_Ticks, div);
-	////////////////////////////////////////////////////////// 6
-	SetFloating_C();
-	SetZero_B();
-	SetPulse_AH(Value);
-	ADC_Change_Order(ADC_CHANNEL_C);
-	Step_Num = 6;
-
-	BeforeCross_Ticks = WaitOneStep(BeforeCross_Ticks, div);
-	return BeforeCross_Ticks;
-}
-
-void Delay_Tick(uint32_t val){
-	__HAL_TIM_SET_COUNTER(htim4,0);
-	if (val > MAX_TICKS) val = MAX_TICKS;
-	while(val > 0x00007fff){
-		val -= 0x00007fff;
-		while(__HAL_TIM_GET_COUNTER(htim4) < 0x7fff);
-		__HAL_TIM_SET_COUNTER(htim4,0);
-	}
-	while(__HAL_TIM_GET_COUNTER(htim4) < val);
-}
-
-void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim){
-	//uint8_t test = __HAL_TIM_GET_COUNTER(htim1);
-//	if(htim->Instance == TIM1){
-//		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3){
-//			test = __HAL_TIM_GET_COUNTER(htim1);
-//			test = __HAL_TIM_GET_COUNTER(htim1);
-//		}
-//	}
-}

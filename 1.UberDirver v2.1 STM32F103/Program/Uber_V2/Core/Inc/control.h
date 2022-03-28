@@ -35,7 +35,8 @@ void Control_Init(
 		TIM_HandleTypeDef *_htim2,
 		TIM_HandleTypeDef *_htim3,
 		TIM_HandleTypeDef *_htim4,
-		ADC_HandleTypeDef *_hadc1);
+		ADC_HandleTypeDef *_hadc1,
+		ADC_HandleTypeDef *_hadc2);
 
 void SetZero_A();
 void SetZero_B();

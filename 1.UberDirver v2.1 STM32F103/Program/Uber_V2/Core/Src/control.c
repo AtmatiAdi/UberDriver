@@ -15,8 +15,10 @@ static TIM_HandleTypeDef *htim2;
 static TIM_HandleTypeDef *htim3;
 static TIM_HandleTypeDef *htim4;
 static ADC_HandleTypeDef *hadc1;
+static ADC_HandleTypeDef *hadc2;
 
-uint32_t ADC_data[7] = {0,0,0,0,0,0,0};	// try 16bit
+uint32_t ADC_data[8] = {0,0,0,0,0,0,0,0};	// try 16bit
+uint16_t Meas[6] = {0,0,0,0,0,0};
 uint16_t data_num = 0;
 uint8_t tim_num = 0;
 uint16_t Value = 8;
@@ -45,12 +47,14 @@ void Control_Init(
 		TIM_HandleTypeDef *_htim2,
 		TIM_HandleTypeDef *_htim3,
 		TIM_HandleTypeDef *_htim4,
-		ADC_HandleTypeDef *_hadc1){
+		ADC_HandleTypeDef *_hadc1,
+		ADC_HandleTypeDef *_hadc2){
 	htim1 = _htim1;
 	htim2 = _htim2;
 	htim3 = _htim3;
 	htim4 = _htim4;
 	hadc1 = _hadc1;
+	hadc2 = _hadc2;
 
 	// Disable gate driver output
 	HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
@@ -76,7 +80,11 @@ void Control_Init(
 
 
 	// ADC and Timer Configuration
-	HAL_ADC_Start_DMA(hadc1, ADC_data, 2);
+	//HAL_ADC_Start_DMA(hadc, ADC_data, 2);
+	HAL_ADCEx_Calibration_Start(hadc1);
+	HAL_ADCEx_Calibration_Start(hadc2);
+	HAL_ADC_Start(hadc2);
+	HAL_ADCEx_MultiModeStart_DMA(hadc1, ADC_data, 2);
 	HAL_TIM_PWM_Start_IT(htim1, TIM_CHANNEL_3);
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, 1);
 
@@ -231,8 +239,22 @@ uint16_t HALL_Treshold = 0;
 uint8_t HALL_Is_Running = 0;
 uint16_t HALL_Angles[7] = {0,300,180,240,60,0,120};
 uint8_t HALL_Start_Pos = 0;
+short I_A;
+short I_B;
+short I_C;
+short I_Alfa;
+short I_Beta;
 
 void HALL_Observer_Block(){
+	// A, B, C Currents
+	I_A = (ADC_data[1] >> 16) - 2087; // Crurrent A
+	I_B = (ADC_data[0] >> 16) - 2143; // Current B
+	I_C = (ADC_data[0]) - 2079;	// Current C
+	Meas[3] = ADC_data[1];	// Voltage DC
+	// Alfa, Beta Currents
+	I_Alfa = I_A;
+	I_Beta = (I_B - I_C)/sqrt(3);
+
 	if(PWM_Value == 0){
 		HALL_Is_Running = 0;
 		OldHall = 0xff;
@@ -245,9 +267,9 @@ void HALL_Observer_Block(){
 	}
 	// Input Block
 	Hall = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin);
+	// Initail state reading
 	if (HALL_Is_Running == 0){
 		HALL_Is_Running = 1;
-		//OldHall = Hall;
 		HALL_Start_Pos = HAL_GPIO_ReadPin(HALL_A_GPIO_Port,HALL_A_Pin)
 						+ (HAL_GPIO_ReadPin(HALL_B_GPIO_Port,HALL_B_Pin) << 1)
 						+ (HAL_GPIO_ReadPin(HALL_C_GPIO_Port, HALL_C_Pin) << 2);
@@ -310,14 +332,27 @@ void HALL_Observer_Block(){
 	if (Scan_Is_enabled > 0){
 		Scan_iter += trace_num * 4;
 
-		Scan_Data[Scan_iter] = Hall*64;
-		Scan_iter ++ ;
 		Scan_Data[Scan_iter] = Angle/2;
 		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = Step_Num * 30;
+		Scan_Data[Scan_iter] = (I_Alfa+2047)/16;
 		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = HALL_time_cnt;
+		Scan_Data[Scan_iter] = (I_Beta+2047)/16;
 		Scan_iter ++ ;
+		Scan_Data[Scan_iter] = 2047/16;
+		Scan_iter ++ ;
+
+		//		Scan_Data[Scan_iter] = ((((uint32_t)DupkoSin[tmpAngle])*PWM_Value)/640)/3;
+		//		Scan_iter ++ ;
+		//		tmpAngle += 120;
+		//		if(tmpAngle >= 360) tmpAngle -= 360;
+		//
+		//		Scan_Data[Scan_iter] = ((((uint32_t)DupkoSin[tmpAngle])*PWM_Value)/640)/3;
+		//		Scan_iter ++ ;
+		//		tmpAngle += 120;
+		//		if(tmpAngle >= 360) tmpAngle -= 360;
+		//
+		//		Scan_Data[Scan_iter] = ((((uint32_t)DupkoSin[tmpAngle])*PWM_Value)/640)/3;
+		//		Scan_iter ++ ;0
 
 		Scan_iter += (MORE_TRACES-trace_num) * 4;
 		if (Scan_iter >= SCAN_SIZE) {
@@ -331,6 +366,9 @@ void HALL_Observer_Block(){
 	// Do nothing if pwm is ste to 0
 
 	DupkoSin_Block(PWM_Value);
+//	SetZero_A();
+//	SetZero_B();
+//	SetZero_C();
 }
 
 void Six_Step_Block(uint16_t PWM_Value){
@@ -412,18 +450,17 @@ void DupkoSin_Block(uint16_t PWM_Value){
 	Step_Num = (Angle/60)+1;
 	if(Step_Num != Old_Step){
 		if(Step_Num == 1){
-			ADC_Change_Order(ADC_CHANNEL_A);
+			Hall_Change_Active(ADC_CHANNEL_A);
 		}else if(Step_Num == 2){
-			ADC_Change_Order(ADC_CHANNEL_B);
+			Hall_Change_Active(ADC_CHANNEL_B);
 		}else if(Step_Num == 3){
-			ADC_Change_Order(ADC_CHANNEL_C);
+			Hall_Change_Active(ADC_CHANNEL_C);
 		}else if(Step_Num == 4){
-			ADC_Change_Order(ADC_CHANNEL_A);
+			Hall_Change_Active(ADC_CHANNEL_A);
 		}else if(Step_Num == 5){
-			SetPulse_AH(PWM_Value);
-			ADC_Change_Order(ADC_CHANNEL_B);
+			Hall_Change_Active(ADC_CHANNEL_B);
 		}else if(Step_Num == 6){
-			ADC_Change_Order(ADC_CHANNEL_C);
+			Hall_Change_Active(ADC_CHANNEL_C);
 		}
 		Old_Step = Step_Num;
 	}

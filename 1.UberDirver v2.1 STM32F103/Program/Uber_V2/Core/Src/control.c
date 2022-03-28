@@ -641,7 +641,7 @@ void Hall_Change_Active(uint32_t pin){
 }
 
 void ADC_Change_Order(uint32_t channel){
-	HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 0);			// 330ns
+	//HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 0);			// 330ns
 	//__disable_irq();
 
 	ADC_ChannelConfTypeDef sConfig = {0};
@@ -666,7 +666,7 @@ void ADC_Change_Order(uint32_t channel){
 	//Hall_Change_Active(channel);
 
 	//__enable_irq();
-	HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 1);			// 330ns
+	//HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 1);			// 330ns
 }
 
 uint32_t WaitOneStep(uint32_t LastTicks, float div){

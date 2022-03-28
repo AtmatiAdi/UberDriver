@@ -20,7 +20,7 @@ uint8_t IsRunning = 0;
 uint8_t IsBreaking = 0;
 uint16_t ticks = MIN_TICKS;
 uint8_t Rotations[1] = {0};
-uint8_t step_delay = 255;	// (255+1)/32 = 8 times shorter t3 = (t1+t2)/8
+uint8_t step_delay = 16;	// (255+1)/32 = 8 times shorter t3 = (t1+t2)/8
 
 //void HAL_UART_RxCpltCallback(UART_HandleTypeDef *_huart){
 //	HAL_GPIO_WritePin(HALL_A_GPIO_Port, HALL_A_Pin, 0);

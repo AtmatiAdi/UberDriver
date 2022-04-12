@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Rename resource &apos;KPro_MSC/KPro_CDC.ioc&apos; to &apos;KPro_MSC.ioc&apos;" description="Rename resource &apos;KPro_CDC.ioc&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="KPro_CDC.ioc" name="KPro_MSC.ioc" stamp="1620928585166" updateReferences="true"/>
-</session>

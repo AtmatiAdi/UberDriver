@@ -1,4 +1,0 @@
-application.c:25:6:HAL_UART_RxCpltCallback	16	static
-application.c:30:6:Application_Init	16	static
-application.c:36:6:NormalControl	16	static
-application.c:63:6:Application_Update	8	static

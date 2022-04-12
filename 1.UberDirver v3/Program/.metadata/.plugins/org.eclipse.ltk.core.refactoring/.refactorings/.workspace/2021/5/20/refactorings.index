@@ -1,7 +1,0 @@
-1620928508850	Rename resource 'KPro'
-1620929028055	Delete 2 resources
-1620933454874	Delete resource 'KPro_Composite/USB_DEVICE'
-1620933460236	Delete resource 'KPro_Composite/Middlewares'
-1620933465561	Delete resource 'KPro_Composite/Drivers'
-1620933469746	Delete resource 'KPro_Composite/Debug'
-1620933688288	Delete resource 'KPro_MSC/Middlewares/ST/STM32_USB_Device_Library/Class/CDC'

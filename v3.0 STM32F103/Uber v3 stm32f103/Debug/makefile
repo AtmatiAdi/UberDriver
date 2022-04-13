@@ -61,8 +61,8 @@ all: main-build
 main-build: Uber_v3_stm32f103.elf secondary-outputs
 
 # Tool invocations
-Uber_v3_stm32f103.elf: $(OBJS) $(USER_OBJS) N:\GitProjects\UberDriver\v3.0\ STM32F103\Uber\ v3\ stm32f103\STM32F103TBUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Uber_v3_stm32f103.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"N:\GitProjects\UberDriver\v3.0 STM32F103\Uber v3 stm32f103\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_v3_stm32f103.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Uber_v3_stm32f103.elf: $(OBJS) $(USER_OBJS) C:\Users\kobakm\Documents\GitHub\UberDriver\v3.0\ STM32F103\Uber\ v3\ stm32f103\STM32F103TBUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Uber_v3_stm32f103.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\kobakm\Documents\GitHub\UberDriver\v3.0 STM32F103\Uber v3 stm32f103\STM32F103TBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uber_v3_stm32f103.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

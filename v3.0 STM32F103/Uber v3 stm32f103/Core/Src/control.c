@@ -11,7 +11,7 @@
 #define PWM_COUNTER     639	// 640-1 = 639
 
 static TIM_HandleTypeDef *htim1;
-static TIM_HandleTypeDef *htim2;
+//static TIM_HandleTypeDef *htim2;
 static ADC_HandleTypeDef *hadc1;
 static ADC_HandleTypeDef *hadc2;
 
@@ -33,114 +33,8 @@ uint32_t Step_Ticks = 0;
 GPIO_TypeDef* Hall_GPIO_Port = HALL_A_GPIO_Port;
 uint16_t Hall_GPIO_Pin = HALL_A_Pin;
 
-/**
-  * @brief ADC1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void ADC_Init(void)
-{
-  ADC_MultiModeTypeDef multimode = {0};
-  ADC_InjectionConfTypeDef sConfigInjected_1 = {0};
-  ADC_InjectionConfTypeDef sConfigInjected_2 = {0};
-  // Common config
-  hadc1->Instance = ADC1;
-  hadc1->Init.ScanConvMode = ADC_SCAN_ENABLE;
-  hadc1->Init.ContinuousConvMode = DISABLE;
-  hadc1->Init.DiscontinuousConvMode = DISABLE;
-  hadc1->Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T2_CC2;
-  hadc1->Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1->Init.NbrOfConversion = 1;
-  if (HAL_ADC_Init(hadc1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  // Configure the ADC multi-mode
-  multimode.Mode = ADC_DUALMODE_INJECSIMULT;
-  if (HAL_ADCEx_MultiModeConfigChannel(hadc1, &multimode) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  // Configure Injected Channel
-  sConfigInjected_1.InjectedChannel = ADC_CHANNEL_6;
-  sConfigInjected_1.InjectedRank = 1;
-  sConfigInjected_1.InjectedNbrOfConversion = 2;
-  sConfigInjected_1.InjectedSamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-  sConfigInjected_1.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJECCONV_T1_CC4;
-  sConfigInjected_1.AutoInjectedConv = DISABLE;
-  sConfigInjected_1.InjectedDiscontinuousConvMode = DISABLE;
-  sConfigInjected_1.InjectedOffset = 0;
-  if (HAL_ADCEx_InjectedConfigChannel(hadc1, &sConfigInjected_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  // Configure Injected Channel
-  sConfigInjected_1.InjectedChannel = ADC_CHANNEL_5;
-  sConfigInjected_1.InjectedRank = 2;
-  if (HAL_ADCEx_InjectedConfigChannel(hadc1, &sConfigInjected_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  //Common config
-  hadc2->Instance = ADC2;
-  hadc2->Init.ScanConvMode = ADC_SCAN_ENABLE;
-  hadc2->Init.ContinuousConvMode = DISABLE;
-  hadc2->Init.DiscontinuousConvMode = DISABLE;
-  hadc2->Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  hadc2->Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc2->Init.NbrOfConversion = 1;
-  if (HAL_ADC_Init(hadc2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  // Configure Injected Channel
-  sConfigInjected_2.InjectedChannel = ADC_CHANNEL_4;
-  sConfigInjected_2.InjectedRank = 1;
-  sConfigInjected_2.InjectedNbrOfConversion = 2;
-  sConfigInjected_2.InjectedSamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-  sConfigInjected_2.AutoInjectedConv = DISABLE;
-  sConfigInjected_2.InjectedDiscontinuousConvMode = DISABLE;
-  sConfigInjected_2.InjectedOffset = 0;
-  if (HAL_ADCEx_InjectedConfigChannel(hadc2, &sConfigInjected_2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  //Configure Injected Channel
-  sConfigInjected_2.InjectedChannel = ADC_CHANNEL_0;
-  sConfigInjected_2.InjectedRank = 2;
-  if (HAL_ADCEx_InjectedConfigChannel(hadc2, &sConfigInjected_2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-}
-
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
-	//BEMF_Observer_Block();
-	HALL_Observer_Block();
-
-	ADC_Ticks ++;
-}
-
-void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc){
-	//BEMF_Observer_Block();
-	Meas[0] = hadc1->Instance->JDR1;
-	Meas[1] = hadc1->Instance->JDR2;
-	Meas[2] = hadc2->Instance->JDR1;
-	Meas[3] = hadc2->Instance->JDR2;
-	HALL_Observer_Block();
-
-	ADC_Ticks ++;
-}
-
-void Control_Init(
-		TIM_HandleTypeDef *_htim1,
-		TIM_HandleTypeDef *_htim2,
-		ADC_HandleTypeDef *_hadc1,
-		ADC_HandleTypeDef *_hadc2){
+void Control_Init_Motor_Timer(TIM_HandleTypeDef *_htim1){
 	htim1 = _htim1;
-	htim2 = _htim2;
-	hadc1 = _hadc1;
-	hadc2 = _hadc2;
 
 	// Disable gate driver output
 	HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 0);
@@ -153,31 +47,200 @@ void Control_Init(
 	HAL_TIMEx_PWMN_Start(htim1, TIM_CHANNEL_2); // turn on complementary channel
 	HAL_TIMEx_PWMN_Start(htim1, TIM_CHANNEL_3); // turn on complementary channel
 
-
 	// Timer for ADC releasing
-	//HAL_TIM_PWM_Start(htim2, TIM_CHANNEL_2);
 	HAL_TIM_PWM_Start(htim1, TIM_CHANNEL_4);
+	HAL_TIM_PWM_Start_IT(htim1, TIM_CHANNEL_4);
+	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_4, 1);
+}
 
-	ADC_Init();
-	// ADC and Timer Configuration
-	//HAL_ADC_Start_DMA(hadc, ADC_data, 2);
+ADC_InjectionConfTypeDef sConfigInjected_1 = {0};
+ADC_InjectionConfTypeDef sConfigInjected_2 = {0};
+// Remember to make meas when all phases are gnd
+void Control_Init_ADC_IAIBICVDC(ADC_HandleTypeDef *_hadc1,
+								ADC_HandleTypeDef *_hadc2){
+	hadc1 = _hadc1;
+	hadc2 = _hadc2;
+	// HAL ADC CONFIGURATION
+	  ADC_MultiModeTypeDef multimode = {0};
+	  // Common config
+	  hadc1->Instance = ADC1;
+	  hadc1->Init.ScanConvMode = ADC_SCAN_ENABLE;
+	  hadc1->Init.ContinuousConvMode = DISABLE;
+	  hadc1->Init.DiscontinuousConvMode = DISABLE;
+	  hadc1->Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T2_CC2;
+	  hadc1->Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	  hadc1->Init.NbrOfConversion = 1;
+	  if (HAL_ADC_Init(hadc1) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+	  // Configure the ADC multi-mode
+	  multimode.Mode = ADC_DUALMODE_INJECSIMULT;
+	  if (HAL_ADCEx_MultiModeConfigChannel(hadc1, &multimode) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+	  // Configure Injected Channel
+	  sConfigInjected_1.InjectedChannel = ADC_CHANNEL_6;
+	  sConfigInjected_1.InjectedRank = 1;
+	  sConfigInjected_1.InjectedNbrOfConversion = 2;
+	  sConfigInjected_1.InjectedSamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+	  sConfigInjected_1.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJECCONV_T1_CC4;
+	  sConfigInjected_1.AutoInjectedConv = DISABLE;
+	  sConfigInjected_1.InjectedDiscontinuousConvMode = DISABLE;
+	  sConfigInjected_1.InjectedOffset = 0;
+	  if (HAL_ADCEx_InjectedConfigChannel(hadc1, &sConfigInjected_1) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+	  // Configure Injected Channel
+	  sConfigInjected_1.InjectedChannel = ADC_CHANNEL_5;
+	  sConfigInjected_1.InjectedRank = 2;
+	  if (HAL_ADCEx_InjectedConfigChannel(hadc1, &sConfigInjected_1) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+	  //Common config
+	  hadc2->Instance = ADC2;
+	  hadc2->Init.ScanConvMode = ADC_SCAN_ENABLE;
+	  hadc2->Init.ContinuousConvMode = DISABLE;
+	  hadc2->Init.DiscontinuousConvMode = DISABLE;
+	  hadc2->Init.ExternalTrigConv = ADC_SOFTWARE_START;
+	  hadc2->Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	  hadc2->Init.NbrOfConversion = 1;
+	  if (HAL_ADC_Init(hadc2) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+	  // Configure Injected Channel
+	  sConfigInjected_2.InjectedChannel = ADC_CHANNEL_4;
+	  sConfigInjected_2.InjectedRank = 1;
+	  sConfigInjected_2.InjectedNbrOfConversion = 2;
+	  sConfigInjected_2.InjectedSamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+	  sConfigInjected_2.AutoInjectedConv = DISABLE;
+	  sConfigInjected_2.InjectedDiscontinuousConvMode = DISABLE;
+	  sConfigInjected_2.InjectedOffset = 0;
+	  if (HAL_ADCEx_InjectedConfigChannel(hadc2, &sConfigInjected_2) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+	  //Configure Injected Channel
+	  sConfigInjected_2.InjectedChannel = ADC_CHANNEL_0;
+	  sConfigInjected_2.InjectedRank = 2;
+	  if (HAL_ADCEx_InjectedConfigChannel(hadc2, &sConfigInjected_2) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+
+	// ADC Configuration
 	HAL_ADCEx_Calibration_Start(hadc1);
 	HAL_ADCEx_Calibration_Start(hadc2);
 	HAL_ADC_Start(hadc2);
+	//HAL_ADC_Start_DMA(hadc, ADC_data, 2);
 	//HAL_ADCEx_MultiModeStart_DMA(hadc1, ADC_data, 2);
-	//HAL_TIM_PWM_Start_IT(htim2, TIM_CHANNEL_2);
-	HAL_TIM_PWM_Start_IT(htim1, TIM_CHANNEL_4);
-	//__HAL_TIM_SET_COMPARE(htim2, TIM_CHANNEL_2, 1);
 	HAL_ADCEx_InjectedStart_IT(hadc1);
-	//HAL_ADCEx_InjectedStart_IT(hadc2);
 	HAL_ADCEx_InjectedStart(hadc2);
+}
+
+void Control_Init_ADC_VPhaseVDC(ADC_HandleTypeDef *_hadc1,
+								ADC_HandleTypeDef *_hadc2){
+	hadc1 = _hadc1;
+	hadc2 = _hadc2;
+	// HAL ADC CONFIGURATION
+	  ADC_MultiModeTypeDef multimode = {0};
+	  // Common config
+	  hadc1->Instance = ADC1;
+	  hadc1->Init.ScanConvMode = ADC_SCAN_ENABLE;
+	  hadc1->Init.ContinuousConvMode = DISABLE;
+	  hadc1->Init.DiscontinuousConvMode = DISABLE;
+	  hadc1->Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T2_CC2;
+	  hadc1->Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	  hadc1->Init.NbrOfConversion = 1;
+	  if (HAL_ADC_Init(hadc1) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+	  // Configure the ADC multi-mode
+	  multimode.Mode = ADC_DUALMODE_INJECSIMULT;
+	  if (HAL_ADCEx_MultiModeConfigChannel(hadc1, &multimode) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+	  // Configure Injected Channel
+	  sConfigInjected_1.InjectedChannel = ADC_CHANNEL_1;
+	  sConfigInjected_1.InjectedRank = 1;
+	  sConfigInjected_1.InjectedNbrOfConversion = 1;
+	  sConfigInjected_1.InjectedSamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+	  sConfigInjected_1.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJECCONV_T1_CC4;
+	  sConfigInjected_1.AutoInjectedConv = DISABLE;
+	  sConfigInjected_1.InjectedDiscontinuousConvMode = DISABLE;
+	  sConfigInjected_1.InjectedOffset = 0;
+	  if (HAL_ADCEx_InjectedConfigChannel(hadc1, &sConfigInjected_1) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+	  //Common config
+	  hadc2->Instance = ADC2;
+	  hadc2->Init.ScanConvMode = ADC_SCAN_ENABLE;
+	  hadc2->Init.ContinuousConvMode = DISABLE;
+	  hadc2->Init.DiscontinuousConvMode = DISABLE;
+	  hadc2->Init.ExternalTrigConv = ADC_SOFTWARE_START;
+	  hadc2->Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	  hadc2->Init.NbrOfConversion = 1;
+	  if (HAL_ADC_Init(hadc2) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+	  // Configure Injected Channel
+	  sConfigInjected_2.InjectedChannel = ADC_CHANNEL_0;
+	  sConfigInjected_2.InjectedRank = 1;
+	  sConfigInjected_2.InjectedNbrOfConversion = 1;
+	  sConfigInjected_2.InjectedSamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+	  sConfigInjected_2.AutoInjectedConv = DISABLE;
+	  sConfigInjected_2.InjectedDiscontinuousConvMode = DISABLE;
+	  sConfigInjected_2.InjectedOffset = 0;
+	  if (HAL_ADCEx_InjectedConfigChannel(hadc2, &sConfigInjected_2) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+
+	// ADC Configuration
+	HAL_ADCEx_Calibration_Start(hadc1);
+	HAL_ADCEx_Calibration_Start(hadc2);
+	HAL_ADC_Start(hadc2);
+	//HAL_ADC_Start_DMA(hadc, ADC_data, 2);
+	//HAL_ADCEx_MultiModeStart_DMA(hadc1, ADC_data, 2);
+	HAL_ADCEx_InjectedStart_IT(hadc1);
+	HAL_ADCEx_InjectedStart(hadc2);
+}
+
+
+void ADC_Change_Order(uint32_t channel){
+	// Stop timer what triggers ADC conversions
+	HAL_TIM_PWM_Stop_IT(htim1, TIM_CHANNEL_4);
+	// Change order of conversions
+	sConfigInjected_1.InjectedChannel = channel;
+
+	if (HAL_ADCEx_InjectedConfigChannel(hadc1, &sConfigInjected_1) != HAL_OK){
+		Error_Handler();
+	}
+	// Start timer what triggers ADC conversions
+	HAL_TIM_PWM_Start_IT(htim1, TIM_CHANNEL_4);
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_4, 1);
+}
 
-	// Control timers basic synchronisation
-	htim1->Instance->CNT = 0;
-	htim2->Instance->CNT = 0;
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
+	//BEMF_Observer_Block();
+	//HALL_Observer_Block();
 
-	HAL_Delay(1);
+	ADC_Ticks ++;
+}
+
+void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc){
+	//BEMF_Observer_Block();
+	//HALL_Observer_Block();
+
+	ADC_Ticks ++;
 }
 
 void EnableScan(){
@@ -212,12 +275,11 @@ uint16_t BEMF_delay = 32;
 uint16_t Angle = 0;
 //uint16_t Ticks_Diff = 0;
 void BEMF_Observer_Block(){
-	//uint16_t Ticks = htim1->Instance->CNT;
-// Input Block
-	uint16_t V_Floating = ADC_data[0];
-	uint16_t V_DC = ADC_data[1];
+	// Input Block
+	uint16_t V_Floating = hadc1->Instance->JDR1;
+	uint16_t V_DC 		= hadc2->Instance->JDR1;
 	//uint16_t V_Floating_Diff = 4095;
-// 0 Cross Detection Block
+	// 0 Cross Detection Block
 	// differentiate BEMF to obtain value and sign of changes
 	//V_Floating_Diff = (4095 + V_Floating) - V_Floating_Old;
 	if((Cross == 0) && (BEMF_cnt_sign == 1) && (BEMF_time_cnt > BEMF_delay)){
@@ -238,7 +300,7 @@ void BEMF_Observer_Block(){
 		}
 	}
 	//V_Floating_Old = V_Floating;
-// 0 Cross Counter Block
+	// 0 Cross Counter Block
 	// Change counting sign when 0-cross is detected
 	if (Cross == 1) {
 		BEMF_cnt_sign = 0;
@@ -306,7 +368,6 @@ void BEMF_Observer_Block(){
 	}
 
 	Six_Step_Block(PWM_Value);
-	//Ticks_Diff = Ticks -  htim1->Instance->CNT;
 }
 
 void Set_Observer_Div(uint8_t div){
@@ -335,6 +396,10 @@ short I_Beta;
 
 void HALL_Observer_Block(){
 	// A, B, C Currents
+	Meas[0] = hadc1->Instance->JDR1;
+	Meas[1] = hadc1->Instance->JDR2;
+	Meas[2] = hadc2->Instance->JDR1;
+	Meas[3] = hadc2->Instance->JDR2;
 //	I_A = (ADC_data[1] >> 16) - 2047; // Crurrent A
 //	I_B = (ADC_data[0] >> 16) - 2047; // Current B
 //	I_C = (ADC_data[0]) - 2047;	// Current C
@@ -616,27 +681,8 @@ void Hall_Change_Active(uint32_t pin){
 	}
 }
 
-void ADC_Change_Order(uint32_t channel){
-	ADC_ChannelConfTypeDef sConfig = {0};
-	// Stop timer what triggers ADC conversions
-	HAL_TIM_PWM_Stop_IT(htim1, TIM_CHANNEL_4);
-	// Stop ADC DMA
-	//HAL_ADC_Stop_DMA(hadc1);
-	// Change order of conversions
-	sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-	sConfig.Rank = ADC_REGULAR_RANK_1;
-	sConfig.Channel = channel;
 
-	if (HAL_ADC_ConfigChannel(hadc1, &sConfig) != HAL_OK)  Error_Handler();
-	// Start ADC DMA
-	//HAL_ADC_Start_DMA(hadc1, ADC_data, 2);
-	// Start timer what triggers ADC conversions
-	HAL_TIM_PWM_Start_IT(htim1, TIM_CHANNEL_4);
-	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_4, 1);
-	// Timers synchonisation
-	htim1->Instance->CNT = 0;
-	Hall_Change_Active(channel);
-}
+
 
 
 

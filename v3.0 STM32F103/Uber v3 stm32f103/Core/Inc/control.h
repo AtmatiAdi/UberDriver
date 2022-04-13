@@ -20,9 +20,9 @@
 #define MIN_TICKS  		0x0000000f
 #define MAX_TICKS  		0x000fffff
 #define MAX_ADC_TICKS 	5000			// 50khz -> 0.1sec
-#define ADC_CHANNEL_A	ADC_CHANNEL_4
-#define ADC_CHANNEL_B	ADC_CHANNEL_3
-#define ADC_CHANNEL_C	ADC_CHANNEL_2
+#define ADC_CHANNEL_A	ADC_CHANNEL_2
+#define ADC_CHANNEL_B	ADC_CHANNEL_1
+#define ADC_CHANNEL_C	ADC_CHANNEL_3
 
 #define SCAN_SIZE		4096*4
 #define MORE_TRACES		7
@@ -30,11 +30,11 @@
 #include "DRV8305.h"
 #include "main.h"
 
-void Control_Init(
-		TIM_HandleTypeDef *_htim1,
-		TIM_HandleTypeDef *_htim2,
-		ADC_HandleTypeDef *_hadc1,
-		ADC_HandleTypeDef *_hadc2);
+void Control_Init_Motor_Timer(TIM_HandleTypeDef *_htim1);
+void Control_Init_ADC_IAIBICVDC(ADC_HandleTypeDef *_hadc1,
+								ADC_HandleTypeDef *_hadc2);
+void Control_Init_ADC_VPhaseVDC(ADC_HandleTypeDef *_hadc1,
+								ADC_HandleTypeDef *_hadc2);
 
 void SetZero_A();
 void SetZero_B();

@@ -33,6 +33,8 @@
 void Control_Init_Motor_Timer(TIM_HandleTypeDef *_htim1);
 void Control_Init_ADC_IAIBICVDC(ADC_HandleTypeDef *_hadc1,
 								ADC_HandleTypeDef *_hadc2);
+void Control_Init_ADC_VAVBVCVDC(ADC_HandleTypeDef *_hadc1,
+								ADC_HandleTypeDef *_hadc2);
 void Control_Init_ADC_VPhaseVDC(ADC_HandleTypeDef *_hadc1,
 								ADC_HandleTypeDef *_hadc2);
 

@@ -118,6 +118,8 @@ int main(void)
 
   //Control_Init_ADC_IAIBICVDC(&hadc1, &hadc2);
   Control_Init_ADC_VPhaseVDC(&hadc1, &hadc2);
+  //Control_Init_ADC_VAVBVCVDC(&hadc1, &hadc2);
+
   Control_Init_Motor_Timer(&htim1);
   //Control_Init(&htim1, &htim2, &hadc1, &hadc2);
   //Control_Init_ADC("V")

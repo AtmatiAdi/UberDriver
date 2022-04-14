@@ -142,6 +142,92 @@ void Control_Init_ADC_IAIBICVDC(ADC_HandleTypeDef *_hadc1,
 	HAL_ADCEx_InjectedStart(hadc2);
 }
 
+void Control_Init_ADC_VAVBVCVDC(ADC_HandleTypeDef *_hadc1,
+								ADC_HandleTypeDef *_hadc2){
+	hadc1 = _hadc1;
+	hadc2 = _hadc2;
+	// HAL ADC CONFIGURATION
+	  ADC_MultiModeTypeDef multimode = {0};
+	  // Common config
+	  hadc1->Instance = ADC1;
+	  hadc1->Init.ScanConvMode = ADC_SCAN_ENABLE;
+	  hadc1->Init.ContinuousConvMode = DISABLE;
+	  hadc1->Init.DiscontinuousConvMode = DISABLE;
+	  hadc1->Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T2_CC2;
+	  hadc1->Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	  hadc1->Init.NbrOfConversion = 1;
+	  if (HAL_ADC_Init(hadc1) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+	  // Configure the ADC multi-mode
+	  multimode.Mode = ADC_DUALMODE_INJECSIMULT;
+	  if (HAL_ADCEx_MultiModeConfigChannel(hadc1, &multimode) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+	  // Configure Injected Channel
+	  sConfigInjected_1.InjectedChannel = ADC_CHANNEL_2;
+	  sConfigInjected_1.InjectedRank = 1;
+	  sConfigInjected_1.InjectedNbrOfConversion = 2;
+	  sConfigInjected_1.InjectedSamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+	  sConfigInjected_1.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJECCONV_T1_CC4;
+	  sConfigInjected_1.AutoInjectedConv = DISABLE;
+	  sConfigInjected_1.InjectedDiscontinuousConvMode = DISABLE;
+	  sConfigInjected_1.InjectedOffset = 0;
+	  if (HAL_ADCEx_InjectedConfigChannel(hadc1, &sConfigInjected_1) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+	  // Configure Injected Channel
+	  sConfigInjected_1.InjectedChannel = ADC_CHANNEL_1;
+	  sConfigInjected_1.InjectedRank = 2;
+	  if (HAL_ADCEx_InjectedConfigChannel(hadc1, &sConfigInjected_1) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+	  //Common config
+	  hadc2->Instance = ADC2;
+	  hadc2->Init.ScanConvMode = ADC_SCAN_ENABLE;
+	  hadc2->Init.ContinuousConvMode = DISABLE;
+	  hadc2->Init.DiscontinuousConvMode = DISABLE;
+	  hadc2->Init.ExternalTrigConv = ADC_SOFTWARE_START;
+	  hadc2->Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	  hadc2->Init.NbrOfConversion = 1;
+	  if (HAL_ADC_Init(hadc2) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+	  // Configure Injected Channel
+	  sConfigInjected_2.InjectedChannel = ADC_CHANNEL_3;
+	  sConfigInjected_2.InjectedRank = 1;
+	  sConfigInjected_2.InjectedNbrOfConversion = 2;
+	  sConfigInjected_2.InjectedSamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+	  sConfigInjected_2.AutoInjectedConv = DISABLE;
+	  sConfigInjected_2.InjectedDiscontinuousConvMode = DISABLE;
+	  sConfigInjected_2.InjectedOffset = 0;
+	  if (HAL_ADCEx_InjectedConfigChannel(hadc2, &sConfigInjected_2) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+	  //Configure Injected Channel
+	  sConfigInjected_2.InjectedChannel = ADC_CHANNEL_0;
+	  sConfigInjected_2.InjectedRank = 2;
+	  if (HAL_ADCEx_InjectedConfigChannel(hadc2, &sConfigInjected_2) != HAL_OK)
+	  {
+	    Error_Handler();
+	  }
+
+	// ADC Configuration
+	HAL_ADCEx_Calibration_Start(hadc1);
+	HAL_ADCEx_Calibration_Start(hadc2);
+	HAL_ADC_Start(hadc2);
+	//HAL_ADC_Start_DMA(hadc, ADC_data, 2);
+	//HAL_ADCEx_MultiModeStart_DMA(hadc1, ADC_data, 2);
+	HAL_ADCEx_InjectedStart_IT(hadc1);
+	HAL_ADCEx_InjectedStart(hadc2);
+}
+
 void Control_Init_ADC_VPhaseVDC(ADC_HandleTypeDef *_hadc1,
 								ADC_HandleTypeDef *_hadc2){
 	hadc1 = _hadc1;
@@ -229,6 +315,20 @@ void ADC_Change_Order(uint32_t channel){
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_4, 1);
 }
 
+void Hall_Change_Active(uint32_t pin){
+	if (pin == ADC_CHANNEL_A){
+		Hall_GPIO_Port = HALL_A_GPIO_Port;
+		Hall_GPIO_Pin = HALL_A_Pin;
+	}else if (pin == ADC_CHANNEL_B){
+		Hall_GPIO_Port = HALL_B_GPIO_Port;
+		Hall_GPIO_Pin = HALL_B_Pin;
+	}else{
+		Hall_GPIO_Port = HALL_C_GPIO_Port;
+		Hall_GPIO_Pin = HALL_C_Pin;
+	}
+}
+
+
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
 	//BEMF_Observer_Block();
 	//HALL_Observer_Block();
@@ -237,7 +337,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
 }
 
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc){
-	//BEMF_Observer_Block();
+	BEMF_Observer_Block();
 	//HALL_Observer_Block();
 
 	ADC_Ticks ++;
@@ -405,8 +505,8 @@ void HALL_Observer_Block(){
 //	I_C = (ADC_data[0]) - 2047;	// Current C
 //	Meas[3] = ADC_data[1];	// Voltage DC
 	// Alfa, Beta Currents
-	I_Alfa = I_A;
-	I_Beta = (I_B - I_C)/sqrt(3);
+//	I_Alfa = I_A;
+//	I_Beta = (I_B - I_C)/sqrt(3);
 
 	if(PWM_Value == 0){
 		HALL_Is_Running = 0;
@@ -487,11 +587,11 @@ void HALL_Observer_Block(){
 
 		Scan_Data[Scan_iter] = Angle/2;
 		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = (I_Alfa+2047)/16;
+		Scan_Data[Scan_iter] = (uint8_t)(Meas[0]/16);
 		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = (I_Beta+2047)/16;
+		Scan_Data[Scan_iter] = (uint8_t)(Meas[1]/16);
 		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = 2047/16;
+		Scan_Data[Scan_iter] = 0;
 		Scan_iter ++ ;
 
 		//		Scan_Data[Scan_iter] = ((((uint32_t)DupkoSin[tmpAngle])*PWM_Value)/640)/3;
@@ -518,7 +618,8 @@ void HALL_Observer_Block(){
 
 	// Do nothing if pwm is ste to 0
 
-	DupkoSin_Block(PWM_Value);
+	//DupkoSin_Block(PWM_Value);
+	Six_Step_Block(PWM_Value);
 //	SetZero_A();
 //	SetZero_B();
 //	SetZero_C();
@@ -541,31 +642,37 @@ void Six_Step_Block(uint16_t PWM_Value){
 			SetZero_B();
 			SetFloating_A();
 			ADC_Change_Order(ADC_CHANNEL_A);
+			Hall_Change_Active(ADC_CHANNEL_A);
 		}else if(Step_Num == 2){
 			SetPulse_CH(PWM_Value);
 			SetFloating_B();
 			SetZero_A();
 			ADC_Change_Order(ADC_CHANNEL_B);
+			Hall_Change_Active(ADC_CHANNEL_B);
 		}else if(Step_Num == 3){
 			SetFloating_C();
 			SetPulse_BH(PWM_Value);
 			SetZero_A();
 			ADC_Change_Order(ADC_CHANNEL_C);
+			Hall_Change_Active(ADC_CHANNEL_C);
 		}else if(Step_Num == 4){
 			SetZero_C();
 			SetPulse_BH(PWM_Value);
 			SetFloating_A();
 			ADC_Change_Order(ADC_CHANNEL_A);
+			Hall_Change_Active(ADC_CHANNEL_A);
 		}else if(Step_Num == 5){
 			SetZero_C();
 			SetFloating_B();
 			SetPulse_AH(PWM_Value);
 			ADC_Change_Order(ADC_CHANNEL_B);
+			Hall_Change_Active(ADC_CHANNEL_B);
 		}else if(Step_Num == 6){
 			SetFloating_C();
 			SetZero_B();
 			SetPulse_AH(PWM_Value);
 			ADC_Change_Order(ADC_CHANNEL_C);
+			Hall_Change_Active(ADC_CHANNEL_C);
 		}
 		Old_Step = Step_Num;
 	}
@@ -573,6 +680,8 @@ void Six_Step_Block(uint16_t PWM_Value){
 
 uint16_t DupkoSin[360] = {553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,548,542,536,530,523,517,510,504,497,490,482,475,467,460,452,444,436,428,419,411,402,393,385,376,367,357,348,339,329,320,310,300,290,280,270,260,250,239,229,219,208,197,187,176,165,155,144,133,122,111,100,89,78,67,56,45,33,22,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,22,33,45,56,67,78,89,100,111,122,133,144,155,165,176,187,197,208,219,229,239,250,260,270,280,290,300,310,319,329,339,348,357,367,376,385,393,402,411,419,428,436,444,452,460,467,475,482,490,497,504,510,517,523,530,536,542,548};
 uint16_t OldAngle = 0xffff;
+
+// ZMIANA PWM W POLOWIE CENTER ALIGN TO ZLY POMYSL !!!!
 
 void DupkoSin_Block(uint16_t PWM_Value){
 	uint16_t tmpAngle = 0;
@@ -624,66 +733,64 @@ void Set_PWM(uint16_t value){
 }
 
 inline void SetZero_A(){
-	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, 1);
+	PWM_LA_GPIO_Port->CRL |= 0x00000080;	// Set to alternate push-pull
+	PWM_HA_GPIO_Port->CRH |= 0x00000800;	// Set to alternate out push-pull
+	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, 0);
 }
 
 inline void SetZero_B(){
-	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_2, 1);
+	PWM_LB_GPIO_Port->CRL |= 0x00000008;	// Set to alternate push-pull
+	PWM_HB_GPIO_Port->CRH |= 0x00000080;	// Set to alternate push-pull
+	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_2, 0);
 }
 
 inline void SetZero_C(){
-	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_1, 1);
+	PWM_LC_GPIO_Port->CRL |= 0x80000000;	// Set to alternate push-pull
+	PWM_HC_GPIO_Port->CRH |= 0x00000008;	// Set to alternate push-pull
+	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_1, 0);
 }
 ///////////////////
 inline void SetPulse_AH(uint16_t value){
-	if(value == 0) value = 1;
+	PWM_LA_GPIO_Port->CRL |= 0x00000080;	// Set to alternate push-pull
+	PWM_HA_GPIO_Port->CRH |= 0x00000800;	// Set to alternate out push-pull
+	//if(value == 0) value = 1;
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, value);
 }
 
 inline void SetPulse_BH(uint16_t value){
-	if(value == 0) value = 1;
+	PWM_LB_GPIO_Port->CRL |= 0x00000008;	// Set to alternate push-pull
+	PWM_HB_GPIO_Port->CRH |= 0x00000080;	// Set to alternate push-pull
+	//if(value == 0) value = 1;
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_2, value);
 }
 
 inline void SetPulse_CH(uint16_t value){
-	if(value == 0) value = 1;
+	PWM_LC_GPIO_Port->CRL |= 0x80000000;	// Set to alternate push-pull
+	PWM_HC_GPIO_Port->CRH |= 0x00000008;	// Set to alternate push-pull
+	//if(value == 0) value = 1;
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_1, value);
 }
 ///////////////////
 inline void SetFloating_A(){
-	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, 1);
+	PWM_LA_GPIO_Port->CRL &= ~0x000000C0;	// Set to general out push-pull
+	PWM_HA_GPIO_Port->CRH &= ~0x00000C00;	// Set to general out push-pull
+	//__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, 1);
 	//HAL_GPIO_WritePin(PWM_AL_GPIO_Port, PWM_AL_Pin, 0);
 	//__HAL_TIM_SET_COMPARE(htim2, TIM_CHANNEL_2, PWM_COUNTER);
 }
 
 inline void SetFloating_B(){
-	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_2, 1);
+	PWM_LB_GPIO_Port->CRL &= ~0x0000000C;	// Set to general out push-pull
+	PWM_HB_GPIO_Port->CRH &= ~0x000000C0;	// Set to general out push-pull
+	//__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_2, 1);
 	//HAL_GPIO_WritePin(PWM_BL_GPIO_Port, PWM_BL_Pin, 0);
 	//__HAL_TIM_SET_COMPARE(htim3, TIM_CHANNEL_2, PWM_COUNTER);
 }
 
 inline void SetFloating_C(){
-	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_1, 1);
+	PWM_LC_GPIO_Port->CRL &= ~0xC0000000;	// Set to general out push-pull
+	PWM_HC_GPIO_Port->CRH &= ~0x0000000C;	// Set to general out push-pull
+	//__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_1, 1);
 	//HAL_GPIO_WritePin(PWM_CL_GPIO_Port, PWM_CL_Pin, 0);
 	//__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_1, PWM_COUNTER);
 }
-
-void Hall_Change_Active(uint32_t pin){
-	if (pin == ADC_CHANNEL_A){
-		Hall_GPIO_Port = HALL_A_GPIO_Port;
-		Hall_GPIO_Pin = HALL_A_Pin;
-	}else if (pin == ADC_CHANNEL_B){
-		Hall_GPIO_Port = HALL_B_GPIO_Port;
-		Hall_GPIO_Pin = HALL_B_Pin;
-	}else{
-		Hall_GPIO_Port = HALL_C_GPIO_Port;
-		Hall_GPIO_Pin = HALL_C_Pin;
-	}
-}
-
-
-
-
-
-
-

@@ -203,7 +203,7 @@
 												// b'010 - VDS protection disabled (no overcurrent sensing or reporting)
 
 void DRV_Init(SPI_HandleTypeDef *hspi);
-uint8_t DRV_Read(uint8_t addr, uint8_t *buf);
+uint16_t DRV_Read(uint8_t addr);
 uint8_t DRV_Write(uint8_t addr, uint16_t data);
 
 #endif /* INC_DRV8305_H_ */

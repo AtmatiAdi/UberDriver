@@ -111,18 +111,31 @@ int main(void)
   //HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, 0);
 
   DRV_Init(&hspi1);
+
+	uint8_t buf1[2] = {0,(0x2 << 3) + 0x80};
+	uint8_t ret1[2] = {0,0};
+	uint8_t res1 = HAL_SPI_TransmitReceive(&hspi1, buf1, ret1, 1, 100);
+
+
+
+
   DRV_Write(SHUNT_AMPLIFIER_CONTROL,
 			(GAIN_CS1 & 0xffff) +
 			(GAIN_CS2 & 0xffff) +
 			(GAIN_CS3 & 0xffff));
+//  uint16_t ret = 0;
+//  ret = DRV_Read(SHUNT_AMPLIFIER_CONTROL);
+//  ret = DRV_Read(WARNINGS_WATCHDOG_RESET);
+//  ret = DRV_Read(OV_VDS_FAULTS);
+//  ret = DRV_Read(IC_FAULTS);
+//  ret = DRV_Read(VGS_FAULTS);
+
 
   //Control_Init_ADC_IAIBICVDC(&hadc1, &hadc2);
   Control_Init_ADC_VPhaseVDC(&hadc1, &hadc2);
   //Control_Init_ADC_VAVBVCVDC(&hadc1, &hadc2);
 
   Control_Init_Motor_Timer(&htim1);
-  //Control_Init(&htim1, &htim2, &hadc1, &hadc2);
-  //Control_Init_ADC("V")
   Application_Init(&huart1);
 
   HAL_Delay(1);

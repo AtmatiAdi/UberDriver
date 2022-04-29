@@ -337,8 +337,8 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
 }
 
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc){
-	BEMF_Observer_Block();
-	//HALL_Observer_Block();
+	//BEMF_Observer_Block();
+	HALL_Observer_Block();
 
 	ADC_Ticks ++;
 }

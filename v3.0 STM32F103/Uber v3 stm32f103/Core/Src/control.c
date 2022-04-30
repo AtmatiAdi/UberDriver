@@ -300,18 +300,20 @@ void Control_Init_ADC_VPhaseVDC(ADC_HandleTypeDef *_hadc1,
 	HAL_ADCEx_InjectedStart(hadc2);
 }
 
-
+__attribute__( ( section(".data") ) )
 void ADC_Change_Order(uint32_t channel){
 	// Stop timer what triggers ADC conversions
-	HAL_TIM_PWM_Stop_IT(htim1, TIM_CHANNEL_4);
+	//HAL_TIM_PWM_Stop_IT(htim1, TIM_CHANNEL_4);
+	__HAL_TIM_DISABLE_IT(htim1, TIM_IT_CC4);
 	// Change order of conversions
 	sConfigInjected_1.InjectedChannel = channel;
 
-	if (HAL_ADCEx_InjectedConfigChannel(hadc1, &sConfigInjected_1) != HAL_OK){
-		Error_Handler();
-	}
+	//HAL_ADCEx_InjectedConfigChannel(hadc1, &sConfigInjected_1);
+	hadc1->Instance->JSQR = channel << ADC_SQR3_SQ4_Pos;
+
 	// Start timer what triggers ADC conversions
-	HAL_TIM_PWM_Start_IT(htim1, TIM_CHANNEL_4);
+	//HAL_TIM_PWM_Start_IT(htim1, TIM_CHANNEL_4);
+	__HAL_TIM_ENABLE_IT(htim1, TIM_IT_CC4);
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_4, 1);
 }
 
@@ -337,14 +339,18 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
 	ADC_Ticks ++;
 }
 uint16_t PWM_Value = 0;
+__attribute__( ( section(".data") ) )
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc){
-	//BEMF_Observer_Block();
-	HALL_Observer_Block();
+	BEMF_Observer_Block();
+	//HALL_Observer_Block();
 	//FAST_HALL_Observer_Block();
 
+	_Six_Step_Block(PWM_Value);
 	//Six_Step_Block(PWM_Value);
-	DupkoSin_Block(PWM_Value);
-	// GOOD COMBO -> PWM(256-1) + FAST_HALL_Observer_Block(); + Six_Step_Block(PWM_Value);
+	//DupkoSin_Block(PWM_Value);
+	// GOOD COMBO 	-> PWM(256-1) + FAST_HALL_Observer_Block(); + Six_Step_Block(PWM_Value);
+	//				-> PWM(512-1) + HALL_Observer_Block(); + DupkoSin_Block(PWM_Value);
+	//				-> PWM(256-1) + BEMF_Observer_Block(); + Six_Step_Block(PWM_Value);
 }
 
 void EnableScan(){
@@ -378,8 +384,9 @@ uint16_t BEMF_Treshold = 0;
 uint16_t BEMF_delay = 32;
 uint16_t Angle = 0;
 //uint16_t Ticks_Diff = 0;
-
+__attribute__( ( section(".data") ) )
 void BEMF_Observer_Block(){
+	GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
 	// Input Block
 	uint16_t V_Floating = hadc1->Instance->JDR1;
 	uint16_t V_DC 		= hadc2->Instance->JDR1;
@@ -446,7 +453,7 @@ void BEMF_Observer_Block(){
 
 		Scan_Data[Scan_iter] = V_Floating/8;
 		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin)*64;
+		Scan_Data[Scan_iter] = 0;
 		Scan_iter ++ ;
 		Scan_Data[Scan_iter] = Step_Num * 16;
 		Scan_iter ++ ;
@@ -471,8 +478,7 @@ void BEMF_Observer_Block(){
 		V_Floating_Old = 0;
 		BEMF_delay = 32;
 	}
-
-	Six_Step_Block(PWM_Value);
+	GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
 }
 // 1. ZMIENIC DZIELNIK NAPIECIA TAK BY NIE DZIELIC VDC
 // 2. PRZENIESC DO RAMU
@@ -581,7 +587,7 @@ short I_C;
 short I_Alfa;
 short I_Beta;
 
-
+__attribute__( ( section(".data") ) )
 void HALL_Observer_Block(){
 	GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
 	// A, B, C Currents
@@ -765,7 +771,7 @@ void FAST_HALL_Observer_Block(){
 	//DupkoSin_Block(PWM_Value);
 	GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
 }
-
+__attribute__( ( section(".data") ) )
 inline void Log_Scan(uint8_t data1, uint8_t data2, uint8_t data3, uint8_t data4){
 	Scan_iter += trace_num * 4;
 
@@ -862,11 +868,71 @@ inline void Six_Step_Block(uint16_t PWM_Value){
 	GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
 }
 
-uint16_t DupkoSin[360] = {553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,548,542,536,530,523,517,510,504,497,490,482,475,467,460,452,444,436,428,419,411,402,393,385,376,367,357,348,339,329,320,310,300,290,280,270,260,250,239,229,219,208,197,187,176,165,155,144,133,122,111,100,89,78,67,56,45,33,22,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,22,33,45,56,67,78,89,100,111,122,133,144,155,165,176,187,197,208,219,229,239,250,260,270,280,290,300,310,319,329,339,348,357,367,376,385,393,402,411,419,428,436,444,452,460,467,475,482,490,497,504,510,517,523,530,536,542,548};
+__attribute__( ( section(".data") ) )
+inline void _Six_Step_Block(uint16_t PWM_Value){
+	GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
+	// Do nothing if pwm is ste to 0
+	if(PWM_Value == 0){
+		SetFloating_A();
+		SetFloating_B();
+		SetFloating_C();
+		Step_Num = 0;
+		Old_Step = 0;
+		return;
+	}
+
+	Step_Num = (Angle/60)+1;
+
+	if(Step_Num != Old_Step){
+		if(Step_Num == 1){
+			SetPulse_CH(PWM_Value);
+			SetZero_B();
+			SetFloating_A();
+			ADC_Change_Order(ADC_CHANNEL_A);
+			//Hall_Change_Active(ADC_CHANNEL_A);
+		}else if(Step_Num == 2){
+			SetPulse_CH(PWM_Value);
+			SetFloating_B();
+			SetZero_A();
+			ADC_Change_Order(ADC_CHANNEL_B);
+			//Hall_Change_Active(ADC_CHANNEL_B);
+		}else if(Step_Num == 3){
+			SetFloating_C();
+			SetPulse_BH(PWM_Value);
+			SetZero_A();
+			ADC_Change_Order(ADC_CHANNEL_C);
+			//Hall_Change_Active(ADC_CHANNEL_C);
+		}else if(Step_Num == 4){
+			SetZero_C();
+			SetPulse_BH(PWM_Value);
+			SetFloating_A();
+			ADC_Change_Order(ADC_CHANNEL_A);
+			//Hall_Change_Active(ADC_CHANNEL_A);
+		}else if(Step_Num == 5){
+			SetZero_C();
+			SetFloating_B();
+			SetPulse_AH(PWM_Value);
+			ADC_Change_Order(ADC_CHANNEL_B);
+			//Hall_Change_Active(ADC_CHANNEL_B);
+		}else if(Step_Num == 6){
+			SetFloating_C();
+			SetZero_B();
+			SetPulse_AH(PWM_Value);
+			ADC_Change_Order(ADC_CHANNEL_C);
+			//Hall_Change_Active(ADC_CHANNEL_C);
+		}
+		Old_Step = Step_Num;
+	}
+	GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
+}
+
+//uint16_t DupkoSin_640[360] = {553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,548,542,536,530,523,517,510,504,497,490,482,475,467,460,452,444,436,428,419,411,402,393,385,376,367,357,348,339,329,320,310,300,290,280,270,260,250,239,229,219,208,197,187,176,165,155,144,133,122,111,100,89,78,67,56,45,33,22,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,22,33,45,56,67,78,89,100,111,122,133,144,155,165,176,187,197,208,219,229,239,250,260,270,280,290,300,310,319,329,339,348,357,367,376,385,393,402,411,419,428,436,444,452,460,467,475,482,490,497,504,510,517,523,530,536,542,548};
+uint16_t DupkoSin_512[360] = {442,447,451,455,459,463,467,470,474,478,480,483,486,489,491,494,496,498,500,502,503,505,506,507,508,510,510,510,511,511,511,511,511,510,510,510,508,507,506,505,503,502,500,498,496,494,491,489,486,483,480,478,474,470,467,463,459,455,451,447,442,447,451,455,459,463,467,470,474,478,480,483,486,489,491,494,496,498,500,502,503,505,506,507,508,510,510,510,511,511,511,511,511,510,510,510,508,507,506,505,503,502,500,498,496,494,491,489,486,483,480,478,474,470,467,463,459,455,451,447,442,438,434,429,424,418,414,408,403,398,392,386,380,374,368,362,355,349,342,335,329,322,314,308,301,294,286,278,271,263,256,248,240,232,224,216,208,200,191,183,175,166,158,150,141,132,124,115,106,98,89,80,71,62,54,45,36,26,18,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,18,26,36,45,54,62,71,80,89,98,106,115,124,132,141,150,158,166,175,183,191,200,208,216,224,232,240,248,255,263,271,278,286,294,301,308,314,322,329,335,342,349,355,362,368,374,380,386,392,398,403,408,414,418,424,429,434,438};
+//uint16_t DupkoSin_400[360] = {346,349,353,356,359,362,365,368,370,373,375,378,380,382,384,386,388,389,391,392,393,394,396,396,397,398,398,399,399,399,399,399,399,399,398,398,397,396,396,394,393,392,391,389,388,386,384,382,380,378,375,373,370,368,365,362,359,356,353,349,346,349,353,356,359,362,365,368,370,373,375,378,380,382,384,386,388,389,391,392,393,394,396,396,397,398,398,399,399,399,399,399,399,399,398,398,397,396,396,394,393,392,391,389,388,386,384,382,380,378,375,373,370,368,365,362,359,356,353,349,346,343,339,335,331,327,323,319,315,311,306,301,297,292,288,283,278,273,268,262,257,251,246,241,235,229,223,217,212,206,200,194,188,181,175,169,163,156,149,143,137,130,123,117,110,103,97,90,83,76,69,63,56,49,42,35,28,21,14,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,14,21,28,35,42,49,56,63,69,76,83,90,97,103,110,117,123,130,137,143,149,156,163,169,175,181,188,194,199,206,212,217,223,229,235,241,246,251,257,262,268,273,278,283,288,292,297,301,306,311,315,319,323,327,331,335,339,343};
 uint16_t OldAngle = 0xffff;
 
 // ZMIANA PWM W POLOWIE CENTER ALIGN TO ZLY POMYSL !!!!
-
+__attribute__( ( section(".data") ) )
 void DupkoSin_Block(uint16_t PWM_Value){
 	GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
 	uint16_t tmpAngle = 0;
@@ -884,15 +950,15 @@ void DupkoSin_Block(uint16_t PWM_Value){
 		OldAngle = Angle;
 		tmpAngle = Angle;
 
-		SetPulse_CH((((uint32_t)DupkoSin[tmpAngle])*PWM_Value)/640);
+		SetPulse_CH((((uint32_t)DupkoSin_512[tmpAngle])*PWM_Value)>>9);// Rapid divison by 512
 
 		tmpAngle += 120;
 		if(tmpAngle >= 360) tmpAngle -= 360;
-		SetPulse_AH((((uint32_t)DupkoSin[tmpAngle])*PWM_Value)/640);
+		SetPulse_AH((((uint32_t)DupkoSin_512[tmpAngle])*PWM_Value)>>9);// Rapid divison by 512
 
 		tmpAngle += 120;
 		if(tmpAngle >= 360) tmpAngle -= 360;
-		SetPulse_BH((((uint32_t)DupkoSin[tmpAngle])*PWM_Value)/640);
+		SetPulse_BH((((uint32_t)DupkoSin_512[tmpAngle])*PWM_Value)>>9);// Rapid divison by 512
 	}
 	Step_Num = (Angle/60)+1;
 	if(Step_Num != Old_Step){

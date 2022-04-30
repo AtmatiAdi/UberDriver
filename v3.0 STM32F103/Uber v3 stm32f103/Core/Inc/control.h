@@ -53,6 +53,7 @@ void HALL_Observer_Block();
 void FAST_HALL_Observer_Block();
 
 void Six_Step_Block(uint16_t PWM_Value);
+void _Six_Step_Block(uint16_t PWM_Value);
 void DupkoSin_Block(uint16_t PWM_Value);
 
 void Log_Scan(uint8_t data1, uint8_t data2, uint8_t data3, uint8_t data4);

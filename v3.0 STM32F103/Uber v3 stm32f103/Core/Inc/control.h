@@ -24,7 +24,7 @@
 #define ADC_CHANNEL_B	ADC_CHANNEL_1
 #define ADC_CHANNEL_C	ADC_CHANNEL_3
 
-#define SCAN_SIZE		4096*4
+#define SCAN_SIZE		4096*4*0
 #define MORE_TRACES		7
 
 #include "DRV8305.h"
@@ -50,10 +50,13 @@ void SetFloating_C();
 
 void BEMF_Observer_Block();
 void HALL_Observer_Block();
+void FAST_HALL_Observer_Block();
 
 void Six_Step_Block(uint16_t PWM_Value);
 void DupkoSin_Block(uint16_t PWM_Value);
 
+void Log_Scan(uint8_t data1, uint8_t data2, uint8_t data3, uint8_t data4);
+void SetHallPin();
 void Set_PWM(uint16_t value);
 void Set_Observer_Div(uint8_t div);
 void EnableScan();

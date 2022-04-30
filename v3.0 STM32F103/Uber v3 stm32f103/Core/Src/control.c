@@ -315,6 +315,7 @@ void ADC_Change_Order(uint32_t channel){
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_4, 1);
 }
 
+__attribute__( ( section(".data") ) )
 void Hall_Change_Active(uint32_t pin){
 	if (pin == ADC_CHANNEL_A){
 		Hall_GPIO_Port = HALL_A_GPIO_Port;
@@ -335,12 +336,15 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
 
 	ADC_Ticks ++;
 }
-
+uint16_t PWM_Value = 0;
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc){
 	//BEMF_Observer_Block();
 	HALL_Observer_Block();
+	//FAST_HALL_Observer_Block();
 
-	ADC_Ticks ++;
+	//Six_Step_Block(PWM_Value);
+	DupkoSin_Block(PWM_Value);
+	// GOOD COMBO -> PWM(256-1) + FAST_HALL_Observer_Block(); + Six_Step_Block(PWM_Value);
 }
 
 void EnableScan(){
@@ -370,7 +374,7 @@ uint16_t BEMF_time_cnt = 1;
 uint16_t BEMF_Angle = 330;
 uint8_t Div = 16;
 uint16_t BEMF_Treshold = 0;
-uint16_t PWM_Value = 0;
+
 uint16_t BEMF_delay = 32;
 uint16_t Angle = 0;
 //uint16_t Ticks_Diff = 0;
@@ -577,12 +581,15 @@ short I_C;
 short I_Alfa;
 short I_Beta;
 
+
 void HALL_Observer_Block(){
+	GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
 	// A, B, C Currents
-	Meas[0] = hadc1->Instance->JDR1;
-	Meas[1] = hadc1->Instance->JDR2;
-	Meas[2] = hadc2->Instance->JDR1;
-	Meas[3] = hadc2->Instance->JDR2;
+//	Meas[0] = hadc1->Instance->JDR1;
+//	Meas[1] = hadc1->Instance->JDR2;
+//	Meas[2] = hadc2->Instance->JDR1;
+//	Meas[3] = hadc2->Instance->JDR2;
+
 //	I_A = (ADC_data[1] >> 16) - 2047; // Crurrent A
 //	I_B = (ADC_data[0] >> 16) - 2047; // Current B
 //	I_C = (ADC_data[0]) - 2047;	// Current C
@@ -601,21 +608,31 @@ void HALL_Observer_Block(){
 		DupkoSin_Block(PWM_Value);
 		return;
 	}
-	// Input Block
-	Hall = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin);
+
 	// Initail state reading
 	if (HALL_Is_Running == 0){
 		HALL_Is_Running = 1;
-		HALL_Start_Pos = HAL_GPIO_ReadPin(HALL_A_GPIO_Port,HALL_A_Pin)
-						+ (HAL_GPIO_ReadPin(HALL_B_GPIO_Port,HALL_B_Pin) << 1)
-						+ (HAL_GPIO_ReadPin(HALL_C_GPIO_Port, HALL_C_Pin) << 2);
+//		HALL_Start_Pos = HAL_GPIO_ReadPin(HALL_A_GPIO_Port,HALL_A_Pin)
+//						+ (HAL_GPIO_ReadPin(HALL_B_GPIO_Port,HALL_B_Pin) << 1)
+//						+ (HAL_GPIO_ReadPin(HALL_C_GPIO_Port, HALL_C_Pin) << 2);
+
+		if ((HALL_A_GPIO_Port->IDR & HALL_A_Pin) != 0) HALL_Start_Pos = 1;
+		else HALL_Start_Pos = 0;
+		if ((HALL_B_GPIO_Port->IDR & HALL_B_Pin) != 0) HALL_Start_Pos += 2;
+		if ((HALL_C_GPIO_Port->IDR & HALL_C_Pin) != 0) HALL_Start_Pos += 4;
+
 		HALL_Angle = HALL_Angles[HALL_Start_Pos];
 		Angle = HALL_Angle;
 		HALL_cnt_sign = 1;
-		DupkoSin_Block(PWM_Value);	// it sets up hall pin
-		OldHall = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin);
-		return;
+		SetHallPin();	// it sets up hall pin
+		if ((Hall_GPIO_Port->IDR & Hall_GPIO_Pin) != 0) OldHall = 1;
+		else OldHall = 0;
+		Step_Num = 0;
 	}
+	// Input Block
+	//Hall = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin);
+	if ((Hall_GPIO_Port->IDR & Hall_GPIO_Pin) != 0) Hall = 1;
+	else Hall = 0;
 
 // 0 Cross Counter Block
 	// Change counting sign when 0-cross is detected
@@ -666,49 +683,130 @@ void HALL_Observer_Block(){
 	Angle = HALL_Angle + Approx_Angle;
 
 	if (Scan_Is_enabled > 0){
-		Scan_iter += trace_num * 4;
-
-		Scan_Data[Scan_iter] = Angle/2;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = (uint8_t)(Meas[0]/16);
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = (uint8_t)(Meas[1]/16);
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = 0;
-		Scan_iter ++ ;
-
-		//		Scan_Data[Scan_iter] = ((((uint32_t)DupkoSin[tmpAngle])*PWM_Value)/640)/3;
-		//		Scan_iter ++ ;
-		//		tmpAngle += 120;
-		//		if(tmpAngle >= 360) tmpAngle -= 360;
-		//
-		//		Scan_Data[Scan_iter] = ((((uint32_t)DupkoSin[tmpAngle])*PWM_Value)/640)/3;
-		//		Scan_iter ++ ;
-		//		tmpAngle += 120;
-		//		if(tmpAngle >= 360) tmpAngle -= 360;
-		//
-		//		Scan_Data[Scan_iter] = ((((uint32_t)DupkoSin[tmpAngle])*PWM_Value)/640)/3;
-		//		Scan_iter ++ ;0
-
-		Scan_iter += (MORE_TRACES-trace_num) * 4;
-		if (Scan_iter >= SCAN_SIZE) {
-			trace_num++;
-			if(trace_num > MORE_TRACES){
-				Scan_Is_enabled = 0;
-			} else Scan_iter = 0;
-		}
+		Log_Scan(Angle/2,
+				(uint8_t)(Meas[0]/16),
+				(uint8_t)(Meas[1]/16),
+				0);
 	}
 
-	// Do nothing if pwm is ste to 0
-
-	//DupkoSin_Block(PWM_Value);
-	Six_Step_Block(PWM_Value);
-//	SetZero_A();
-//	SetZero_B();
-//	SetZero_C();
+	GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
 }
 
-void Six_Step_Block(uint16_t PWM_Value){
+__attribute__( ( section(".data") ) )
+void FAST_HALL_Observer_Block(){
+	GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
+
+	if(PWM_Value == 0){
+		HALL_Is_Running = 0;
+		OldHall = 0xff;
+		HALL_cnt_sign = 1;
+		HALL_time_cnt = 0;
+		First_Half_Upper = 0;
+		HALL_Angle = 0;	// UWAZAC Z GOWNO PRZESUNIECIAMI
+		Six_Step_Block(PWM_Value);
+		return;
+	}
+
+	// Initail state reading
+	if (HALL_Is_Running == 0){
+		HALL_Is_Running = 1;
+
+		if ((HALL_A_GPIO_Port->IDR & HALL_A_Pin) != 0) HALL_Start_Pos = 1;
+		else HALL_Start_Pos = 0;
+		if ((HALL_B_GPIO_Port->IDR & HALL_B_Pin) != 0) HALL_Start_Pos += 2;
+		if ((HALL_C_GPIO_Port->IDR & HALL_C_Pin) != 0) HALL_Start_Pos += 4;
+
+		HALL_Angle = HALL_Angles[HALL_Start_Pos];
+		Angle = HALL_Angle;
+		HALL_cnt_sign = 1;
+		SetHallPin();	// it sets up hall pin
+		if ((Hall_GPIO_Port->IDR & Hall_GPIO_Pin) != 0) OldHall = 1;
+		else OldHall = 0;
+		Step_Num = 0;
+	}
+	// Input Block
+	if ((Hall_GPIO_Port->IDR & Hall_GPIO_Pin) != 0) Hall = 1;
+	else Hall = 0;
+
+// 0 Cross Counter Block
+	// Change counting sign when 0-cross is detected
+	if (Hall != OldHall){
+		HALL_cnt_sign = 0;
+		HALL_Angle  += 30;
+		if (Div > 30) HALL_Treshold = 0;
+		else HALL_Treshold = HALL_time_cnt/Div;
+	}
+	OldHall = Hall;
+	// Countter
+	if(HALL_cnt_sign){
+		HALL_time_cnt++;
+	} else {
+		if (HALL_time_cnt > 0) HALL_time_cnt--;
+	}
+	// When Counter reached TRESHOLD then change sign and update BEMF_Angle
+	if((HALL_time_cnt <= HALL_Treshold) && (HALL_cnt_sign == 0)){
+		HALL_Angle += 30;
+		HALL_cnt_sign = 1;
+		HALL_time_cnt = 0;
+	}
+	// Counter buffor reset before overflow
+	if(HALL_time_cnt == 1024){
+//		HALL_Angle += 60;
+		HALL_cnt_sign = 1;
+		HALL_time_cnt = 0;
+		First_Half_Upper = 0;
+		HALL_Is_Running = 0;
+		return;
+	}
+
+	if(HALL_Angle >= 360) HALL_Angle = 0;
+	Angle = HALL_Angle;
+
+	//DupkoSin_Block(PWM_Value);
+	GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
+}
+
+inline void Log_Scan(uint8_t data1, uint8_t data2, uint8_t data3, uint8_t data4){
+	Scan_iter += trace_num * 4;
+
+	Scan_Data[Scan_iter] = data1;
+	Scan_iter ++ ;
+	Scan_Data[Scan_iter] = data2;
+	Scan_iter ++ ;
+	Scan_Data[Scan_iter] = data3;
+	Scan_iter ++ ;
+	Scan_Data[Scan_iter] = data4;
+	Scan_iter ++ ;
+
+	Scan_iter += (MORE_TRACES-trace_num) * 4;
+	if (Scan_iter >= SCAN_SIZE) {
+		trace_num++;
+		if(trace_num > MORE_TRACES){
+			Scan_Is_enabled = 0;
+		} else Scan_iter = 0;
+	}
+}
+__attribute__( ( section(".data") ) )
+inline void SetHallPin(){
+	Step_Num = (Angle/60)+1;
+	if(Step_Num == 1){
+		Hall_Change_Active(ADC_CHANNEL_A);
+	}else if(Step_Num == 2){
+		Hall_Change_Active(ADC_CHANNEL_B);
+	}else if(Step_Num == 3){
+		Hall_Change_Active(ADC_CHANNEL_C);
+	}else if(Step_Num == 4){
+		Hall_Change_Active(ADC_CHANNEL_A);
+	}else if(Step_Num == 5){
+		Hall_Change_Active(ADC_CHANNEL_B);
+	}else if(Step_Num == 6){
+		Hall_Change_Active(ADC_CHANNEL_C);
+	}
+}
+
+__attribute__( ( section(".data") ) )
+inline void Six_Step_Block(uint16_t PWM_Value){
+	GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
 	// Do nothing if pwm is ste to 0
 	if(PWM_Value == 0){
 		SetFloating_A();
@@ -718,47 +816,50 @@ void Six_Step_Block(uint16_t PWM_Value){
 		Old_Step = 0;
 		return;
 	}
+
 	Step_Num = (Angle/60)+1;
+
 	if(Step_Num != Old_Step){
 		if(Step_Num == 1){
 			SetPulse_CH(PWM_Value);
 			SetZero_B();
 			SetFloating_A();
-			ADC_Change_Order(ADC_CHANNEL_A);
+			//ADC_Change_Order(ADC_CHANNEL_A);
 			Hall_Change_Active(ADC_CHANNEL_A);
 		}else if(Step_Num == 2){
 			SetPulse_CH(PWM_Value);
 			SetFloating_B();
 			SetZero_A();
-			ADC_Change_Order(ADC_CHANNEL_B);
+			//ADC_Change_Order(ADC_CHANNEL_B);
 			Hall_Change_Active(ADC_CHANNEL_B);
 		}else if(Step_Num == 3){
 			SetFloating_C();
 			SetPulse_BH(PWM_Value);
 			SetZero_A();
-			ADC_Change_Order(ADC_CHANNEL_C);
+			//ADC_Change_Order(ADC_CHANNEL_C);
 			Hall_Change_Active(ADC_CHANNEL_C);
 		}else if(Step_Num == 4){
 			SetZero_C();
 			SetPulse_BH(PWM_Value);
 			SetFloating_A();
-			ADC_Change_Order(ADC_CHANNEL_A);
+			//ADC_Change_Order(ADC_CHANNEL_A);
 			Hall_Change_Active(ADC_CHANNEL_A);
 		}else if(Step_Num == 5){
 			SetZero_C();
 			SetFloating_B();
 			SetPulse_AH(PWM_Value);
-			ADC_Change_Order(ADC_CHANNEL_B);
+			//ADC_Change_Order(ADC_CHANNEL_B);
 			Hall_Change_Active(ADC_CHANNEL_B);
 		}else if(Step_Num == 6){
 			SetFloating_C();
 			SetZero_B();
 			SetPulse_AH(PWM_Value);
-			ADC_Change_Order(ADC_CHANNEL_C);
+			//ADC_Change_Order(ADC_CHANNEL_C);
 			Hall_Change_Active(ADC_CHANNEL_C);
 		}
 		Old_Step = Step_Num;
 	}
+	GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
 }
 
 uint16_t DupkoSin[360] = {553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,548,542,536,530,523,517,510,504,497,490,482,475,467,460,452,444,436,428,419,411,402,393,385,376,367,357,348,339,329,320,310,300,290,280,270,260,250,239,229,219,208,197,187,176,165,155,144,133,122,111,100,89,78,67,56,45,33,22,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,22,33,45,56,67,78,89,100,111,122,133,144,155,165,176,187,197,208,219,229,239,250,260,270,280,290,300,310,319,329,339,348,357,367,376,385,393,402,411,419,428,436,444,452,460,467,475,482,490,497,504,510,517,523,530,536,542,548};
@@ -767,6 +868,7 @@ uint16_t OldAngle = 0xffff;
 // ZMIANA PWM W POLOWIE CENTER ALIGN TO ZLY POMYSL !!!!
 
 void DupkoSin_Block(uint16_t PWM_Value){
+	GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
 	uint16_t tmpAngle = 0;
 	// REMEMBER THAT MAXIMUM PWM VALUE IS 640
 	if(PWM_Value == 0){
@@ -809,44 +911,46 @@ void DupkoSin_Block(uint16_t PWM_Value){
 		}
 		Old_Step = Step_Num;
 	}
+	GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
 }
 
 void Set_PWM(uint16_t value){
 	PWM_Value = value;
 }
-
+__attribute__( ( section(".data") ) )
 inline void SetZero_A(){
 	PWM_LA_GPIO_Port->CRL |= 0x00000080;	// Set to alternate push-pull
 	PWM_HA_GPIO_Port->CRH |= 0x00000800;	// Set to alternate out push-pull
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, 0);
 }
-
+__attribute__( ( section(".data") ) )
 inline void SetZero_B(){
 	PWM_LB_GPIO_Port->CRL |= 0x00000008;	// Set to alternate push-pull
 	PWM_HB_GPIO_Port->CRH |= 0x00000080;	// Set to alternate push-pull
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_2, 0);
 }
-
+__attribute__( ( section(".data") ) )
 inline void SetZero_C(){
 	PWM_LC_GPIO_Port->CRL |= 0x80000000;	// Set to alternate push-pull
 	PWM_HC_GPIO_Port->CRH |= 0x00000008;	// Set to alternate push-pull
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_1, 0);
 }
 ///////////////////
+__attribute__( ( section(".data") ) )
 inline void SetPulse_AH(uint16_t value){
 	PWM_LA_GPIO_Port->CRL |= 0x00000080;	// Set to alternate push-pull
 	PWM_HA_GPIO_Port->CRH |= 0x00000800;	// Set to alternate out push-pull
 	//if(value == 0) value = 1;
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_3, value);
 }
-
+__attribute__( ( section(".data") ) )
 inline void SetPulse_BH(uint16_t value){
 	PWM_LB_GPIO_Port->CRL |= 0x00000008;	// Set to alternate push-pull
 	PWM_HB_GPIO_Port->CRH |= 0x00000080;	// Set to alternate push-pull
 	//if(value == 0) value = 1;
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_2, value);
 }
-
+__attribute__( ( section(".data") ) )
 inline void SetPulse_CH(uint16_t value){
 	PWM_LC_GPIO_Port->CRL |= 0x80000000;	// Set to alternate push-pull
 	PWM_HC_GPIO_Port->CRH |= 0x00000008;	// Set to alternate push-pull
@@ -854,6 +958,7 @@ inline void SetPulse_CH(uint16_t value){
 	__HAL_TIM_SET_COMPARE(htim1, TIM_CHANNEL_1, value);
 }
 ///////////////////
+__attribute__( ( section(".data") ) )
 inline void SetFloating_A(){
 	PWM_LA_GPIO_Port->CRL &= ~0x000000C0;	// Set to general out push-pull
 	PWM_HA_GPIO_Port->CRH &= ~0x00000C00;	// Set to general out push-pull
@@ -861,7 +966,7 @@ inline void SetFloating_A(){
 	//HAL_GPIO_WritePin(PWM_AL_GPIO_Port, PWM_AL_Pin, 0);
 	//__HAL_TIM_SET_COMPARE(htim2, TIM_CHANNEL_2, PWM_COUNTER);
 }
-
+__attribute__( ( section(".data") ) )
 inline void SetFloating_B(){
 	PWM_LB_GPIO_Port->CRL &= ~0x0000000C;	// Set to general out push-pull
 	PWM_HB_GPIO_Port->CRH &= ~0x000000C0;	// Set to general out push-pull
@@ -869,7 +974,7 @@ inline void SetFloating_B(){
 	//HAL_GPIO_WritePin(PWM_BL_GPIO_Port, PWM_BL_Pin, 0);
 	//__HAL_TIM_SET_COMPARE(htim3, TIM_CHANNEL_2, PWM_COUNTER);
 }
-
+__attribute__( ( section(".data") ) )
 inline void SetFloating_C(){
 	PWM_LC_GPIO_Port->CRL &= ~0xC0000000;	// Set to general out push-pull
 	PWM_HC_GPIO_Port->CRH &= ~0x0000000C;	// Set to general out push-pull

@@ -37,11 +37,11 @@ void NormalControl(){
 	if(MessageRecived){
 		MessageRecived = 0;
 		Function = rx_buffer[0];
-		Power = rx_buffer[1] * 3;
+		Power = (rx_buffer[1] * 2);	// zalezy od max period
 		step_delay = rx_buffer[2];
 		if((Function == SET_MOTOR_1_SPEED_FORWAD) && (Power > 0)){					// Jezeli to funkcja z jakas wartoscia
 			HAL_GPIO_WritePin(ENGATE_GPIO_Port, ENGATE_Pin, 1);
-			Set_PWM(Power);
+			Set_PWM(Power + 150);	// zalezy od max period
 			Set_Observer_Div(step_delay/8);
 		}else if(Function == SCAN_ONE_VARIABLE){
 			EnableScan();

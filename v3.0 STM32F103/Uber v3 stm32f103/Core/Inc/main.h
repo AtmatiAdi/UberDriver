@@ -60,12 +60,12 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define PWM_PRESC 2-1
+#define PWM_PRESC 1-1
 #define PWM_PERIOD 640-1
 #define ENGATE_Pin GPIO_PIN_0
 #define ENGATE_GPIO_Port GPIOD
-#define NFAULT_Pin GPIO_PIN_1
-#define NFAULT_GPIO_Port GPIOD
+#define DEBUG_PIN_Pin GPIO_PIN_1
+#define DEBUG_PIN_GPIO_Port GPIOD
 #define ADC_VOLTAGE_DC_Pin GPIO_PIN_0
 #define ADC_VOLTAGE_DC_GPIO_Port GPIOA
 #define ADC_VOLTAGE_A_Pin GPIO_PIN_1
@@ -107,5 +107,3 @@ void Error_Handler(void);
 #endif
 
 #endif /* __MAIN_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

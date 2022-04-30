@@ -442,31 +442,16 @@ void BEMF_Observer_Block(){
 		BEMF_Angle += 60;
 		BEMF_cnt_sign = 1;
 		BEMF_time_cnt = 0;
-
 	}
 	//Old_Step = Step_Num;
 	if (BEMF_Angle >= 360) BEMF_Angle = 0;
 	Angle = BEMF_Angle;
 
 	if (Scan_Is_enabled > 0){
-		Scan_iter += trace_num * 4;
-
-		Scan_Data[Scan_iter] = V_Floating/8;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = 0;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = Step_Num * 16;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = BEMF_time_cnt;
-		Scan_iter ++ ;
-
-		Scan_iter += (MORE_TRACES-trace_num) * 4;
-		if (Scan_iter >= SCAN_SIZE) {
-			trace_num++;
-			if(trace_num > MORE_TRACES){
-				Scan_Is_enabled = 0;
-			} else Scan_iter = 0;
-		}
+		Log_Scan(V_Floating/8,
+				0,
+				Step_Num * 16,
+				BEMF_time_cnt);
 	}
 	// Do nothing if pwm is ste to 0
 	if(PWM_Value == 0){

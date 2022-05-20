@@ -256,7 +256,8 @@ void Control_Init_ADC_VPhaseVDC(ADC_HandleTypeDef *_hadc1,
 	  sConfigInjected_1.InjectedChannel = ADC_CHANNEL_1;
 	  sConfigInjected_1.InjectedRank = 1;
 	  sConfigInjected_1.InjectedNbrOfConversion = 1;
-	  sConfigInjected_1.InjectedSamplingTime = ADC_SAMPLETIME_28CYCLES_5;
+//	  sConfigInjected_1.InjectedSamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+	  sConfigInjected_2.InjectedSamplingTime = ADC_SAMPLETIME_28CYCLES_5;
 	  sConfigInjected_1.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJECCONV_T1_CC4;
 	  sConfigInjected_1.AutoInjectedConv = DISABLE;
 	  sConfigInjected_1.InjectedDiscontinuousConvMode = DISABLE;
@@ -281,6 +282,7 @@ void Control_Init_ADC_VPhaseVDC(ADC_HandleTypeDef *_hadc1,
 	  sConfigInjected_2.InjectedChannel = ADC_CHANNEL_0;
 	  sConfigInjected_2.InjectedRank = 1;
 	  sConfigInjected_2.InjectedNbrOfConversion = 1;
+//	  sConfigInjected_1.InjectedSamplingTime = ADC_SAMPLETIME_1CYCLE_5;
 	  sConfigInjected_2.InjectedSamplingTime = ADC_SAMPLETIME_28CYCLES_5;
 	  sConfigInjected_2.AutoInjectedConv = DISABLE;
 	  sConfigInjected_2.InjectedDiscontinuousConvMode = DISABLE;
@@ -342,12 +344,12 @@ int16_t PWM_Value = 0;
 int16_t PWM_Value_irr = 0;
 __attribute__( ( section(".data") ) )
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc){
-	BEMF_Observer_Block();
-	//HALL_Observer_Block();
+	//BEMF_Observer_Block();
+	HALL_Observer_Block();
 	//FAST_HALL_Observer_Block();
 
-	_Six_Step_Block(PWM_Value_irr);	// Bemf
-	//Six_Step_Block(PWM_Value_irr);// Hall
+	//_Six_Step_Block(PWM_Value_irr);	// Bemf
+	Six_Step_Block(PWM_Value_irr);// Hall
 	//DupkoSin_Block(PWM_Value_irr);	// NIE BEDZIE DZIALAC BO KAT JEST 384 !!!!!!!!!!!!!
 	// GOOD COMBO 	-> PWM(256-1) + FAST_HALL_Observer_Block(); + Six_Step_Block(PWM_Value);
 	//				-> PWM(512-1) + HALL_Observer_Block(); + DupkoSin_Block(PWM_Value);
@@ -615,118 +617,7 @@ short I_Beta;
 
 __attribute__( ( section(".data") ) )
 void HALL_Observer_Block(){
-	GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
-	// A, B, C Currents
-//	Meas[0] = hadc1->Instance->JDR1;
-//	Meas[1] = hadc1->Instance->JDR2;
-//	Meas[2] = hadc2->Instance->JDR1;
-//	Meas[3] = hadc2->Instance->JDR2;
-
-//	I_A = (ADC_data[1] >> 16) - 2047; // Crurrent A
-//	I_B = (ADC_data[0] >> 16) - 2047; // Current B
-//	I_C = (ADC_data[0]) - 2047;	// Current C
-//	Meas[3] = ADC_data[1];	// Voltage DC
-	// Alfa, Beta Currents
-//	I_Alfa = I_A;
-//	I_Beta = (I_B - I_C)/sqrt(3);
-
-	if(PWM_Value == 0){
-		HALL_Is_Running = 0;
-		OldHall = 0xff;
-		HALL_cnt_sign = 1;
-		HALL_time_cnt = 0;
-		First_Half_Upper = 0;
-		HALL_Angle = 0;	// UWAZAC Z GOWNO PRZESUNIECIAMI
-		DupkoSin_Block(PWM_Value);
-		return;
-	}
-
-	// Initail state reading
-	if (HALL_Is_Running == 0){
-		HALL_Is_Running = 1;
-//		HALL_Start_Pos = HAL_GPIO_ReadPin(HALL_A_GPIO_Port,HALL_A_Pin)
-//						+ (HAL_GPIO_ReadPin(HALL_B_GPIO_Port,HALL_B_Pin) << 1)
-//						+ (HAL_GPIO_ReadPin(HALL_C_GPIO_Port, HALL_C_Pin) << 2);
-
-		if ((HALL_A_GPIO_Port->IDR & HALL_A_Pin) != 0) HALL_Start_Pos = 1;
-		else HALL_Start_Pos = 0;
-		if ((HALL_B_GPIO_Port->IDR & HALL_B_Pin) != 0) HALL_Start_Pos += 2;
-		if ((HALL_C_GPIO_Port->IDR & HALL_C_Pin) != 0) HALL_Start_Pos += 4;
-
-		HALL_Angle = HALL_Angles[HALL_Start_Pos];
-		Angle = HALL_Angle;
-		HALL_cnt_sign = 1;
-		SetHallPin();	// it sets up hall pin
-		if ((Hall_GPIO_Port->IDR & Hall_GPIO_Pin) != 0) OldHall = 1;
-		else OldHall = 0;
-		Step_Num = 0;
-	}
-	// Input Block
-	//Hall = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin);
-	if ((Hall_GPIO_Port->IDR & Hall_GPIO_Pin) != 0) Hall = 1;
-	else Hall = 0;
-
-// 0 Cross Counter Block
-	// Change counting sign when 0-cross is detected
-	if (Hall != OldHall){
-		HALL_cnt_sign = 0;
-		HALL_Angle  += 30;
-		if (Div > 30) HALL_Treshold = 0;
-		else HALL_Treshold = HALL_time_cnt/Div;
-		// For angle aproximation
-		First_Half_Upper = HALL_time_cnt;
-		Second_Half_Upper = HALL_time_cnt - HALL_Treshold;
-	}
-	OldHall = Hall;
-	// Countter
-	if(HALL_cnt_sign){
-		HALL_time_cnt++;
-	} else {
-		if (HALL_time_cnt > 0) HALL_time_cnt--;
-	}
-	// When Counter reached TRESHOLD then change sign and update BEMF_Angle
-	if((HALL_time_cnt <= HALL_Treshold) && (HALL_cnt_sign == 0)){
-		HALL_Angle += 30;
-		HALL_cnt_sign = 1;
-		HALL_time_cnt = 0;
-	}
-	// Counter buffor reset before overflow
-	if(HALL_time_cnt == 1024){
-//		HALL_Angle += 60;
-		HALL_cnt_sign = 1;
-		HALL_time_cnt = 0;
-		First_Half_Upper = 0;
-		HALL_Is_Running = 0;
-		return;
-	}
-	if(First_Half_Upper){
-		if(HALL_cnt_sign){
-			// cnt is increasing
-			Approx_Angle = ((uint16_t)(HALL_time_cnt)*30)/First_Half_Upper;
-			if(Approx_Angle > 30 ) Approx_Angle = 30;
-		}else{
-			// cnt is decreasing
-			Approx_Angle = ((uint16_t)(HALL_time_cnt-HALL_Treshold)*30)/Second_Half_Upper;
-			Approx_Angle = 30 - Approx_Angle;
-		}
-	}
-
-	if(HALL_Angle >= 360) HALL_Angle = 0;
-	Angle = HALL_Angle + Approx_Angle;
-
-	if (Scan_Is_enabled > 0){
-		Log_Scan(Angle/2,
-				(uint8_t)(Meas[0]/16),
-				(uint8_t)(Meas[1]/16),
-				0);
-	}
-
-	GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
-}
-
-__attribute__( ( section(".data") ) )
-void FAST_HALL_Observer_Block(){
-	GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
+	//GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
 
 	if(PWM_Value == 0){
 		HALL_Is_Running = 0;
@@ -764,7 +655,103 @@ void FAST_HALL_Observer_Block(){
 	// Change counting sign when 0-cross is detected
 	if (Hall != OldHall){
 		HALL_cnt_sign = 0;
-		HALL_Angle  += 30;
+		HALL_Angle  += 32;
+		if (Div > 30) HALL_Treshold = 0;
+		else HALL_Treshold = HALL_time_cnt/Div;
+		// For angle aproximation
+		First_Half_Upper = HALL_time_cnt;
+		Second_Half_Upper = HALL_time_cnt - HALL_Treshold;
+	}
+	OldHall = Hall;
+	// Countter
+	if(HALL_cnt_sign){
+		HALL_time_cnt++;
+	} else {
+		if (HALL_time_cnt > 0) HALL_time_cnt--;
+	}
+	// When Counter reached TRESHOLD then change sign and update BEMF_Angle
+	if((HALL_time_cnt <= HALL_Treshold) && (HALL_cnt_sign == 0)){
+		HALL_Angle += 32;
+		HALL_cnt_sign = 1;
+		HALL_time_cnt = 0;
+	}
+	// Counter buffor reset before overflow
+	if(HALL_time_cnt == 1024){
+//		HALL_Angle += 64;
+		HALL_cnt_sign = 1;
+		HALL_time_cnt = 0;
+		First_Half_Upper = 0;
+		HALL_Is_Running = 0;
+		return;
+	}
+	// ANGLE APROXIMATIONS WORKS BADLY !!!!!!!!
+	if(First_Half_Upper){
+		if(HALL_cnt_sign){
+			// cnt is increasing
+			Approx_Angle = (HALL_time_cnt<<5)/First_Half_Upper;
+			if(Approx_Angle >= 32 ) Approx_Angle = 31;
+		}else{
+			// cnt is decreasing
+			Approx_Angle = ((HALL_time_cnt-HALL_Treshold)<<5)/Second_Half_Upper;
+			Approx_Angle = 32 - Approx_Angle;
+			if(Approx_Angle >= 32 ) Approx_Angle = 31;
+		}
+	}
+
+	if(HALL_Angle >= 384) HALL_Angle = 0;
+	Angle = HALL_Angle + Approx_Angle;
+
+	if (Scan_Is_enabled > 0){
+		Log_Scan(Angle/2,
+				(uint8_t)(Meas[0]/16),
+				(uint8_t)(Meas[1]/16),
+				0);
+	}
+
+	//GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
+}
+
+__attribute__( ( section(".data") ) )
+void FAST_HALL_Observer_Block(){
+	//GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
+
+	if(PWM_Value == 0){
+		HALL_Is_Running = 0;
+		OldHall = 0xff;
+		HALL_cnt_sign = 1;
+		HALL_time_cnt = 0;
+		First_Half_Upper = 0;
+		HALL_Angle = 0;	// UWAZAC Z GOWNO PRZESUNIECIAMI
+		Six_Step_Block(PWM_Value);
+		return;
+	}
+
+	// Initail state reading
+	if (HALL_Is_Running == 0){
+		HALL_Is_Running = 1;
+
+		if ((HALL_A_GPIO_Port->IDR & HALL_A_Pin) != 0) HALL_Start_Pos = 1;
+		else HALL_Start_Pos = 0;
+		if ((HALL_B_GPIO_Port->IDR & HALL_B_Pin) != 0) HALL_Start_Pos += 2;
+		if ((HALL_C_GPIO_Port->IDR & HALL_C_Pin) != 0) HALL_Start_Pos += 4;
+
+		HALL_Angle = HALL_Angles[HALL_Start_Pos];
+		Angle = HALL_Angle;
+		HALL_cnt_sign = 1;
+		SetHallPin();	// it sets up hall pin
+		if ((Hall_GPIO_Port->IDR & Hall_GPIO_Pin) != 0) OldHall = 1;
+		else OldHall = 0;
+		Step_Num = 0;
+	}
+	// Input Block
+	if ((Hall_GPIO_Port->IDR & Hall_GPIO_Pin) != 0) Hall = 1;
+	else Hall = 0;
+
+// 0 Cross Counter Block
+	// Change counting sign when 0-cross is detected
+	if (Hall != OldHall){
+		HALL_cnt_sign = 0;
+		HALL_Angle  += 32;
 		if (Div > 30) HALL_Treshold = 0;
 		else HALL_Treshold = HALL_time_cnt/Div;
 	}
@@ -777,13 +764,13 @@ void FAST_HALL_Observer_Block(){
 	}
 	// When Counter reached TRESHOLD then change sign and update BEMF_Angle
 	if((HALL_time_cnt <= HALL_Treshold) && (HALL_cnt_sign == 0)){
-		HALL_Angle += 30;
+		HALL_Angle += 32;
 		HALL_cnt_sign = 1;
 		HALL_time_cnt = 0;
 	}
 	// Counter buffor reset before overflow
 	if(HALL_time_cnt == 1024){
-//		HALL_Angle += 60;
+//		HALL_Angle += 64;
 		HALL_cnt_sign = 1;
 		HALL_time_cnt = 0;
 		First_Half_Upper = 0;
@@ -791,11 +778,10 @@ void FAST_HALL_Observer_Block(){
 		return;
 	}
 
-	if(HALL_Angle >= 360) HALL_Angle = 0;
+	if(HALL_Angle >= 384) HALL_Angle = 0;
 	Angle = HALL_Angle;
 
-	//DupkoSin_Block(PWM_Value);
-	GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
+	//GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
 }
 __attribute__( ( section(".data") ) )
 inline void Log_Scan(uint8_t data1, uint8_t data2, uint8_t data3, uint8_t data4){
@@ -838,7 +824,7 @@ inline void SetHallPin(){
 
 __attribute__( ( section(".data") ) )
 inline void Six_Step_Block(uint16_t PWM_Value){
-	GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
+	//GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
 	// Do nothing if pwm is ste to 0
 	if(PWM_Value == 0){
 		SetFloating_A();
@@ -891,12 +877,12 @@ inline void Six_Step_Block(uint16_t PWM_Value){
 		}
 		Old_Step = Step_Num;
 	}
-	GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
+	//GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
 }
 
 __attribute__( ( section(".data") ) )
 inline void _Six_Step_Block(uint16_t PWM_Value){
-	GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
+	//GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
 	// Do nothing if pwm is ste to 0
 	if(PWM_Value == 0){
 		SetFloating_A();
@@ -949,18 +935,19 @@ inline void _Six_Step_Block(uint16_t PWM_Value){
 		}
 		Old_Step = Step_Num;
 	}
-	GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
+	//GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
 }
 
 //uint16_t DupkoSin_640[360] = {553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,559,564,569,574,579,584,588,592,597,600,604,608,611,614,617,620,623,625,627,629,631,633,634,635,637,637,638,639,639,639,639,639,638,637,637,635,634,633,631,629,627,625,623,620,617,614,611,608,604,600,597,592,588,584,579,574,569,564,559,553,548,542,536,530,523,517,510,504,497,490,482,475,467,460,452,444,436,428,419,411,402,393,385,376,367,357,348,339,329,320,310,300,290,280,270,260,250,239,229,219,208,197,187,176,165,155,144,133,122,111,100,89,78,67,56,45,33,22,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,22,33,45,56,67,78,89,100,111,122,133,144,155,165,176,187,197,208,219,229,239,250,260,270,280,290,300,310,319,329,339,348,357,367,376,385,393,402,411,419,428,436,444,452,460,467,475,482,490,497,504,510,517,523,530,536,542,548};
-uint16_t DupkoSin_512[360] = {442,447,451,455,459,463,467,470,474,478,480,483,486,489,491,494,496,498,500,502,503,505,506,507,508,510,510,510,511,511,511,511,511,510,510,510,508,507,506,505,503,502,500,498,496,494,491,489,486,483,480,478,474,470,467,463,459,455,451,447,442,447,451,455,459,463,467,470,474,478,480,483,486,489,491,494,496,498,500,502,503,505,506,507,508,510,510,510,511,511,511,511,511,510,510,510,508,507,506,505,503,502,500,498,496,494,491,489,486,483,480,478,474,470,467,463,459,455,451,447,442,438,434,429,424,418,414,408,403,398,392,386,380,374,368,362,355,349,342,335,329,322,314,308,301,294,286,278,271,263,256,248,240,232,224,216,208,200,191,183,175,166,158,150,141,132,124,115,106,98,89,80,71,62,54,45,36,26,18,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,18,26,36,45,54,62,71,80,89,98,106,115,124,132,141,150,158,166,175,183,191,200,208,216,224,232,240,248,255,263,271,278,286,294,301,308,314,322,329,335,342,349,355,362,368,374,380,386,392,398,403,408,414,418,424,429,434,438};
+//uint16_t DupkoSin_512[360] = {442,447,451,455,459,463,467,470,474,478,480,483,486,489,491,494,496,498,500,502,503,505,506,507,508,510,510,510,511,511,511,511,511,510,510,510,508,507,506,505,503,502,500,498,496,494,491,489,486,483,480,478,474,470,467,463,459,455,451,447,442,447,451,455,459,463,467,470,474,478,480,483,486,489,491,494,496,498,500,502,503,505,506,507,508,510,510,510,511,511,511,511,511,510,510,510,508,507,506,505,503,502,500,498,496,494,491,489,486,483,480,478,474,470,467,463,459,455,451,447,442,438,434,429,424,418,414,408,403,398,392,386,380,374,368,362,355,349,342,335,329,322,314,308,301,294,286,278,271,263,256,248,240,232,224,216,208,200,191,183,175,166,158,150,141,132,124,115,106,98,89,80,71,62,54,45,36,26,18,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,18,26,36,45,54,62,71,80,89,98,106,115,124,132,141,150,158,166,175,183,191,200,208,216,224,232,240,248,255,263,271,278,286,294,301,308,314,322,329,335,342,349,355,362,368,374,380,386,392,398,403,408,414,418,424,429,434,438};
 //uint16_t DupkoSin_400[360] = {346,349,353,356,359,362,365,368,370,373,375,378,380,382,384,386,388,389,391,392,393,394,396,396,397,398,398,399,399,399,399,399,399,399,398,398,397,396,396,394,393,392,391,389,388,386,384,382,380,378,375,373,370,368,365,362,359,356,353,349,346,349,353,356,359,362,365,368,370,373,375,378,380,382,384,386,388,389,391,392,393,394,396,396,397,398,398,399,399,399,399,399,399,399,398,398,397,396,396,394,393,392,391,389,388,386,384,382,380,378,375,373,370,368,365,362,359,356,353,349,346,343,339,335,331,327,323,319,315,311,306,301,297,292,288,283,278,273,268,262,257,251,246,241,235,229,223,217,212,206,200,194,188,181,175,169,163,156,149,143,137,130,123,117,110,103,97,90,83,76,69,63,56,49,42,35,28,21,14,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,14,21,28,35,42,49,56,63,69,76,83,90,97,103,110,117,123,130,137,143,149,156,163,169,175,181,188,194,199,206,212,217,223,229,235,241,246,251,257,262,268,273,278,283,288,292,297,301,306,311,315,319,323,327,331,335,339,343};
+uint8_t DupkoSin_256[384] = {221,223,225,227,229,231,232,234,236,237,239,240,241,243,244,245,246,247,248,249,250,251,252,252,253,253,254,254,254,255,255,255,255,255,255,255,254,254,254,253,253,252,252,251,250,249,248,247,246,245,244,243,241,240,239,237,236,234,232,231,229,227,225,223,221,223,225,227,229,231,232,234,236,237,239,240,241,243,244,245,246,247,248,249,250,251,252,252,253,253,254,254,254,255,255,255,255,255,255,255,254,254,254,253,253,252,252,251,250,249,248,247,246,245,244,243,241,240,239,237,236,234,232,231,229,227,225,223,221,219,217,214,212,210,207,205,202,200,197,194,192,189,186,183,180,177,174,171,168,165,162,159,155,152,149,145,142,138,135,131,128,124,120,117,113,109,105,101,98,94,90,86,82,78,74,70,66,62,58,54,50,46,42,37,33,29,25,21,17,13,8,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,8,13,17,21,25,29,33,37,42,46,50,54,58,62,66,70,74,78,82,86,90,94,98,101,105,109,113,117,120,124,127,131,135,138,142,145,149,152,155,159,162,165,168,171,174,177,180,183,186,189,192,194,197,200,202,205,207,210,212,214,217,219};
 uint16_t OldAngle = 0xffff;
 
 // ZMIANA PWM W POLOWIE CENTER ALIGN TO ZLY POMYSL !!!!
 __attribute__( ( section(".data") ) )
 void DupkoSin_Block(uint16_t PWM_Value){
-	GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
+	//GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
 	uint16_t tmpAngle = 0;
 	// REMEMBER THAT MAXIMUM PWM VALUE IS 640
 	if(PWM_Value == 0){
@@ -976,17 +963,17 @@ void DupkoSin_Block(uint16_t PWM_Value){
 		OldAngle = Angle;
 		tmpAngle = Angle;
 
-		SetPulse_CH((((uint32_t)DupkoSin_512[tmpAngle])*PWM_Value)>>9);// Rapid divison by 512
+		SetPulse_CH((((uint32_t)DupkoSin_256[tmpAngle])*(PWM_Value+1))>>8);// Rapid divison by 256
 
-		tmpAngle += 120;
-		if(tmpAngle >= 360) tmpAngle -= 360;
-		SetPulse_AH((((uint32_t)DupkoSin_512[tmpAngle])*PWM_Value)>>9);// Rapid divison by 512
+		tmpAngle += 128;
+		if(tmpAngle >= 384) tmpAngle -= 384;
+		SetPulse_AH((((uint32_t)DupkoSin_256[tmpAngle])*(PWM_Value+1))>>8);// Rapid divison by 256
 
-		tmpAngle += 120;
-		if(tmpAngle >= 360) tmpAngle -= 360;
-		SetPulse_BH((((uint32_t)DupkoSin_512[tmpAngle])*PWM_Value)>>9);// Rapid divison by 512
+		tmpAngle += 128;
+		if(tmpAngle >= 384) tmpAngle -= 384;
+		SetPulse_BH((((uint32_t)DupkoSin_256[tmpAngle])*(PWM_Value+1))>>8);// Rapid divison by 256
 	}
-	Step_Num = (Angle/60)+1;
+	Step_Num = (Angle>>6)+1;
 	if(Step_Num != Old_Step){
 		if(Step_Num == 1){
 			Hall_Change_Active(ADC_CHANNEL_A);
@@ -1003,12 +990,13 @@ void DupkoSin_Block(uint16_t PWM_Value){
 		}
 		Old_Step = Step_Num;
 	}
-	GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
+	//GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
 }
 
 void Set_PWM(int16_t value){
 	PWM_Value = value;
 	PWM_Value_irr += (PWM_Value - PWM_Value_irr) >> 1;
+	Old_Step = 0;
 }
 __attribute__( ( section(".data") ) )
 inline void SetZero_A(){

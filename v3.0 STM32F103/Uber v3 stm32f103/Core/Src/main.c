@@ -116,9 +116,6 @@ int main(void)
 	uint8_t ret1[2] = {0,0};
 	uint8_t res1 = HAL_SPI_TransmitReceive(&hspi1, buf1, ret1, 1, 100);
 
-
-
-
   DRV_Write(SHUNT_AMPLIFIER_CONTROL,
 			(GAIN_CS1 & 0xffff) +
 			(GAIN_CS2 & 0xffff) +

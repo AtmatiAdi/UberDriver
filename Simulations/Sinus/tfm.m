@@ -10,7 +10,7 @@ sinA_GND = (sin(deg2rad(ang))+1)/2;
 sinB_GND = (sin(deg2rad(ang+120))+1)/2;
 sinC_GND = (sin(deg2rad(ang+240))+1)/2;
 
-% subplot(5,5,1);
+% subplot(4,4,1);
 % hold on;
 % plot(sinA_GND);
 % plot(sinB_GND);
@@ -22,7 +22,7 @@ sinA = (sinB_GND-sinC_GND)/sqrt(3);
 sinB = (sinC_GND-sinA_GND)/sqrt(3);
 sinC = (sinA_GND-sinB_GND)/sqrt(3);
 
-% subplot(5,5,2);
+% subplot(4,4,2);
 % hold on;
 % plot(sinA);
 % plot(sinB);
@@ -34,7 +34,7 @@ sinC = (sinA_GND-sinB_GND)/sqrt(3);
 sin_alfa = sinA;
 sin_beta = (sinB - sinC)/sqrt(3);
 
-% subplot(5,5,3);
+% subplot(4,4,3);
 % hold on;
 % plot(sin_alfa);
 % plot(sin_beta);
@@ -48,7 +48,7 @@ for i = 1:1:360
     sin_D(i) = cos(tet)*sin_alfa(i) + sin(tet)*sin_beta(i);
     sin_Q(i) = -sin(tet)*sin_alfa(i) + cos(tet)*sin_beta(i);
 end
-% subplot(5,5,4);
+% subplot(4,4,4);
 % hold on;
 % plot(sin_D);
 % plot(sin_Q);
@@ -90,7 +90,7 @@ end
 % svmC(360 - shift + 1:360) = tmp(1:shift);
 
 % PHASE TO GROUND VOLTAGES
-% subplot(5,5,6);
+% subplot(4,4,6);
 % hold on;
 % plot(svmA_GND);
 % plot(svmB_GND);
@@ -102,7 +102,7 @@ svmA = (svmB_GND-svmC_GND)/sqrt(3);
 svmB = (svmC_GND-svmA_GND)/sqrt(3);
 svmC = (svmA_GND-svmB_GND)/sqrt(3);
 
-% subplot(5,5,7);
+% subplot(4,4,7);
 % hold on;
 % plot(svmA);
 % plot(svmB);
@@ -114,7 +114,7 @@ svmC = (svmA_GND-svmB_GND)/sqrt(3);
 svm_alfa = svmA;
 svm_beta = (svmB - svmC)/sqrt(3);
 
-% subplot(5,5,8);
+% subplot(4,4,8);
 % hold on;
 % plot(svm_alfa);
 % plot(svm_beta);
@@ -128,7 +128,7 @@ for i = 1:1:360
     svm_D(i) = cos(tet)*svm_alfa(i) + sin(tet)*svm_beta(i);
     svm_Q(i) = -sin(tet)*svm_alfa(i) + cos(tet)*svm_beta(i);
 end
-% subplot(5,5,9);
+% subplot(4,4,9);
 % hold on;
 % plot(svm_D);
 % plot(svm_Q);
@@ -144,7 +144,7 @@ sixC_GND = zeros(1,360);
 sixC_GND(241:360) = 1;
 
 % PHASE TO GROUND VOLTAGES
-subplot(5,5,6);
+subplot(4,4,1);
 hold on;
 plot(sixA_GND);
 plot(sixB_GND+1.5);
@@ -163,7 +163,7 @@ sixC = zeros(1,360);
 sixC(241:360) = 0.5;
 sixC(61:180) = -0.5;
 
-subplot(5,5,7);
+subplot(4,4,2);
 hold on;
 plot(sixA);
 plot(sixB+1.5);
@@ -174,7 +174,7 @@ legend(["A","B","C"]);
 six_alfa = sixA;
 six_beta = (sixB - sixC)/sqrt(3);
 
-subplot(5,5,8);
+subplot(4,4,3);
 hold on;
 plot(six_alfa);
 plot(six_beta);
@@ -185,11 +185,11 @@ ylim([-1,1]);
 % D-Q
 
 for i = 1:1:360
-    tet = deg2rad(ang(i)-60);
+    tet = deg2rad(ang(i)-60-90);
     six_D(i) = cos(tet)*six_alfa(i) + sin(tet)*six_beta(i);
     six_Q(i) = -sin(tet)*six_alfa(i) + cos(tet)*six_beta(i);
 end
-subplot(5,5,9);
+subplot(4,4,4);
 hold on;
 plot(six_D);
 plot(six_Q);
@@ -208,7 +208,7 @@ newC_GND(241:360) = sinA_GND(31:150);
 
 % PHASE TO GROUND VOLTAGES
 
-subplot(5,5,11);
+subplot(4,4,5);
 hold on;
 plot(newA_GND);
 plot(newB_GND+1.5);
@@ -227,7 +227,7 @@ newC = zeros(1,360);
 newC(241:360) = newC_GND(241:360)/2;
 newC(61:180) = -newC_GND(241:360)/2;
 
-subplot(5,5,12);
+subplot(4,4,6);
 hold on;
 plot(newA);
 plot(newB+1.5);
@@ -239,7 +239,7 @@ legend(["A","B","C"]);
 new_alfa = newA;
 new_beta = (newB - newC)/sqrt(3);
 
-subplot(5,5,13);
+subplot(4,4,7);
 hold on;
 plot(new_alfa);
 plot(new_beta);
@@ -249,11 +249,11 @@ ylim([-1,1]);
 % D-Q
 
 for i = 1:1:360
-    tet = deg2rad(ang(i)-60);
+    tet = deg2rad(ang(i)-60-90);
     new_D(i) = cos(tet)*new_alfa(i) + sin(tet)*new_beta(i);
     new_Q(i) = -sin(tet)*new_alfa(i) + cos(tet)*new_beta(i);
 end
-subplot(5,5,14);
+subplot(4,4,8);
 hold on;
 plot(new_D);
 plot(new_Q);
@@ -271,7 +271,7 @@ newC_GND(241:360) = svmA_GND(61:180);
 
 % PHASE TO GROUND VOLTAGES
 
-subplot(5,5,16);
+subplot(4,4,9);
 hold on;
 plot(newA_GND);
 plot(newB_GND+1.5);
@@ -290,7 +290,7 @@ newC = zeros(1,360);
 newC(241:360) = newC_GND(241:360)/2;
 newC(61:180) = -newC_GND(241:360)/2;
 
-subplot(5,5,17);
+subplot(4,4,10);
 hold on;
 plot(newA);
 plot(newB+1.5);
@@ -302,7 +302,7 @@ legend(["A","B","C"]);
 new_alfa = newA;
 new_beta = (newB - newC)/sqrt(3);
 
-subplot(5,5,18);
+subplot(4,4,11);
 hold on;
 plot(new_alfa);
 plot(new_beta);
@@ -312,11 +312,11 @@ ylim([-1,1]);
 % D-Q
 
 for i = 1:1:360
-    tet = deg2rad(ang(i)-60);
+    tet = deg2rad(ang(i)-60-90);
     new_D(i) = cos(tet)*new_alfa(i) + sin(tet)*new_beta(i);
     new_Q(i) = -sin(tet)*new_alfa(i) + cos(tet)*new_beta(i);
 end
-subplot(5,5,19);
+subplot(4,4,12);
 hold on;
 plot(new_D);
 plot(new_Q);
@@ -384,7 +384,7 @@ newB_GND(331:360) = SIN(c:c+29);
 newC_GND(331:360) = SIN(b:b+29);
 % PHASE TO GROUND VOLTAGES
 
-subplot(5,5,21);
+subplot(4,4,13);
 hold on;
 plot(newA_GND);
 plot(newB_GND+1.5);
@@ -418,7 +418,7 @@ newC(121:150) = -newB_GND(121:150)/2;
 newC(181:210) = 0;
 
 
-subplot(5,5,22);
+subplot(4,4,14);
 hold on;
 plot(newA);
 plot(newB+1.5);
@@ -430,7 +430,7 @@ plot(newC+3);
 new_alfa = newA;
 new_beta = (newB - newC)/sqrt(3);
 
-subplot(5,5,23);
+subplot(4,4,15);
 hold on;
 plot(new_alfa);
 plot(new_beta);
@@ -440,11 +440,11 @@ ylim([-1,1]);
 % D-Q
 
 for i = 1:1:360
-    tet = deg2rad(ang(i)-60);
+    tet = deg2rad(ang(i)-60-90);
     new_D(i) = cos(tet)*new_alfa(i) + sin(tet)*new_beta(i);
     new_Q(i) = -sin(tet)*new_alfa(i) + cos(tet)*new_beta(i);
 end
-subplot(5,5,24);
+subplot(4,4,16);
 hold on;
 plot(new_D);
 plot(new_Q);

@@ -256,7 +256,7 @@ void Control_Init_ADC_VPhaseVDC(ADC_HandleTypeDef *_hadc1,
 	  sConfigInjected_1.InjectedChannel = ADC_CHANNEL_1;
 	  sConfigInjected_1.InjectedRank = 1;
 	  sConfigInjected_1.InjectedNbrOfConversion = 1;
-	  sConfigInjected_1.InjectedSamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+	  sConfigInjected_1.InjectedSamplingTime = ADC_SAMPLETIME_28CYCLES_5;
 	  sConfigInjected_1.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJECCONV_T1_CC4;
 	  sConfigInjected_1.AutoInjectedConv = DISABLE;
 	  sConfigInjected_1.InjectedDiscontinuousConvMode = DISABLE;
@@ -281,7 +281,7 @@ void Control_Init_ADC_VPhaseVDC(ADC_HandleTypeDef *_hadc1,
 	  sConfigInjected_2.InjectedChannel = ADC_CHANNEL_0;
 	  sConfigInjected_2.InjectedRank = 1;
 	  sConfigInjected_2.InjectedNbrOfConversion = 1;
-	  sConfigInjected_2.InjectedSamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+	  sConfigInjected_2.InjectedSamplingTime = ADC_SAMPLETIME_28CYCLES_5;
 	  sConfigInjected_2.AutoInjectedConv = DISABLE;
 	  sConfigInjected_2.InjectedDiscontinuousConvMode = DISABLE;
 	  sConfigInjected_2.InjectedOffset = 0;
@@ -338,16 +338,17 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
 
 	ADC_Ticks ++;
 }
-uint16_t PWM_Value = 0;
+int16_t PWM_Value = 0;
+int16_t PWM_Value_irr = 0;
 __attribute__( ( section(".data") ) )
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc){
 	BEMF_Observer_Block();
 	//HALL_Observer_Block();
 	//FAST_HALL_Observer_Block();
 
-	_Six_Step_Block(PWM_Value);
-	//Six_Step_Block(PWM_Value);
-	//DupkoSin_Block(PWM_Value);
+	_Six_Step_Block(PWM_Value_irr);	// Bemf
+	//Six_Step_Block(PWM_Value_irr);// Hall
+	//DupkoSin_Block(PWM_Value_irr);	// NIE BEDZIE DZIALAC BO KAT JEST 384 !!!!!!!!!!!!!
 	// GOOD COMBO 	-> PWM(256-1) + FAST_HALL_Observer_Block(); + Six_Step_Block(PWM_Value);
 	//				-> PWM(512-1) + HALL_Observer_Block(); + DupkoSin_Block(PWM_Value);
 	//				-> PWM(256-1) + BEMF_Observer_Block(); + Six_Step_Block(PWM_Value);
@@ -381,45 +382,96 @@ uint16_t BEMF_Angle = 330;
 uint8_t Div = 16;
 uint16_t BEMF_Treshold = 0;
 
-uint16_t BEMF_delay = 32;
-uint16_t Angle = 0;
+uint16_t BEMF_delay = 0;
+uint16_t Angle = 0;	// form 0 to 384 for fast calc
+uint8_t Diode_Is_Conducting = 0 ;
 //uint16_t Ticks_Diff = 0;
+uint16_t V_DC = 0;
+uint16_t V_DC_iir = 0;
+uint16_t V_Floating = 0;
+uint16_t V_Floating_iir = 0;
+uint16_t Half_V_DC = 0;
+uint8_t Bemf_Is_running = 0;
+uint8_t Block = 0;
 __attribute__( ( section(".data") ) )
 void BEMF_Observer_Block(){
-	GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
+	//GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
 	// Input Block
-	uint16_t V_Floating = hadc1->Instance->JDR1;
-	uint16_t V_DC 		= hadc2->Instance->JDR1;
-	//uint16_t V_Floating_Diff = 4095;
+	V_Floating = hadc1->Instance->JDR1;
+	V_DC = hadc2->Instance->JDR1;
+	// IRR Filtration
+	if (V_DC > V_DC_iir) V_DC_iir += (V_DC - V_DC_iir) >> 2;
+	else V_DC_iir -= (V_DC_iir - V_DC) >> 2;
+
+
+	Half_V_DC = V_DC_iir >> 1;
+	// Do nothing if pwm is ste to 0
+	if(PWM_Value == 0){
+		Old_Cross = 0;
+		Cross = 0;
+		BEMF_cnt_sign = 0;
+		BEMF_time_cnt = 1;
+		BEMF_Angle = 330;
+		V_Floating_Old = 0;
+		BEMF_delay = 0;
+		Bemf_Is_running = 0;
+		//Block = 0;
+
+		SetFloating_A();
+		SetFloating_B();
+		SetFloating_C();
+		return;
+	}
+	if (Bemf_Is_running == 0){
+		//if (Block) return;
+		// Start sequence
+		// 300 deg
+		SetFloating_C();
+		SetZero_B();
+		SetPulse_AH(255);
+
+		BEMF_time_cnt ++ ;
+		if (BEMF_time_cnt > 64) {
+			//Block = 1;
+			// 360/0 deg
+			SetPulse_CH(255);
+			SetZero_B();
+			SetFloating_A();
+
+			Old_Step = (Angle>>6)+1;
+			PWM_Value_irr = 255;
+
+			Bemf_Is_running = 1;
+			BEMF_time_cnt = 1;
+		}
+		return;
+	}
+
 	// 0 Cross Detection Block
-	// differentiate BEMF to obtain value and sign of changes
-	//V_Floating_Diff = (4095 + V_Floating) - V_Floating_Old;
 	if((Cross == 0) && (BEMF_cnt_sign == 1) && (BEMF_time_cnt > BEMF_delay)){
 		if((Step_Num == 1) || (Step_Num == 3) || (Step_Num == 5)){
 			// BEMF voltage will be decreasing -> '\'
-			//if (V_Floating_Diff < 4095){
-				// If BEMF actually '\'
-
-				if (V_Floating < V_DC/2 ) Cross = 1;
-			//}
+			if (V_Floating > 0) {	// If Voltage is more than 0V
+				if (V_Floating < Half_V_DC ) {
+					Cross = 1;
+				}
+			}
 		}else if((Step_Num == 2) || (Step_Num == 4) || (Step_Num == 6)){
 			// Bemf voltage will be increasing -> '/'
-			//if (V_Floating_Diff > 4095){
-				// If BEMF actually '/'
-				//if (V_Floating > 0 && V_Floating_Old) BEMF_delay = BEMF_time_cnt * 1.5;
-				if (V_Floating > V_DC/2 ) Cross = 1;
-			//}
+			if (V_Floating < V_DC_iir){	// If Voltage is less than VDC
+				if (V_Floating > Half_V_DC ) {
+					Cross = 1;
+				}
+			}
 		}
 	}
-	//V_Floating_Old = V_Floating;
 	// 0 Cross Counter Block
 	// Change counting sign when 0-cross is detected
 	if (Cross == 1) {
 		BEMF_cnt_sign = 0;
-		BEMF_delay = BEMF_time_cnt/4;
-		//if(BEMF_delay > 32) BEMF_delay = 32;
+		BEMF_delay = 0;
 		Cross = 0;
-		BEMF_Angle += 30;
+		Angle += 32;
 		if (Div > 30) BEMF_Treshold = 0;
 		else BEMF_Treshold = BEMF_time_cnt/Div;
 	}
@@ -432,20 +484,20 @@ void BEMF_Observer_Block(){
 	}
 	// When Counter reached TRESHOLD then change sign and update BEMF_Angle
 	if((BEMF_time_cnt <= BEMF_Treshold) && (BEMF_cnt_sign == 0)){
-		BEMF_Angle += 30;
+		Angle += 32;
 		BEMF_cnt_sign = 1;
 		BEMF_time_cnt = 0;
 	}
 	// Counter buffor reset before overflow
-	if(BEMF_time_cnt >= 1024){
+	if(BEMF_time_cnt >= 4096){
 		BEMF_delay = BEMF_time_cnt/4;
-		BEMF_Angle += 60;
+		Angle += 64;
 		BEMF_cnt_sign = 1;
 		BEMF_time_cnt = 0;
 	}
 	//Old_Step = Step_Num;
-	if (BEMF_Angle >= 360) BEMF_Angle = 0;
-	Angle = BEMF_Angle;
+	if (Angle >= 384) Angle = 0;
+	//Angle = BEMF_Angle;
 
 	if (Scan_Is_enabled > 0){
 		Log_Scan(V_Floating/8,
@@ -453,22 +505,11 @@ void BEMF_Observer_Block(){
 				Step_Num * 16,
 				BEMF_time_cnt);
 	}
-	// Do nothing if pwm is ste to 0
-	if(PWM_Value == 0){
-		Old_Cross = 0;
-		Cross = 0;
-		BEMF_cnt_sign = 0;
-		BEMF_time_cnt = 1;
-		BEMF_Angle = 330;
-		V_Floating_Old = 0;
-		BEMF_delay = 32;
-	}
-	GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
+
+	//GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
 }
 // 1. ZMIENIC DZIELNIK NAPIECIA TAK BY NIE DZIELIC VDC
 // 2. PRZENIESC DO RAMU
-uint16_t V_Floating = 0;
-uint16_t V_DC		= 0;
 uint8_t BEMF_slope  = 0;	// 0 means decreasing, 1 means increasing voltage
 void FAST_BEMF_Observer_Block(){
 	// INPUT BLOCK
@@ -808,7 +849,7 @@ inline void Six_Step_Block(uint16_t PWM_Value){
 		return;
 	}
 
-	Step_Num = (Angle/60)+1;
+	Step_Num = (Angle>>6)+1;
 
 	if(Step_Num != Old_Step){
 		if(Step_Num == 1){
@@ -866,7 +907,7 @@ inline void _Six_Step_Block(uint16_t PWM_Value){
 		return;
 	}
 
-	Step_Num = (Angle/60)+1;
+	Step_Num = (Angle>>6)+1;
 
 	if(Step_Num != Old_Step){
 		if(Step_Num == 1){
@@ -965,8 +1006,9 @@ void DupkoSin_Block(uint16_t PWM_Value){
 	GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
 }
 
-void Set_PWM(uint16_t value){
+void Set_PWM(int16_t value){
 	PWM_Value = value;
+	PWM_Value_irr += (PWM_Value - PWM_Value_irr) >> 1;
 }
 __attribute__( ( section(".data") ) )
 inline void SetZero_A(){

@@ -58,7 +58,7 @@ void DupkoSin_Block(uint16_t PWM_Value);
 
 void Log_Scan(uint8_t data1, uint8_t data2, uint8_t data3, uint8_t data4);
 void SetHallPin();
-void Set_PWM(uint16_t value);
+void Set_PWM(int16_t value);
 void Set_Observer_Div(uint8_t div);
 void EnableScan();
 uint8_t IsScanReady();

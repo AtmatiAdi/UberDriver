@@ -8,7 +8,7 @@ sinA_GND = (sin(deg2rad(ang))+1)/2;
 sinB_GND = (sin(deg2rad(ang+120))+1)/2;
 sinC_GND = (sin(deg2rad(ang+240))+1)/2;
 
-subplot(3,4,1);
+subplot(4,4,1);
 hold on;
 plot(sinA_GND);
 plot(sinB_GND);
@@ -20,7 +20,7 @@ sinA = (sinB_GND-sinC_GND)/sqrt(3);
 sinB = (sinC_GND-sinA_GND)/sqrt(3);
 sinC = (sinA_GND-sinB_GND)/sqrt(3);
 
-subplot(3,4,2);
+subplot(4,4,2);
 hold on;
 plot(sinA);
 plot(sinB);
@@ -32,7 +32,7 @@ ylim([-1,1]);
 sin_alfa = sinA;
 sin_beta = (sinB - sinC)/sqrt(3);
 
-subplot(3,4,3);
+subplot(4,4,3);
 hold on;
 plot(sin_alfa);
 plot(sin_beta);
@@ -42,11 +42,11 @@ ylim([-1,1]);
 % D-Q
 
 for i = 1:1:360
-    tet = deg2rad(-ang(i)-90);
+    tet = deg2rad(-ang(i));
     sin_D(i) = cos(tet)*sin_alfa(i) + sin(tet)*sin_beta(i);
     sin_Q(i) = -sin(tet)*sin_alfa(i) + cos(tet)*sin_beta(i);
 end
-subplot(3,4,4);
+subplot(4,4,4);
 hold on;
 plot(sin_D);
 plot(sin_Q);
@@ -78,7 +78,7 @@ for i = 1:1:360
     end
 end
 
-subplot(3,4,5);
+subplot(4,4,5);
 hold on;
 plot(svmA_GND);
 plot(svmB_GND);
@@ -90,7 +90,7 @@ svmA = (svmB_GND-svmC_GND)/sqrt(3);
 svmB = (svmC_GND-svmA_GND)/sqrt(3);
 svmC = (svmA_GND-svmB_GND)/sqrt(3);
 
-subplot(3,4,6);
+subplot(4,4,6);
 hold on;
 plot(svmA);
 plot(svmB);
@@ -102,7 +102,7 @@ ylim([-1,1]);
 svm_alfa = svmA;
 svm_beta = (svmB - svmC)/sqrt(3);
 
-subplot(3,4,7);
+subplot(4,4,7);
 hold on;
 plot(svm_alfa);
 plot(svm_beta);
@@ -112,11 +112,11 @@ ylim([-1,1]);
 % D-Q
 
 for i = 1:1:360
-    tet = deg2rad(-ang(i)+30-90);
+    tet = deg2rad(-ang(i)+30);
     svm_D(i) = cos(tet)*svm_alfa(i) + sin(tet)*svm_beta(i);
     svm_Q(i) = -sin(tet)*svm_alfa(i) + cos(tet)*svm_beta(i);
 end
-subplot(3,4,8);
+subplot(4,4,8);
 hold on;
 plot(svm_D);
 plot(svm_Q);
@@ -130,7 +130,7 @@ stB_GND = (sin(deg2rad(ang+120)) - sawtooth(deg2rad(ang+210)*3,1/2)/4)/sqrt(3) +
 stC_GND = (sin(deg2rad(ang+240)) - sawtooth(deg2rad(ang+330)*3,1/2)/4)/sqrt(3) + 0.5;
 x = sawtooth(deg2rad(ang+90)*3,1/2)/4;
 
-subplot(3,4,9);
+subplot(4,4,9);
 hold on;
 plot(stA_GND);
 plot(stB_GND);
@@ -143,7 +143,7 @@ stA = (stB_GND-stC_GND)/sqrt(3);
 stB = (stC_GND-stA_GND)/sqrt(3);
 stC = (stA_GND-stB_GND)/sqrt(3);
 
-subplot(3,4,10);
+subplot(4,4,10);
 hold on;
 plot(stA);
 plot(stB);
@@ -155,7 +155,7 @@ ylim([-1,1]);
 st_alfa = stA;
 st_beta = (stB - stC)/sqrt(3);
 
-subplot(3,4,11);
+subplot(4,4,11);
 hold on;
 plot(st_alfa);
 plot(st_beta);
@@ -165,11 +165,11 @@ ylim([-1,1]);
 % D-Q
 
 for i = 1:1:360
-    tet = deg2rad(-ang(i)-90);
+    tet = deg2rad(-ang(i)+0);
     st_D(i) = cos(tet)*st_alfa(i) + sin(tet)*st_beta(i);
     st_Q(i) = -sin(tet)*st_alfa(i) + cos(tet)*st_beta(i);
 end
-subplot(3,4,12);
+subplot(4,4,14);
 hold on;
 plot(st_D);
 plot(st_Q);

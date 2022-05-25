@@ -81,6 +81,7 @@ void loop() {
   buf[1] = power;
   buf[2] = com_delay;
   Serial1.write(buf, 3);
+  Serial.println(power);
   delay(delay_ms);
       
   if (display_RPM){

@@ -16,7 +16,7 @@ Servo myservo;  // create servo object to control a servo
 void setup() {
   Serial.begin(115200);
   //Serial1.begin(57600);
-  myservo.attach(9,1000,2000);  // attaches the servo on pin 9 to the servo object
+  myservo.attach(9,900,2000);  // attaches the servo on pin 9 to the servo object
   pinMode(3,INPUT);
 }
 
@@ -75,8 +75,11 @@ void loop() {
 //  buf[1] = power;
 //  buf[2] = com_delay;
 //  Serial1.write(buf, 3);
+power = power/4;
+power = power*4;
   int val = map(power, 0, 255, 0, 180);     // scale it to use it with the servo (value between 0 and 180)
   myservo.write(val);
+  Serial.println(power);
   
   delay(delay_ms);
       

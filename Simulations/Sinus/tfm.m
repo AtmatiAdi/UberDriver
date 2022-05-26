@@ -9,39 +9,16 @@ sinA_GND = (sin(deg2rad(ang))+1)/2;
 sinB_GND = (sin(deg2rad(ang+120))+1)/2;
 sinC_GND = (sin(deg2rad(ang+240))+1)/2;
 
-% subplot(4,5,1);
-% hold on;
-% plot(sinA_GND);
-% plot(sinB_GND);
-% plot(sinC_GND);
-% legend(["A-GND","B-GND","C-GND"]);
-
 % PHASE VOLTAGES
 sinA = (sinB_GND-sinC_GND)/sqrt(3);
 sinB = (sinC_GND-sinA_GND)/sqrt(3);
 sinC = (sinA_GND-sinB_GND)/sqrt(3);
 
-% subplot(4,5,2);
-% hold on;
-% plot(sinA);
-% plot(sinB);
-% plot(sinC);
-% legend(["A","B","C"]);
-% ylim([-1,1]);
-
 % ALFA BETA
 sin_alfa = sinA;
 sin_beta = (sinB - sinC)/sqrt(3);
 
-% subplot(4,5,3);
-% hold on;
-% plot(sin_alfa);
-% plot(sin_beta);
-% legend(["Alfa","Beta"]);
-% ylim([-1,1]);
-
 % D-Q
-
 for i = 1:1:360
     tet = deg2rad(-ang(i));
     sin_D(i) = cos(tet)*sin_alfa(i) + sin(tet)*sin_beta(i);
@@ -77,48 +54,14 @@ for i = 1:1:360
     end
 end
 
-% tmp = svmA;
-% shift = 60;
-% svmA(1:360 - shift) = tmp(1 + shift:360);
-% svmA(360 - shift + 1:360) = tmp(1:shift);
-% tmp = svmB;
-% svmB(1:360 - shift) = tmp(1 + shift:360);
-% svmB(360 - shift + 1:360) = tmp(1:shift);
-% tmp = svmC;
-% svmC(1:360 - shift) = tmp(1 + shift:360);
-% svmC(360 - shift + 1:360) = tmp(1:shift);
-
-% PHASE TO GROUND VOLTAGES
-% subplot(4,5,6);
-% hold on;
-% plot(svmA_GND);
-% plot(svmB_GND);
-% plot(svmC_GND);
-% legend(["A-GND","B-GND","C-GND"]);
-
 % PHASE VOLTAGES
 svmA = (svmB_GND-svmC_GND)/sqrt(3);
 svmB = (svmC_GND-svmA_GND)/sqrt(3);
 svmC = (svmA_GND-svmB_GND)/sqrt(3);
 
-% subplot(4,5,7);
-% hold on;
-% plot(svmA);
-% plot(svmB);
-% plot(svmC);
-% legend(["A","B","C"]);
-% ylim([-1,1]);
-
 % ALFA BETA
 svm_alfa = svmA;
 svm_beta = (svmB - svmC)/sqrt(3);
-
-% subplot(4,5,8);
-% hold on;
-% plot(svm_alfa);
-% plot(svm_beta);
-% legend(["Alfa","Beta"]);
-% ylim([-1,1]);
 
 % D-Q
 
@@ -127,14 +70,8 @@ for i = 1:1:360
     svm_D(i) = cos(tet)*svm_alfa(i) + sin(tet)*svm_beta(i);
     svm_Q(i) = -sin(tet)*svm_alfa(i) + cos(tet)*svm_beta(i);
 end
-% subplot(4,5,9);
-% hold on;
-% plot(svm_D);
-% plot(svm_Q);
-% legend(["D","Q"]);
-% ylim([-1,1]);
-
                                                     % SIX STEP CONTROL
+% PHASE TO GROUND VOLTAGES
 sixU_GND = zeros(1,360);
 sixU_GND(1:120) = 1;
 sixV_GND = zeros(1,360);
@@ -142,13 +79,16 @@ sixV_GND(121:240) = 1;
 sixW_GND = zeros(1,360);
 sixW_GND(241:360) = 1;
 
-% PHASE TO GROUND VOLTAGES
 subplot(4,5,1);
 hold on;
 plot(sixU_GND);
 plot(sixV_GND+1.5);
 plot(sixW_GND+3);
-legend(["A-GND","B-GND","C-GND"]);
+grid on;
+legend(["A-GND","B-GND","C-GND"],'Location','southeast');
+xlabel("Commutation angle [deg°]");
+ylabel("Amplitude");
+title("Input motor terminals to ground voltages");
 
 % PHASE VOLTAGES
 sixU = zeros(1,360);
@@ -167,7 +107,11 @@ hold on;
 plot(sixU);
 plot(sixV+2.5);
 plot(sixW+5);
+grid on;
 legend(["U","V","W"]);
+xlabel("Commutation angle [deg°]");
+ylabel("Amplitude");
+title("Phases currents");
 
 % ALFA BETA
 six_alfa = sixU;
@@ -177,8 +121,12 @@ subplot(4,5,3);
 hold on;
 plot(six_alfa);
 plot(six_beta);
+grid on;
 legend(["Alfa","Beta"]);
 ylim([-1,1]);
+xlabel("Commutation angle [deg°]");
+ylabel("Amplitude");
+title("Alfa-Beta currents");
 
 subplot(4,5,4);
 tet = atan2(six_beta,six_alfa);
@@ -188,11 +136,9 @@ polarplot(tet,rho,'--')
 hold on;
 polarplot(tet,rho,'.')
 hold off;
-
-
+title("Alfa-Beta current vectors");
 
 % D-Q
-
 for i = 1:1:360
     tet = deg2rad(ang(i)+180+30+30);
     six_D(i) = cos(tet)*six_alfa(i) + sin(tet)*six_beta(i);
@@ -202,63 +148,73 @@ subplot(4,5,5);
 hold on;
 plot(six_D);
 plot(six_Q);
+grid on;
 legend(["D","Q"]);
 ylim([-1,1]);
-
+xlabel("Commutation angle [deg°]");
+ylabel("Amplitude");
+title("D-Q currents");
 
                                                         % BEMF_SINUS CONTROL
-
+% PHASE TO GROUND VOLTAGES
 newA_GND = zeros(1,360);
 newA_GND(1:120) = sinA_GND(31:150);
-newB_GND = zeros(1,360);
-newB_GND(121:240) = sinA_GND(31:150);
-newC_GND = zeros(1,360);
-newC_GND(241:360) = sinA_GND(31:150);
-
-% PHASE TO GROUND VOLTAGES
+newB_GND = circshift(newA_GND,120);
+newC_GND = circshift(newB_GND,120);
 
 subplot(4,5,6);
 hold on;
 plot(newA_GND);
 plot(newB_GND+1.5);
 plot(newC_GND+3);
-legend(["A-GND","B-GND","C-GND"]);
+grid on;
+legend(["A-GND","B-GND","C-GND"],'Location','southeast');
+xlabel("Commutation angle [deg°]");
+ylabel("Amplitude");
+title("Input motor terminals to ground voltages");
 
 % PHASE VOLTAGES
-newA = zeros(1,360);
-newA(1:120) = newA_GND(1:120)/2;
-newA(181:300) = -newA_GND(1:120)/2;
-newB = zeros(1,360);
-newB(121:240) = newB_GND(121:240)/2;
-newB(1:60) = -newB_GND(121:180)/2;
-newB(301:360) = -newB_GND(181:240)/2;
-newC = zeros(1,360);
-newC(241:360) = newC_GND(241:360)/2;
-newC(61:180) = -newC_GND(241:360)/2;
+newU = zeros(1,360);
+newU(1:60) = newA_GND(1:60)-newB_GND(1:60);
+newU(61:120) = (newA_GND(61:120)-newC_GND(61:120))/2;
+newU(121:180) = -(newB_GND(121:180)-newC_GND(121:180))/2;
+newU(181:240) = -(newB_GND(181:240)-newA_GND(181:240));
+newU(241:300) = -(newC_GND(241:300)-newA_GND(241:300))/2;
+newU(301:360) = (newC_GND(301:360)-newB_GND(301:360))/2;
+newV = circshift(newU,120);
+newW = circshift(newV,120);
 
 subplot(4,5,7);
 hold on;
-plot(newA);
-plot(newB+1.5);
-plot(newC+3);
-legend(["A","B","C"]);
+plot(newU);
+plot(newV+2);
+plot(newW+4);
+grid on;
+legend(["U","V","W"]);
+xlabel("Commutation angle [deg°]");
+ylabel("Amplitude");
+title("Phases currents");
 
 
 % ALFA BETA
-new_alfa = newA;
-new_beta = (newB - newC)/sqrt(3);
+new_alfa = newU;
+new_beta = (newV - newW)/sqrt(3);
 
 subplot(4,5,8);
 hold on;
 plot(new_alfa);
 plot(new_beta);
+grid on;
 legend(["Alfa","Beta"]);
 ylim([-1,1]);
+xlabel("Commutation angle [deg°]");
+ylabel("Amplitude");
+title("Alfa-Beta currents");
 
 % D-Q
 
 for i = 1:1:360
-    tet = deg2rad(ang(i)-60-90);
+    tet = deg2rad(ang(i)+180+30+30);
     new_D(i) = cos(tet)*new_alfa(i) + sin(tet)*new_beta(i);
     new_Q(i) = -sin(tet)*new_alfa(i) + cos(tet)*new_beta(i);
 end
@@ -266,6 +222,7 @@ subplot(4,5,10);
 hold on;
 plot(new_D);
 plot(new_Q);
+grid on;
 legend(["D","Q"]);
 ylim([-1,1]);
 
@@ -285,43 +242,48 @@ hold on;
 plot(newA_GND);
 plot(newB_GND+1.5);
 plot(newC_GND+3);
+grid on;
 legend(["A-GND","B-GND","C-GND"]);
 
 % PHASE VOLTAGES
-newA = zeros(1,360);
-newA(1:120) = newA_GND(1:120)/2;
-newA(181:300) = -newA_GND(1:120)/2;
-newB = zeros(1,360);
-newB(121:240) = newB_GND(121:240)/2;
-newB(1:60) = -newB_GND(121:180)/2;
-newB(301:360) = -newB_GND(181:240)/2;
-newC = zeros(1,360);
-newC(241:360) = newC_GND(241:360)/2;
-newC(61:180) = -newC_GND(241:360)/2;
+newU = zeros(1,360);
+newU(1:60) = newA_GND(1:60)-newB_GND(1:60);
+newU(61:120) = (newA_GND(61:120)-newC_GND(61:120))/2;
+newU(121:180) = -(newB_GND(121:180)-newC_GND(121:180))/2;
+newU(181:240) = -(newB_GND(181:240)-newA_GND(181:240));
+newU(241:300) = -(newC_GND(241:300)-newA_GND(241:300))/2;
+newU(301:360) = (newC_GND(301:360)-newB_GND(301:360))/2;
+newV = circshift(newU,120);
+newW = circshift(newV,120);
 
 subplot(4,5,12);
 hold on;
-plot(newA);
-plot(newB+1.5);
-plot(newC+3);
-legend(["A","B","C"]);
+plot(newU);
+plot(newV+2);
+plot(newW+4);
+grid on;
+legend(["U","V","W"]);
+xlabel("Commutation angle [deg°]");
+ylabel("Amplitude");
+title("Phases currents");
 
 
 % ALFA BETA
-new_alfa = newA;
-new_beta = (newB - newC)/sqrt(3);
+new_alfa = newU;
+new_beta = (newV - newW)/sqrt(3);
 
 subplot(4,5,13);
 hold on;
 plot(new_alfa);
 plot(new_beta);
+grid on;
 legend(["Alfa","Beta"]);
 ylim([-1,1]);
 
 % D-Q
 
 for i = 1:1:360
-    tet = deg2rad(ang(i)-60-90);
+    tet = deg2rad(ang(i)+180+30+30);
     new_D(i) = cos(tet)*new_alfa(i) + sin(tet)*new_beta(i);
     new_Q(i) = -sin(tet)*new_alfa(i) + cos(tet)*new_beta(i);
 end
@@ -329,6 +291,7 @@ subplot(4,5,15);
 hold on;
 plot(new_D);
 plot(new_Q);
+grid on;
 legend(["D","Q"]);
 ylim([-1,1]);
 
@@ -398,6 +361,7 @@ hold on;
 plot(newA_GND);
 plot(newB_GND+1.5);
 plot(newC_GND+3);
+grid on;
 legend(["A-GND","B-GND","C-GND"]);
 
 % PHASE VOLTAGES
@@ -443,6 +407,7 @@ subplot(4,5,18);
 hold on;
 plot(new_alfa);
 plot(new_beta);
+grid on;
 legend(["Alfa","Beta"]);
 ylim([-1,1]);
 
@@ -457,6 +422,7 @@ subplot(4,5,20);
 hold on;
 plot(new_D);
 plot(new_Q);
+grid on;
 legend(["D","Q"]);
 ylim([-1,1]);
 

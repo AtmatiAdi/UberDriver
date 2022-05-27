@@ -344,16 +344,16 @@ int16_t PWM_Value = 0;
 int16_t PWM_Value_irr = 0;
 __attribute__( ( section(".data") ) )
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc){
-	BEMF_Observer_Block();
-	//HALL_Observer_Block();
+	//BEMF_Observer_Block();
+	HALL_Observer_Block();
 	//FAST_HALL_Observer_Block();
 
-	_Six_Step_Block(PWM_Value_irr);	// Bemf
+	//_Six_Step_Block(PWM_Value_irr);	// Bemf
 	//Six_Step_Block(PWM_Value_irr);// Hall
-	//DupkoSin_Block(PWM_Value_irr);
-	// GOOD COMBO 	-> PWM(256-1) + FAST_HALL_Observer_Block(); + Six_Step_Block(PWM_Value);
-	//				-> PWM(512-1) + HALL_Observer_Block(); + DupkoSin_Block(PWM_Value);
-	//				-> PWM(256-1) + BEMF_Observer_Block(); + Six_Step_Block(PWM_Value);
+	DupkoSin_Block(PWM_Value_irr);
+	// GOOD COMBO 	-> PWM(div 1) + FAST_HALL_Observer_Block(); + Six_Step_Block(PWM_Value);
+	//				-> PWM(div 4) + HALL_Observer_Block(); + DupkoSin_Block(PWM_Value);
+	//				-> PWM(div 1) + BEMF_Observer_Block(); + Six_Step_Block(PWM_Value);
 }
 
 void EnableScan(){
@@ -966,15 +966,15 @@ void DupkoSin_Block(uint16_t PWM_Value){
 		OldAngle = Angle;
 		tmpAngle = Angle;
 
-		SetPulse_CH((((uint32_t)DupkoSin_48_minus15[tmpAngle>>3])*(PWM_Value+1))>>8);// Rapid divison by 256
+		SetPulse_CH((((uint32_t)DupkoSin_48_minus7_5[tmpAngle>>3])*(PWM_Value+1))>>8);// Rapid divison by 256
 
 		tmpAngle += 128;
 		if(tmpAngle >= 384) tmpAngle -= 384;
-		SetPulse_AH((((uint32_t)DupkoSin_48_minus15[tmpAngle>>3])*(PWM_Value+1))>>8);// Rapid divison by 256
+		SetPulse_AH((((uint32_t)DupkoSin_48_minus7_5[tmpAngle>>3])*(PWM_Value+1))>>8);// Rapid divison by 256
 
 		tmpAngle += 128;
 		if(tmpAngle >= 384) tmpAngle -= 384;
-		SetPulse_BH((((uint32_t)DupkoSin_48_minus15[tmpAngle>>3])*(PWM_Value+1))>>8);// Rapid divison by 256
+		SetPulse_BH((((uint32_t)DupkoSin_48_minus7_5[tmpAngle>>3])*(PWM_Value+1))>>8);// Rapid divison by 256
 	}
 	Step_Num = (Angle>>6)+1;
 	if(Step_Num != Old_Step){

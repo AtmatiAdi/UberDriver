@@ -1,3 +1,10 @@
+%   _____ ____  __  __ ______ _____   _____ _____          _      
+%  / ____/ __ \|  \/  |  ____|  __ \ / ____|_   _|   /\   | |     
+% | |   | |  | | \  / | |__  | |__) | |      | |    /  \  | |     
+% | |   | |  | | |\/| |  __| |  _  /| |      | |   / /\ \ | |     
+% | |___| |__| | |  | | |____| | \ \| |____ _| |_ / ____ \| |____ 
+%  \_____\____/|_|  |_|______|_|  \_\\_____|_____/_/    \_\______|
+
 m1_prop = "6x4.5 triple";
 m1_motor = "Tarot 1900kV";
 m1_inv = "comercial";
@@ -47,8 +54,13 @@ m3_mot_temp = [    29    29    30    33    39    45    53    63    77    92   11
 m3_p = m3_I * m3_U;
 m3_eff = m3_Thrust./m3_p;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%  ____  ______ __  __ ______             __        _____ _______ ______ _____  
+% |  _ \|  ____|  \/  |  ____|    _      / /       / ____|__   __|  ____|  __ \ 
+% | |_) | |__  | \  / | |__     _| |_   / /_ _____| (___    | |  | |__  | |__) |
+% |  _ <|  __| | |\/| |  __|   |_   _| | '_ \______\___ \   | |  |  __| |  ___/ 
+% | |_) | |____| |  | | |        |_|   | (_) |     ____) |  | |  | |____| |     
+% |____/|______|_|  |_|_|               \___/     |_____/   |_|  |______|_|     
+                                                                           
 m4_prop = "6x4.5 triple";
 m4_motor = "Tarot 1900kV";
 m4_inv = "uber";
@@ -146,6 +158,217 @@ m9_inv_temp = [94   102];
 m9_mot_temp = [125   155];
 m9_p = m9_I * m9_U;
 m9_eff = m9_Thrust./m9_p;
+
+%   _    _          _      _                  __        _____ _______ ______ _____  
+%  | |  | |   /\   | |    | |         _      / /       / ____|__   __|  ____|  __ \ 
+%  | |__| |  /  \  | |    | |       _| |_   / /_ _____| (___    | |  | |__  | |__) |
+%  |  __  | / /\ \ | |    | |      |_   _| | '_ \______\___ \   | |  |  __| |  ___/ 
+%  | |  | |/ ____ \| |____| |____    |_|   | (_) |     ____) |  | |  | |____| |     
+%  |_|  |_/_/    \_\______|______|          \___/     |_____/   |_|  |______|_|     
+                                                                                
+
+m10_prop = "6x4.5 triple";
+m10_motor = "Tarot 1900kV";
+m10_inv = "uber";
+m10_comm = "6-Step";
+m10_U = 10;
+m10_I = [ 0.2070    0.5220    0.9980    1.6000    2.4200    3.2200    4.0900    4.9700    6.4200    9.1000   12.2000   13.4000];
+m10_in = [ 48    64    80    96   112   128   144   160   176   192   208   224];
+m10_In = (m10_in*100)/256;
+m10_Thrust = [1    13    43    69    96   121   161   206   254   327   392   441];
+m10_rpm = [283        1886        3703        4680        5511        6369        7329        8220        9086       10286       11194       11949];
+m10_rpm_dev = [4    25    51    63    75    89   106   117   135   153   174   193];
+m10_inv_temp = [37    41    45    49    57    60    64    69    75    88    80    85];
+m10_mot_temp = [32    33    34    36    43    47    53    60    69    92   124   146];
+m10_p = m10_I * m10_U;
+m10_eff = m10_Thrust./m10_p;
+
+m11_prop = "6x4.5 triple";
+m11_motor = "Tarot 1900kV";
+m11_inv = "developed";
+m11_comm = "6-Step";
+m11_shift = 30;
+m11_U = 10;
+m11_I = [0.2240    0.2380    1.2100    1.7900    2.5500    3.3300    4.2600    5.2300    6.5100   10.0000   12.1000   13.6000];
+m11_in = [48    64    80    96   112   128   144   160   176   192   208   224];
+m11_In = (m11_in*100)/256;
+m11_Thrust = [ 1    15    45    71   100   136   180   223   271   365   418   465];
+m11_rpm = [257        2040        4037        4971        5846        6754        7517        8571        9146       10483       11597       12274];
+m11_rpm_dev = [4    26    55    68    79    88    99   115   125   146   159   183];
+m11_inv_temp = [34    41    46    51    56    62    66    72    77    90    75    80];
+m11_mot_temp = [29    32    26    40    44    49    55    61    70    97   115   137];
+m11_p = m11_I * m11_U;
+m11_eff = m11_Thrust./m11_p;
+
+m12_prop = "7x6 duo";
+m12_motor = "Tarot 1900kV";
+m12_inv = "developed";
+m12_comm = "6-Step";
+m12_U = 10;
+m12_I = [0.2690    0.6450    1.2500    2.1600    3.1300    3.9500    5.1600    6.5800    8.4100   11.6000];
+m12_in = [48    64    80    96   112   128   144   160   176   192];
+m12_In = (m12_in*100)/256;
+m12_Thrust = [1    18    43    71   105   139   175   214   260   317];
+m12_rpm = [343        1954        3111        3951        4774        5323        6197        6874        7534        8280];
+m12_rpm_dev = [5    26    43    56    65    74    81    93   120   120];
+m12_inv_temp = [36    42    45    51    57    62    69    75    84   101];
+m12_mot_temp = [ 31    32    35    41    48    55    66    80   103   145];
+m12_p = m12_I * m12_U;
+m12_eff = m12_Thrust./m12_p;
+
+m13_prop = "7x6 duo";
+m13_motor = "Tarot 1900kV";
+m13_inv = "developed";
+m13_comm = "6-Step";
+m13_shift = 30;
+m13_U = 10;
+m13_I = [ 0.2630    0.6100    1.3400    2.3000    3.1600    4.0900    5.3100    6.6200    8.5100   11.6000];
+m13_in = [  48    64    80    96   112   128   144   160   176   192];
+m13_In = (m13_in*100)/256;
+m13_Thrust = [1    15    44    81   113   149   189   231   279   344];
+m13_rpm = [386        1860        3240        4251        5040        5760        6480        7149        7791        8554];
+m13_rpm_dev = [ 5    25    45    59    67    74    78    93   112   137];
+m13_inv_temp = [39    43    48    56    62    69    74    85    93   104];
+m13_mot_temp = [34    34    37    44    51    59    69    87   104   141];
+m13_p = m13_I * m13_U;
+m13_eff = m13_Thrust./m13_p;
+
+m14_prop = "8x4.5 duo";
+m14_motor = "Tarot 1900kV";
+m14_inv = "developed";
+m14_comm = "6-Step";
+m14_U = 10;
+m14_I = [0.2490    0.5940    1.3500    2.1800    3.1500    4.1500    5.4400    6.7500    8.9300   10.6000];
+m14_in = [48    64    80    96   112   128   144   160   176   184];
+m14_In = (m14_in*100)/256;
+m14_Thrust = [1    17    58    92   136   184   233   276   337   368];
+m14_rpm = [283        1723        3077        3797        4620        5331        6034        6574        7234        7491];
+m14_rpm_dev = [4    22    39    59    62    69    80    76    98   111];
+m14_inv_temp = [39    41    46    50    55    63    69    75    86    98];
+m14_mot_temp = [ 36    36    37    42    48    58    70    87   118   150];
+m14_p = m14_I * m14_U;
+m14_eff = m14_Thrust./m14_p;
+
+m15_prop = "8x4.5 duo";
+m15_motor = "Tarot 1900kV";
+m15_inv = "developed";
+m15_comm = "6-Step";
+m15_U = 10;
+m15_I = [290.0000  672.0000    1.3700    2.2400    3.1200    4.3000    5.5100    6.9100    8.7200   11.0000];
+m15_in = [48    64    80    96   112   128   144   160   176   184];
+m15_In = (m15_in*100)/256;
+m15_Thrust = [1    22    63   103   145   202   252   303   349   433];
+m15_rpm = [437        2040        3146        4011        4774        5623        6231        6814        7371        7817];
+m15_rpm_dev = [ 6    27    43    56    63    72    77    69    97   111];
+m15_inv_temp = [33    38    45    50    56    63    70    79    86    98];
+m15_mot_temp = [31    32    36    42    49    59    72    90   110   145];
+m15_p = m15_I * m15_U;
+m15_eff = m15_Thrust./m15_p;
+
+%   _    _          _      _                 _______      ____  __ 
+%  | |  | |   /\   | |    | |         _     / ____\ \    / /  \/  |
+%  | |__| |  /  \  | |    | |       _| |_  | (___  \ \  / /| \  / |
+%  |  __  | / /\ \ | |    | |      |_   _|  \___ \  \ \/ / | |\/| |
+%  | |  | |/ ____ \| |____| |____    |_|    ____) |  \  /  | |  | |
+%  |_|  |_/_/    \_\______|______|         |_____/    \/   |_|  |_|
+
+m16_prop = "6x4.5 triple";
+m16_motor = "Tarot 1900kV";
+m16_inv = "uber";
+m16_comm = "6-Step";
+m16_U = 10;
+m16_I = [0.184	0.46	0.662	0.993	1.47	1.99	2.83	3.55	4.7	5.7	6.87	8.45	10.1	10.6];
+m16_in = [16	32	48	64	80	96	112	128	144	160	176	192	208	216];
+m16_In = (m16_in*100)/256;
+m16_Thrust = [0	9	23	48	77	109	144	170	203	238	262	299	326	329];
+m16_rpm = [163	2160	3214	4243	5211	6077	6900	7500	8254	8811	9394	9926	10277	10423];
+m16_rpm_dev = [5	31	48	66	79	96	119	143	151	146	163	132	180	189];
+m16_inv_temp = [37	36	35	36	37	38	41	45	50	55	60	66	75	81];
+m16_mot_temp = [36	35	34	35	37	41	49	56	69	78	91	112	138	150];
+m16_p = m16_I * m16_U;
+m16_eff = m16_Thrust./m16_p;
+
+m17_prop = "6x4.5 triple";
+m17_motor = "Tarot 1900kV";
+m17_inv = "developed";
+m17_comm = "6-Step";
+m17_shift = 30;
+m17_U = 10;
+m17_I = [0.208	0.445	0.689	1	1.51	2.1	2.75	3.71	4.44	5.82	6.9	8.16	9.84	11.53	12.4];
+m17_in = [16	32	48	64	80	96	112	128	144	160	176	192	208	224	232];
+m17_In = (m17_in*100)/256;
+m17_Thrust = [0	7	27	48	80	113	145	184	213	261	283	315	345	374	387];
+m17_rpm = [274	2006	3231	4209	5254	6120	6857	7706	8289	9034	9523	10011	10534	10937	11160];
+m17_rpm_dev = [6	27	43	60	74	94	103	120	129	154	163	154	171	170	171];
+m17_inv_temp = [35	35	35	35	36	38	40	43	47	52	58	64	72	80	86];
+m17_mot_temp = [34	35	35	55	38	41	45	52	58	67	80	94	115	137	150];
+m17_p = m17_I * m17_U;
+m17_eff = m17_Thrust./m17_p;
+
+m18_prop = "7x6 duo";
+m18_motor = "Tarot 1900kV";
+m18_inv = "developed";
+m18_comm = "6-Step";
+m18_U = 10;
+m18_I = [];
+m18_in = [];
+m18_In = (m18_in*100)/256;
+m18_Thrust = [];
+m18_rpm = [];
+m18_rpm_dev = [];
+m18_inv_temp = [];
+m18_mot_temp = [];
+m18_p = m18_I * m18_U;
+m18_eff = m18_Thrust./m18_p;
+
+m19_prop = "7x6 duo";
+m19_motor = "Tarot 1900kV";
+m19_inv = "developed";
+m19_comm = "6-Step";
+m19_shift = 30;
+m19_U = 10;
+m19_I = [];
+m19_in = [];
+m19_In = (m19_in*100)/256;
+m19_Thrust = [];
+m19_rpm = [];
+m19_rpm_dev = [];
+m19_inv_temp = [];
+m19_mot_temp = [];
+m19_p = m19_I * m19_U;
+m19_eff = m19_Thrust./m19_p;
+
+m20_prop = "8x4.5 duo";
+m20_motor = "Tarot 1900kV";
+m20_inv = "developed";
+m20_comm = "6-Step";
+m20_U = 10;
+m20_I = [];
+m20_in = [];
+m20_In = (m20_in*100)/256;
+m20_Thrust = [];
+m20_rpm = [];
+m20_rpm_dev = [];
+m20_inv_temp = [];
+m20_mot_temp = [];
+m20_p = m20_I * m20_U;
+m20_eff = m20_Thrust./m20_p;
+
+m21_prop = "8x4.5 duo";
+m21_motor = "Tarot 1900kV";
+m21_inv = "developed";
+m21_comm = "6-Step";
+m21_U = 10;
+m21_I = [];
+m21_in = [];
+m21_In = (m21_in*100)/256;
+m21_Thrust = [];
+m21_rpm = [];
+m21_rpm_dev = [];
+m21_inv_temp = [];
+m21_mot_temp = [];
+m21_p = m21_I * m21_U;
+m21_eff = m21_Thrust./m21_p;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -299,6 +522,148 @@ hold on;
 plot(m9_In,m9_eff);
 grid on;
 legend({m5_prop,m7_prop,m9_prop},'Location','southeast');
+title("Input pover vs Efficency");
+xlabel("PWM duty");
+ylabel("Efficency [g/W]");
+
+figure(4);
+
+subplot(2,2,1);
+plot(m10_In,m10_Thrust);
+hold on;
+plot(m12_In,m12_Thrust);
+hold on;
+plot(m14_In,m14_Thrust);
+grid on;
+legend({m10_prop,m12_prop,m14_prop},'Location','southeast');
+title("Input pover vs Thrust");
+xlabel("PWM duty");
+ylabel("Thrust [g]");
+
+subplot(2,2,2);
+plot(m10_In,m10_rpm);
+hold on;
+plot(m12_In,m12_rpm);
+hold on;
+plot(m14_In,m14_rpm);
+grid on;
+legend({m10_prop,m12_prop,m14_prop},'Location','southeast');
+title("Input pover vs RPM");
+xlabel("PWM duty");
+ylabel("Rotations [RPM]");
+
+subplot(2,2,3);
+plot(m10_In,m10_mot_temp);
+hold on;
+plot(m12_In,m12_mot_temp);
+hold on;
+plot(m14_In,m14_mot_temp);
+grid on;
+legend({m10_prop,m12_prop,m14_prop},'Location','southeast');
+title("Input pover vs motor temperature");
+xlabel("PWM duty");
+ylabel("Motor temperature [°C]");
+
+subplot(2,2,4);
+plot(m10_In,m10_eff);
+hold on;
+plot(m12_In,m12_eff);
+hold on;
+plot(m14_In,m14_eff);
+grid on;
+legend({m10_prop,m12_prop,m14_prop},'Location','southeast');
+title("Input pover vs Efficency");
+xlabel("PWM duty");
+ylabel("Efficency [g/W]");
+
+figure(5);
+
+subplot(2,2,1);
+plot(m11_In,m11_Thrust);
+hold on;
+plot(m13_In,m13_Thrust);
+hold on;
+plot(m15_In,m15_Thrust);
+grid on;
+legend({m11_prop,m13_prop,m15_prop},'Location','southeast');
+title("Input pover vs Thrust");
+xlabel("PWM duty");
+ylabel("Thrust [g]");
+
+subplot(2,2,2);
+plot(m11_In,m11_rpm);
+hold on;
+plot(m13_In,m13_rpm);
+hold on;
+plot(m15_In,m15_rpm);
+grid on;
+legend({m11_prop,m13_prop,m15_prop},'Location','southeast');
+title("Input pover vs RPM");
+xlabel("PWM duty");
+ylabel("Rotations [RPM]");
+
+subplot(2,2,3);
+plot(m11_In,m11_mot_temp);
+hold on;
+plot(m13_In,m13_mot_temp);
+hold on;
+plot(m15_In,m15_mot_temp);
+grid on;
+legend({m11_prop,m13_prop,m15_prop},'Location','southeast');
+title("Input pover vs motor temperature");
+xlabel("PWM duty");
+ylabel("Motor temperature [°C]");
+
+subplot(2,2,4);
+plot(m11_In,m11_eff);
+hold on;
+plot(m13_In,m13_eff);
+hold on;
+plot(m15_In,m15_eff);
+grid on;
+legend({m11_prop,m13_prop,m15_prop},'Location','southeast');
+title("Input pover vs Efficency");
+xlabel("PWM duty");
+ylabel("Efficency [g/W]");
+
+figure(6);
+
+subplot(2,2,1);
+plot(m16_In,m16_Thrust);
+hold on;
+plot(m17_In,m17_Thrust);
+grid on;
+legend({m16_prop},'Location','southeast');
+title("Input pover vs Thrust");
+xlabel("PWM duty");
+ylabel("Thrust [g]");
+
+subplot(2,2,2);
+plot(m16_In,m16_rpm);
+hold on;
+plot(m17_In,m17_rpm);
+grid on;
+legend({m16_prop},'Location','southeast');
+title("Input pover vs RPM");
+xlabel("PWM duty");
+ylabel("Rotations [RPM]");
+
+subplot(2,2,3);
+plot(m16_In,m16_mot_temp);
+hold on;
+plot(m17_In,m17_mot_temp);
+grid on;
+legend({m16_prop},'Location','southeast');
+title("Input pover vs motor temperature");
+xlabel("PWM duty");
+ylabel("Motor temperature [°C]");
+
+subplot(2,2,4);
+plot(m16_In,m16_eff);
+hold on;
+plot(m17_In,m17_eff);
+grid on;
+legend({m16_prop},'Location','southeast');
 title("Input pover vs Efficency");
 xlabel("PWM duty");
 ylabel("Efficency [g/W]");

@@ -78,10 +78,11 @@ void loop() {
   }
 
   buf[0] = SET_MOTOR_1_SPEED_FORWAD;
-  buf[1] = power;
-  buf[2] = com_delay;
   power = power/4;
   power = power*4;
+  buf[1] = power;
+  buf[2] = com_delay;
+
   Serial1.write(buf, 3);
   Serial.println(power);
   delay(delay_ms);

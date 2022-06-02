@@ -111,14 +111,14 @@ sin_b = sin(deg2rad(ang-120));
 sin_c = sin(deg2rad(ang-240));
 
 for i = 1:1:360
-    svm_max(i) = max([sin_a(i) sin_b(i) sin_c(i)]); 
+    mod(i) = min([sin_a(i) sin_b(i) sin_c(i)]); 
 end
-svm_max = circshift(svm_max,+60);
-for i = 1:1:360
-    svmA_GND(i) = (sin_a(i) + svm_max(i))/sqrt(3);
-    svmB_GND(i) = (sin_b(i) + svm_max(i))/sqrt(3);
-    svmC_GND(i) = (sin_c(i) + svm_max(i))/sqrt(3);
-end
+%mod = circshift(mod,+60);
+
+svmA_GND = (sin_a - mod)/sqrt(3);
+svmB_GND = (sin_b - mod)/sqrt(3);
+svmC_GND = (sin_c - mod)/sqrt(3);
+
 
 % PHASE VOLTAGES
 svmAB = (svmA_GND-svmB_GND);
@@ -146,7 +146,7 @@ hold on;
 plot(svmA_GND);
 plot(svmB_GND);
 plot(svmC_GND);
-plot(svm_max);
+plot(mod);
 grid on;
 legend(["A-GND","B-GND","C-GND"],'Location','east');
 xlabel("Commutation angle [deg°]");

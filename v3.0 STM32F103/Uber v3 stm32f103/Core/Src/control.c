@@ -374,7 +374,7 @@ uint8_t* GetScanData(){
 uint8_t ADC_Meas_Enabled = 0;
 uint8_t Step_Num = 0;
 uint8_t Old_Step = 0;
-uint16_t V_Floating_Old = 0;
+uint16_t V_Phase_Old = 0;
 uint8_t Old_Cross = 0;
 uint8_t Cross = 0;
 uint8_t BEMF_cnt_sign = 1;
@@ -384,14 +384,14 @@ uint16_t BEMF_Angle = 330;
 uint8_t Div = 16;
 uint16_t BEMF_Treshold = 0;
 
-uint16_t BEMF_delay = 0;
+//uint16_t BEMF_delay = 0;
 uint16_t Angle = 0;	// form 0 to 384 for fast calc
 uint8_t Diode_Is_Conducting = 0 ;
 //uint16_t Ticks_Diff = 0;
 uint16_t V_DC = 0;
 uint16_t V_DC_iir = 0;
-uint16_t V_Floating = 0;
-uint16_t V_Floating_iir = 0;
+uint16_t V_Phase = 0;
+uint16_t V_Phase_iir = 0;
 uint16_t Half_V_DC = 0;
 uint8_t Bemf_Is_running = 0;
 uint8_t Block = 0;
@@ -399,7 +399,7 @@ __attribute__( ( section(".data") ) )
 void BEMF_Observer_Block(){
 	//GPIOD->BSRR |= (1<<1);		// SET DEBUG_PIN HIGH
 	// Input Block
-	V_Floating = hadc1->Instance->JDR1;
+	V_Phase = hadc1->Instance->JDR1;
 	V_DC = hadc2->Instance->JDR1;
 	// IRR Filtration
 	if (V_DC > V_DC_iir) V_DC_iir += (V_DC - V_DC_iir) >> 2;
@@ -414,8 +414,7 @@ void BEMF_Observer_Block(){
 		BEMF_cnt_sign = 0;
 		BEMF_time_cnt = 1;
 		BEMF_Angle = 330;
-		V_Floating_Old = 0;
-		BEMF_delay = 0;
+		V_Phase_Old = 0;
 		Bemf_Is_running = 0;
 		//Block = 0;
 
@@ -450,35 +449,38 @@ void BEMF_Observer_Block(){
 	}
 
 	// 0 Cross Detection Block
-	if((Cross == 0) && (BEMF_cnt_sign == 1) && (BEMF_time_cnt > BEMF_delay)){
+	// If Counter increments time and Cross is not detected yet
+	if((Cross == 0) && (BEMF_cnt_sign == 1)){
+		// If setep is 1,3,5 then BEMF voltage will be decreasing -> '\'
 		if((Step_Num == 1) || (Step_Num == 3) || (Step_Num == 5)){
-			// BEMF voltage will be decreasing -> '\'
-			if (V_Floating > 0) {	// If Voltage is more than 0V
-				if (V_Floating < Half_V_DC ) {
+			// If Voltage is more than 0V then diode is not conducting
+			if (V_Phase > 0) {
+				// If Voltage is less than Half_V_DC then BEMF crosses 0
+				if (V_Phase < Half_V_DC ) {
 					Cross = 1;
 				}
 			}
+		// Else if step is 2,4,6 then BEMF voltage will be increasing -> '/'
 		}else if((Step_Num == 2) || (Step_Num == 4) || (Step_Num == 6)){
-			// Bemf voltage will be increasing -> '/'
-			if (V_Floating < V_DC_iir){	// If Voltage is less than VDC
-				if (V_Floating > Half_V_DC ) {
+			// If Voltage is less than VDC then diode is not conducting
+			if (V_Phase < V_DC_iir){
+				// If Voltage is higher than Half_V_DC then BEMF crosses 0
+				if (V_Phase > Half_V_DC ) {
 					Cross = 1;
 				}
 			}
 		}
 	}
-	// 0 Cross Counter Block
 	// Change counting sign when 0-cross is detected
 	if (Cross == 1) {
 		BEMF_cnt_sign = 0;
-		BEMF_delay = 0;
 		Cross = 0;
 		Angle += 32;
+		// Phase shift calculation
 		if (Div > 30) BEMF_Treshold = 0;
 		else BEMF_Treshold = BEMF_time_cnt/Div;
 	}
-	//Old_Cross = Cross;
-	// Counter
+	// Counter Block
 	if (BEMF_cnt_sign) {
 		BEMF_time_cnt ++;
 	}else {
@@ -490,9 +492,8 @@ void BEMF_Observer_Block(){
 		BEMF_cnt_sign = 1;
 		BEMF_time_cnt = 0;
 	}
-	// Counter buffor reset before overflow
+	// Counter buffer reset before overflow
 	if(BEMF_time_cnt >= 4096){
-		BEMF_delay = BEMF_time_cnt/4;
 		Angle += 64;
 		BEMF_cnt_sign = 1;
 		BEMF_time_cnt = 0;
@@ -502,93 +503,13 @@ void BEMF_Observer_Block(){
 	//Angle = BEMF_Angle;
 
 	if (Scan_Is_enabled > 0){
-		Log_Scan(V_Floating/8,
+		Log_Scan(V_Phase/8,
 				0,
 				Step_Num * 16,
 				BEMF_time_cnt);
 	}
 
 	//GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
-}
-// 1. ZMIENIC DZIELNIK NAPIECIA TAK BY NIE DZIELIC VDC
-// 2. PRZENIESC DO RAMU
-uint8_t BEMF_slope  = 0;	// 0 means decreasing, 1 means increasing voltage
-void FAST_BEMF_Observer_Block(){
-	// INPUT BLOCK
-	V_Floating	= hadc1->Instance->JDR1;
-	V_DC 		= hadc2->Instance->JDR1;
-	// 0 CROSS DETECTION BLOCK
-	if((BEMF_cnt_sign) && (BEMF_time_cnt > BEMF_delay)){
-		if(BEMF_slope){
-			// Bemf voltage will be increasing -> '/'
-			if (V_Floating > V_DC/2 ) {
-				BEMF_cnt_sign = 0;
-				BEMF_delay = BEMF_time_cnt >> 2;	// Fast divison by 4
-				BEMF_Treshold = BEMF_time_cnt/Div;
-			}
-		}else {
-			// BEMF voltage will be decreasing -> '\'
-			if (V_Floating < V_DC/2 ) {
-				BEMF_cnt_sign = 0;
-				BEMF_delay = BEMF_time_cnt >> 2;	// Fast divison by 4
-				BEMF_Treshold = BEMF_time_cnt/Div;
-			}
-		}
-	}
-	// Counter
-	if (BEMF_cnt_sign) {
-		BEMF_time_cnt ++;
-	}else {
-		if (BEMF_time_cnt > 0) BEMF_time_cnt --;
-	}
-	// When Counter reached TRESHOLD then change sign and update BEMF_Angle
-	if((BEMF_time_cnt <= BEMF_Treshold) && (BEMF_cnt_sign == 0)){
-		BEMF_Angle += 60;
-		BEMF_cnt_sign = 1;
-		BEMF_time_cnt = 0;
-	}
-	// Counter buffor reset before overflow
-	if(BEMF_time_cnt >= 1024){
-		BEMF_delay = BEMF_time_cnt >> 2;	// Fast divison by 4
-		BEMF_Angle += 60;
-		BEMF_cnt_sign = 1;
-		BEMF_time_cnt = 0;
-
-	}
-	//Old_Step = Step_Num;
-	if (BEMF_Angle >= 360) BEMF_Angle = 0;
-	Angle = BEMF_Angle;
-
-	if (Scan_Is_enabled > 0){
-		Scan_iter += trace_num * 4;
-
-		Scan_Data[Scan_iter] = V_Floating/8;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = HAL_GPIO_ReadPin(Hall_GPIO_Port, Hall_GPIO_Pin)*64;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = Step_Num * 16;
-		Scan_iter ++ ;
-		Scan_Data[Scan_iter] = BEMF_time_cnt;
-		Scan_iter ++ ;
-
-		Scan_iter += (MORE_TRACES-trace_num) * 4;
-		if (Scan_iter >= SCAN_SIZE) {
-			trace_num++;
-			if(trace_num > MORE_TRACES){
-				Scan_Is_enabled = 0;
-			} else Scan_iter = 0;
-		}
-	}
-	// Do nothing if pwm is ste to 0
-	if(PWM_Value == 0){
-		Old_Cross = 0;
-		Cross = 0;
-		BEMF_cnt_sign = 0;
-		BEMF_time_cnt = 1;
-		BEMF_Angle = 330;
-		V_Floating_Old = 0;
-		BEMF_delay = 32;
-	}
 }
 
 void Set_Observer_Div(uint8_t div){
@@ -639,7 +560,7 @@ void HALL_Observer_Block(){
 		if ((HALL_B_GPIO_Port->IDR & HALL_B_Pin) != 0) HALL_Start_Pos += 2;
 		if ((HALL_C_GPIO_Port->IDR & HALL_C_Pin) != 0) HALL_Start_Pos += 4;
 
-		HALL_Angle = HALL_Angles[HALL_Start_Pos];
+		Angle = HALL_Angles[HALL_Start_Pos];
 		Angle = HALL_Angle;
 		HALL_cnt_sign = 1;
 		SetHallPin();	// it sets up hall pin
@@ -651,11 +572,12 @@ void HALL_Observer_Block(){
 	if ((Hall_GPIO_Port->IDR & Hall_GPIO_Pin) != 0) Hall = 1;
 	else Hall = 0;
 
-// 0 Cross Counter Block
-	// Change counting sign when 0-cross is detected
+	// State change detection Block
+	// Change counting sign when state change is detected
 	if (Hall != OldHall){
 		HALL_cnt_sign = 0;
 		HALL_Angle  += 32;
+		// Phase shift calculation
 		if (Div > 30) HALL_Treshold = 0;
 		else HALL_Treshold = HALL_time_cnt/Div;
 		// For angle aproximation
@@ -663,7 +585,7 @@ void HALL_Observer_Block(){
 		Second_Half_Upper = HALL_time_cnt - HALL_Treshold;
 	}
 	OldHall = Hall;
-	// Countter
+	// Countter Block
 	if(HALL_cnt_sign){
 		HALL_time_cnt++;
 	} else {
@@ -688,7 +610,7 @@ void HALL_Observer_Block(){
 		HALL_cnt_sign = 1;
 		HALL_time_cnt = 0;
 	}
-	// Counter buffor reset before overflow
+	// Counter buffer reset before overflow
 	if(HALL_time_cnt == 1024){
 //		HALL_Angle += 64;
 		HALL_cnt_sign = 1;

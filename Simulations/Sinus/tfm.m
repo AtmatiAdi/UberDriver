@@ -20,12 +20,10 @@ sixW_GND(241:360) = 1;
 
 % PHASE CURRENTS
 sixU = zeros(1,360);
-sixU(1:60) = 1;
-sixU(61:120) = 1/2;
-sixU(121:180) = -1/2;
-sixU(181:240) = -1;
-sixU(241:300) = -1/2;
-sixU(301:360) = 1/2;
+sixU(1:120) = 1;
+sixU(121:180) = 0;
+sixU(181:300) = -1;
+sixU(301:360) = 0;
 %sixU = circshift(sixU,30);
 sixV = circshift(sixU,120);
 sixW = circshift(sixV,120);
@@ -39,7 +37,7 @@ rho = sqrt(six_alfa.^2+six_beta.^2);
 
 % D-Q
 for i = 1:1:360
-    tet = deg2rad(ang(i)+180+30+30);
+    tet = deg2rad(ang(i)+180+30);
     six_D(i) = cos(tet)*six_alfa(i) + sin(tet)*six_beta(i);
     six_Q(i) = -sin(tet)*six_alfa(i) + cos(tet)*six_beta(i);
 end
@@ -87,7 +85,6 @@ plot(six_D);
 plot(six_Q);
 grid on;
 legend(["D","Q"],'Location','east');
-ylim([-1,1]);
 xlabel("Commutation angle [deg°]");
 ylabel("Amplitude");
 title("D-Q currents");
@@ -103,7 +100,7 @@ hold on;
 polarplot(alfa,rho,'o')
 hold off;
 title("Alfa-Beta current vectors");
-rlim([0 1]);
+rlim([0 1.2]);
 
 saveas(gcf,'2','epsc')
 
@@ -325,7 +322,6 @@ title("D-Q currents");
 
 %right-upper corner
 set(gcf, 'Position', [1.4474e+03 885.8000 1.4448e+03 760.8000]);
-
 saveas(gcf,'5','epsc')
 
 figure(6);

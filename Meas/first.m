@@ -736,8 +736,60 @@ plot(m11_Thrust,m11_eff);
 plot(m16_Thrust,m16_eff);
 plot(m17_Thrust,m17_eff);
 
-legend(["bemf","bemf+30","hall","hall+30","svm","svm+30","comercial"])
-ylabel(["XD"])
-ylabel(["Efficency g/W"])
+legend(["comercial","bemf","bemf+30","hall","hall+30","svm","svm+30"])
 ylabel(["Efficiency [g/W]"])
 xlabel(["Thrust [g]"])
+%left-upper corner
+set(gcf, 'Position', [1.8000 885.8000 1444 760.8000]);
+saveas(gcf,'meas_1','epsc');
+
+figure(9)
+hold on
+plot(m1_In,m1_rpm);
+plot(m4_In,m4_rpm);
+plot(m5_In,m5_rpm);
+plot(m10_In,m10_rpm);
+plot(m11_In,m11_rpm);
+plot(m16_In,m16_rpm);
+plot(m17_In,m17_rpm);
+
+legend(["comercial","bemf","bemf+30","hall","hall+30","svm","svm+30"])
+ylabel(["Rotations [RPM]"]);
+xlabel(["PWM Duty [%]"]);
+%left-bottom corner
+set(gcf, 'Position', [1.8000 41.8000 1444 760.8000]);
+saveas(gcf,'meas_2','epsc')
+
+figure(10);
+hold on
+plot(m1_In,m1_p);
+plot(m4_In,m4_p);
+plot(m5_In,m5_p);
+plot(m10_In,m10_p);
+plot(m11_In,m11_p);
+plot(m16_In,m16_p);
+plot(m17_In,m17_p);
+
+legend(["comercial","bemf","bemf+30","hall","hall+30","svm","svm+30"])
+ylabel(["Input power [W]"]);
+xlabel(["PWM Duty [%]"]);
+%right-upper corner
+set(gcf, 'Position', [1.4474e+03 885.8000 1.4448e+03 760.8000]);
+saveas(gcf,'meas_3','epsc')
+
+figure(11)
+hold on
+plot(m1_In,m1_rpm_dev)
+plot(m4_In,m4_rpm_dev)
+plot(m5_In,m5_rpm_dev)
+plot(m10_In,m10_rpm_dev)
+plot(m11_In,m11_rpm_dev)
+plot(m16_In,m16_rpm_dev)
+plot(m17_In,m17_rpm_dev)
+
+legend(["comercial","bemf","bemf+30","hall","hall+30","svm","svm+30"])
+ylabel(["Rotations deviation [RPM]"]);
+xlabel(["PWM Duty [%]"]);
+%right-upper corner
+set(gcf, 'Position', [1.4474e+03 41.8000 1.4448e+03 760.8000]);
+saveas(gcf,'meas_4','epsc')

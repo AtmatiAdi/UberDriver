@@ -28,21 +28,22 @@ sixU(301:360) = 0;
 sixV = circshift(sixU,120);
 sixW = circshift(sixV,120);
 
-% ALFA BETA
-six_alfa = sixU;
+% Alpha BETA
+six_Alpha = sixU;
 six_beta = (sixV - sixW)/sqrt(3);
 
-alfa = atan2(six_beta,six_alfa);
-rho = sqrt(six_alfa.^2+six_beta.^2);
+Alpha = atan2(six_beta,six_Alpha);
+rho = sqrt(six_Alpha.^2+six_beta.^2);
 
 % D-Q
 for i = 1:1:360
     tet = deg2rad(ang(i)+180+30);
-    six_D(i) = cos(tet)*six_alfa(i) + sin(tet)*six_beta(i);
-    six_Q(i) = -sin(tet)*six_alfa(i) + cos(tet)*six_beta(i);
+    six_D(i) = cos(tet)*six_Alpha(i) + sin(tet)*six_beta(i);
+    six_Q(i) = -sin(tet)*six_Alpha(i) + cos(tet)*six_beta(i);
 end
-six_Q_per = mean(six_Q.^2*100/1);
-six_D_per = mean(six_D.^2*100/1);
+fprintf("six-step D_Q percentage currents:");
+six_Q_per = mean(six_Q.^2*100/(six_Q.^2 + six_D.^2))
+six_D_per = mean(six_D.^2*100/(six_Q.^2 + six_D.^2))
 
 figure(1);
 
@@ -52,9 +53,13 @@ plot(sixU_GND);
 plot(sixV_GND+1.5);
 plot(sixW_GND+3);
 grid on;
-legend(["A-GND","B-GND","C-GND"],'Location','east');
+xlim([0,360]);
+xticks([0,60,120,180,240,300,360]);
+yticks([0,0.5,1,1.5,2,2.5,3,3.5,4]);
+yticklabels({'0','0.5','1','0','0.5','1','0','0.5','1'});
+legend(["U-GND","V-GND","W-GND"],'Location','east');
 xlabel("Commutation angle [deg°]");
-ylabel("Amplitude");
+ylabel("Amplitude [V]");
 title("Input motor terminals to ground voltages");
 
 subplot(2,2,2);
@@ -63,30 +68,39 @@ plot(sixU);
 plot(sixV+2.5);
 plot(sixW+5);
 grid on;
+xlim([0,360]);
+xticks([0,60,120,180,240,300,360]);
+yticks([-1,0,1, 1.5,2.5,3.5, 4,5,6]);
+yticklabels({'-1','0','1','-1','0','1','-1','0','1'});
 legend(["U","V","W"],'Location','east');
 xlabel("Commutation angle [deg°]");
-ylabel("Amplitude");
+ylabel("Amplitude [V]");
 title("Phases currents");
 
 subplot(2,2,3);
 hold on;
-plot(six_alfa);
+plot(six_Alpha);
 plot(six_beta);
 grid on;
-legend(["Alfa","Beta"],'Location','east');
-ylim([-1,1]);
+xlim([0,360]);
+xticks([0,60,120,180,240,300,360]);
+legend(["Alpha","Beta"],'Location','east');
+ylim([-1.2,1.2]);
 xlabel("Commutation angle [deg°]");
-ylabel("Amplitude");
-title("Alfa-Beta currents");
+ylabel("Amplitude [V]");
+title("Alpha-Beta currents");
 
 subplot(2,2,4);
 hold on;
 plot(six_D);
 plot(six_Q);
 grid on;
+xlim([0,360]);
+xticks([0,60,120,180,240,300,360]);
+ylim([-1.5,1.5]);
 legend(["D","Q"],'Location','east');
 xlabel("Commutation angle [deg°]");
-ylabel("Amplitude");
+ylabel("Amplitude [V]");
 title("D-Q currents");
 
 %left-upper corner
@@ -95,11 +109,11 @@ saveas(gcf,'1','epsc')
 
 figure(2);
 
-polarplot(alfa,rho,'--')
+polarplot(Alpha,rho,'--')
 hold on;
-polarplot(alfa,rho,'o')
+polarplot(Alpha,rho,'o')
 hold off;
-title("Alfa-Beta current vectors");
+title("Alpha-Beta current vectors");
 rlim([0 1.2]);
 
 saveas(gcf,'2','epsc')
@@ -118,33 +132,32 @@ newA_GND(1:120) = sinA_GND(31:150);
 newB_GND = circshift(newA_GND,120);
 newC_GND = circshift(newB_GND,120);
 
-% PHASE VOLTAGES
+% PHASE CURRENTS
 newU = zeros(1,360);
-newU(1:60) = newA_GND(1:60)-newB_GND(1:60);
-newU(61:120) = (newA_GND(61:120)-newC_GND(61:120))/2;
-newU(121:180) = -(newB_GND(121:180)-newC_GND(121:180))/2;
-newU(181:240) = -(newB_GND(181:240)-newA_GND(181:240));
-newU(241:300) = -(newC_GND(241:300)-newA_GND(241:300))/2;
-newU(301:360) = (newC_GND(301:360)-newB_GND(301:360))/2;
+newU(1:120) = newA_GND(1:120);
+newU(121:180) = 0;
+newU(181:240) = -newA_GND(61:120);
+newU(241:300) = -newA_GND(1:60);
+newU(301:360) = 0;
 newV = circshift(newU,120);
 newW = circshift(newV,120);
 
-% ALFA BETA
-new_alfa = newU;
+% Alpha BETA
+new_Alpha = newU;
 new_beta = (newV - newW)/sqrt(3);
 
-alfa = atan2(new_beta,new_alfa);
-rho = sqrt(new_alfa.^2+new_beta.^2);
+Alpha = atan2(new_beta,new_Alpha);
+rho = sqrt(new_Alpha.^2+new_beta.^2);
 % D-Q
 
 for i = 1:1:360
-    tet = deg2rad(ang(i)+180+30+30);
-    new_D(i) = cos(tet)*new_alfa(i) + sin(tet)*new_beta(i);
-    new_Q(i) = -sin(tet)*new_alfa(i) + cos(tet)*new_beta(i);
+    tet = deg2rad(ang(i)+180+30);
+    new_D(i) = cos(tet)*new_Alpha(i) + sin(tet)*new_beta(i);
+    new_Q(i) = -sin(tet)*new_Alpha(i) + cos(tet)*new_beta(i);
 end
-
-new_Q_per = mean(new_Q.^2*100/1);
-new_D_per = mean(new_D.^2*100/1);
+fprintf("six-step-sin D_Q percentage currents:");
+six_Q_per = mean(new_Q.^2*100/(new_Q.^2 + new_D.^2))
+six_D_per = mean(new_D.^2*100/(new_Q.^2 + new_D.^2))
 
 figure(3);
 
@@ -154,42 +167,54 @@ plot(newA_GND);
 plot(newB_GND+1.5);
 plot(newC_GND+3);
 grid on;
-legend(["A-GND","B-GND","C-GND"],'Location','east');
+xlim([0,360]);
+xticks([0,60,120,180,240,300,360]);
+yticks([0,0.5,1,1.5,2,2.5,3,3.5,4]);
+yticklabels({'0','0.5','1','0','0.5','1','0','0.5','1'});
+legend(["U-GND","V-GND","W-GND"],'Location','east');
 xlabel("Commutation angle [deg°]");
-ylabel("Amplitude");
+ylabel("Amplitude [V]");
 title("Input motor terminals to ground voltages");
 
 subplot(2,2,2);
 hold on;
 plot(newU);
-plot(newV+2);
-plot(newW+4);
+plot(newV+2.5);
+plot(newW+5);
 grid on;
+xlim([0,360]);
+xticks([0,60,120,180,240,300,360]);
+yticks([-1,0,1, 1.5,2.5,3.5, 4,5,6]);
+yticklabels({'-1','0','1','-1','0','1','-1','0','1'});
 legend(["U","V","W"],'Location','east');
 xlabel("Commutation angle [deg°]");
-ylabel("Amplitude");
+ylabel("Amplitude [V]");
 title("Phases currents");
 
 subplot(2,2,3);
 hold on;
-plot(new_alfa);
+plot(new_Alpha);
 plot(new_beta);
 grid on;
-legend(["Alfa","Beta"],'Location','east');
-ylim([-1,1]);
+xlim([0,360]);
+xticks([0,60,120,180,240,300,360]);
+legend(["Alpha","Beta"],'Location','east');
+ylim([-1.2,1.2]);
 xlabel("Commutation angle [deg°]");
-ylabel("Amplitude");
-title("Alfa-Beta currents");
+ylabel("Amplitude [V]");
+title("Alpha-Beta currents");
 
 subplot(2,2,4);
 hold on;
 plot(new_D);
 plot(new_Q);
 grid on;
+xlim([0,360]);
+xticks([0,60,120,180,240,300,360]);
 legend(["D","Q"],'Location','east');
-ylim([-1,1]);
+ylim([-1.5,1.5]);
 xlabel("Commutation angle [deg°]");
-ylabel("Amplitude");
+ylabel("Amplitude [V]");
 title("D-Q currents");
 
 %left-bottom corner
@@ -198,12 +223,12 @@ saveas(gcf,'3','epsc')
 
 figure(4);
 
-polarplot(alfa,rho,'--')
+polarplot(Alpha,rho,'--')
 hold on;
-polarplot(alfa,rho,'o')
+polarplot(Alpha,rho,'o')
 hold off;
-title("Alfa-Beta current vectors");
-rlim([0 1]);
+title("Alpha-Beta current vectors");
+%rlim([0 1]);
 
 saveas(gcf,'4','epsc')
 
@@ -245,34 +270,32 @@ newB_GND(121:240) = svmA_GND(61:180);
 newC_GND = zeros(1,360);
 newC_GND(241:360) = svmA_GND(61:180);
 
-% PHASE VOLTAGES
+% PHASE CURRENTS
 newU = zeros(1,360);
-newU(1:60) = newA_GND(1:60)-newB_GND(1:60);
-newU(61:120) = (newA_GND(61:120)-newC_GND(61:120))/2;
-newU(121:180) = -(newB_GND(121:180)-newC_GND(121:180))/2;
-newU(181:240) = -(newB_GND(181:240)-newA_GND(181:240));
-newU(241:300) = -(newC_GND(241:300)-newA_GND(241:300))/2;
-newU(301:360) = (newC_GND(301:360)-newB_GND(301:360))/2;
+newU(1:120) = newA_GND(1:120);
+newU(121:180) = 0;
+newU(181:300) = -newA_GND(1:120);
+newU(301:360) = 0;
 newV = circshift(newU,120);
 newW = circshift(newV,120);
 
-% ALFA BETA
-new_alfa = newU;
+% Alpha BETA
+new_Alpha = newU;
 new_beta = (newV - newW)/sqrt(3);
 
-alfa = atan2(new_beta,new_alfa);
-rho = sqrt(new_alfa.^2+new_beta.^2);
+Alpha = atan2(new_beta,new_Alpha);
+rho = sqrt(new_Alpha.^2+new_beta.^2);
 
 % D-Q
 
 for i = 1:1:360
-    tet = deg2rad(ang(i)+180+30+30);
-    new_D(i) = cos(tet)*new_alfa(i) + sin(tet)*new_beta(i);
-    new_Q(i) = -sin(tet)*new_alfa(i) + cos(tet)*new_beta(i);
+    tet = deg2rad(ang(i)+180+30);
+    new_D(i) = cos(tet)*new_Alpha(i) + sin(tet)*new_beta(i);
+    new_Q(i) = -sin(tet)*new_Alpha(i) + cos(tet)*new_beta(i);
 end
-sum = mean(new_Q.^2 + new_D.^2);
-new_Q_per = mean(new_Q.^2*100/sum);
-new_D_per = mean(new_D.^2*100/sum);
+fprintf("six-step-Dsin D_Q percentage currents:");
+six_Q_per = mean(new_Q.^2*100/(new_Q.^2 + new_D.^2))
+six_D_per = mean(new_D.^2*100/(new_Q.^2 + new_D.^2))
 
 figure(5);
 
@@ -282,42 +305,54 @@ plot(newA_GND);
 plot(newB_GND+1.5);
 plot(newC_GND+3);
 grid on;
-legend(["A-GND","B-GND","C-GND"],'Location','east');
+xlim([0,360]);
+xticks([0,60,120,180,240,300,360]);
+yticks([0,0.5,1,1.5,2,2.5,3,3.5,4]);
+yticklabels({'0','0.5','1','0','0.5','1','0','0.5','1'});
+legend(["U-GND","V-GND","W-GND"],'Location','east');
 xlabel("Commutation angle [deg°]");
-ylabel("Amplitude");
+ylabel("Amplitude [V]");
 title("Input motor terminals to ground voltages");
 
 subplot(2,2,2);
 hold on;
 plot(newU);
-plot(newV+2);
-plot(newW+4);
+plot(newV+2.5);
+plot(newW+5);
 grid on;
+xlim([0,360]);
+xticks([0,60,120,180,240,300,360]);
+yticks([-1,0,1, 1.5,2.5,3.5, 4,5,6]);
+yticklabels({'-1','0','1','-1','0','1','-1','0','1'});
 legend(["U","V","W"],'Location','east');
 xlabel("Commutation angle [deg°]");
-ylabel("Amplitude");
+ylabel("Amplitude [V]");
 title("Phases currents");
 
 subplot(2,2,3);
 hold on;
-plot(new_alfa);
+plot(new_Alpha);
 plot(new_beta);
 grid on;
-legend(["Alfa","Beta"],'Location','east');
-ylim([-1,1]);
+xlim([0,360]);
+xticks([0,60,120,180,240,300,360]);
+legend(["Alpha","Beta"],'Location','east');
+ylim([-1.2,1.2]);
 xlabel("Commutation angle [deg°]");
-ylabel("Amplitude");
-title("Alfa-Beta currents");
+ylabel("Amplitude [V]");
+title("Alpha-Beta currents");
 
 subplot(2,2,4);
 hold on;
 plot(new_D);
 plot(new_Q);
 grid on;
+xlim([0,360]);
+xticks([0,60,120,180,240,300,360]);
 legend(["D","Q"],'Location','east');
-ylim([-1,1]);
+ylim([-1.5,1.5]);
 xlabel("Commutation angle [deg°]");
-ylabel("Amplitude");
+ylabel("Amplitude [V]");
 title("D-Q currents");
 
 %right-upper corner
@@ -326,11 +361,11 @@ saveas(gcf,'5','epsc')
 
 figure(6);
 
-polarplot(alfa,rho,'--')
+polarplot(Alpha,rho,'--')
 hold on;
-polarplot(alfa,rho,'.')
+polarplot(Alpha,rho,'.')
 hold off;
-title("Alfa-Beta current vectors");
+title("Alpha-Beta current vectors");
 
 saveas(gcf,'6','epsc')
 
@@ -342,8 +377,9 @@ saveas(gcf,'6','epsc')
 %  |_____/|_____/_/ \_\   |_____/   |_|  |______|_|         |_____/    \/   |_|  |_|
 
 % PHASE TO GROUND VOLTAGES
-sinA_GND = circshift(sinA_GND,-30);
-
+sinA_GND = circshift(sinA_GND,0);
+%newA_GND = 3*newA_GND/(2*sqrt(3));
+newA_GND = newA_GND * 0.75;
 newA_GND(31:60) = sinA_GND(31:60);
 newA_GND(91:120) = sinA_GND(91:120);
 newA_GND(151:180) = sinA_GND(151:180);
@@ -354,36 +390,35 @@ newA_GND(331:360) = sinA_GND(331:360);
 newB_GND = circshift(newA_GND,120);
 newC_GND = circshift(newB_GND,120);
 
-% PHASE VOLTAGES
+% PHASE CURRENTS
 newU = (newA_GND-newB_GND);
 
-newU(1:30) = newA_GND(1:30)-newB_GND(1:30);
-newU(61:90) = (newA_GND(61:90)-newC_GND(61:90))/2;
-newU(121:150) = -(newB_GND(121:150)-newC_GND(121:150))/2;
-newU(181:210) = -(newB_GND(181:210)-newA_GND(181:210));
-newU(241:270) = -(newC_GND(241:270)-newA_GND(241:270))/2;
-newU(301:330) = (newC_GND(301:330)-newB_GND(301:330))/2;
+newU(1:30) = newA_GND(1:30);
+newU(61:90) = newA_GND(61:90);
+newU(121:150) = 0;
+newU(181:210) = -newA_GND(1:30);
+newU(241:270) = -newA_GND(61:90);
+newU(301:330) = 0;
 newV = circshift(newU,120);
 newW = circshift(newV,120);
 
-% ALFA BETA
-new_alfa = newU;
+% Alpha BETA
+new_Alpha = newU;
 new_beta = (newV - newW)/sqrt(3);
 
-alfa = atan2(new_beta,new_alfa);
-rho = sqrt(new_alfa.^2+new_beta.^2);
+Alpha = atan2(new_beta,new_Alpha);
+rho = sqrt(new_Alpha.^2+new_beta.^2);
 
 % D-Q
 
 for i = 1:1:360
-    tet = deg2rad(ang(i)+180+30+30);
-    new_D(i) = cos(tet)*new_alfa(i) + sin(tet)*new_beta(i);
-    new_Q(i) = -sin(tet)*new_alfa(i) + cos(tet)*new_beta(i);
+    tet = deg2rad(ang(i)+180+30);
+    new_D(i) = cos(tet)*new_Alpha(i) + sin(tet)*new_beta(i);
+    new_Q(i) = -sin(tet)*new_Alpha(i) + cos(tet)*new_beta(i);
 end
-
-sum = mean(new_Q.^2 + new_D.^2);
-new_Q_per = mean(new_Q.^2*100/sum);
-new_D_per = mean(new_D.^2*100/sum);
+fprintf("hybrid D_Q percentage currents:");
+six_Q_per = mean(new_Q.^2*100/(new_Q.^2 + new_D.^2))
+six_D_per = mean(new_D.^2*100/(new_Q.^2 + new_D.^2))
 
 figure(7);
 
@@ -393,41 +428,54 @@ plot(newA_GND);
 plot(newB_GND+1.5);
 plot(newC_GND+3);
 grid on;
-legend(["A-GND","B-GND","C-GND"],'Location','east');
+xlim([0,360]);
+xticks([0,60,120,180,240,300,360]);
+yticks([0,0.5,1,1.5,2,2.5,3,3.5,4]);
+yticklabels({'0','0.5','1','0','0.5','1','0','0.5','1'});
+legend(["U-GND","V-GND","W-GND"],'Location','east');
 xlabel("Commutation angle [deg°]");
-ylabel("Amplitude");
+ylabel("Amplitude [V]");
 title("Input motor terminals to ground voltages");
 
 subplot(2,2,2);
 hold on;
 plot(newU);
-plot(newV+1.5);
-plot(newW+3);
+plot(newV+2.5);
+plot(newW+5);
+grid on;
+xlim([0,360]);
+xticks([0,60,120,180,240,300,360]);
+yticks([-1,0,1, 1.5,2.5,3.5, 4,5,6]);
+yticklabels({'-1','0','1','-1','0','1','-1','0','1'});
 legend(["U","V","W"],'Location','east');
 xlabel("Commutation angle [deg°]");
-ylabel("Amplitude");
+ylabel("Amplitude [V]");
 title("Phases currents");
 
 subplot(2,2,3);
 hold on;
-plot(new_alfa);
+plot(new_Alpha);
 plot(new_beta);
 grid on;
-legend(["Alfa","Beta"],'Location','east');
+xlim([0,360]);
+xticks([0,60,120,180,240,300,360]);
+legend(["Alpha","Beta"],'Location','east');
 ylim([-1,1]);
 xlabel("Commutation angle [deg°]");
-ylabel("Amplitude");
-title("Alfa-Beta currents");
+ylabel("Amplitude [V]");
+title("Alpha-Beta currents");
 
 subplot(2,2,4);
 hold on;
 plot(new_D);
 plot(new_Q);
 grid on;
+xlim([0,360]);
+xticks([0,60,120,180,240,300,360]);
 legend(["D","Q"],'Location','east');
 ylim([-1,1]);
 xlabel("Commutation angle [deg°]");
-ylabel("Amplitude");
+ylabel("Amplitude [V]");
 title("D-Q currents");
 
 %right-upper corner
@@ -436,10 +484,10 @@ saveas(gcf,'7','epsc')
 
 figure(8);
 
-polarplot(alfa,rho,'--')
+polarplot(Alpha,rho,'--')
 hold on;
-polarplot(alfa,rho,'.')
+polarplot(Alpha,rho,'.')
 hold off;
-title("Alfa-Beta current vectors");
+title("Alpha-Beta current vectors");
 
 saveas(gcf,'8','epsc')

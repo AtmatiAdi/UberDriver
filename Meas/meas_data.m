@@ -7,7 +7,7 @@ clear all;
 % | |___| |__| | |  | | |____| | \ \| |____ _| |_ / ____ \| |____ 
 %  \_____\____/|_|  |_|______|_|  \_\\_____|_____/_/    \_\______|
 
-m1_prop = "6x4.5 triple";
+m1_prop = "6x4.5 triple propeller";
 m1_motor = "Tarot 1900kV";
 m1_inv = "comercial";
 m1_comm = "6-Step";
@@ -24,7 +24,7 @@ m1_mot_temp = [27    28    30    32    35    38    43    48    54    62    72   
 m1_p = m1_I * m1_U;
 m1_eff = m1_Thrust./m1_p;
 
-m2_prop = "7x6 duo";
+m2_prop = "7x6 duo propeller";
 m2_motor = "Tarot 1900kV";
 m2_inv = "comercial";
 m2_comm = "6-Step";
@@ -40,7 +40,7 @@ m2_mot_temp = [ 29    29    30    32    37    42    48    56    67    79    93  
 m2_p = m2_I * m2_U;
 m2_eff = m2_Thrust./m2_p;
 
-m3_prop = "8x4.5 duo";
+m3_prop = "8x4.5 duo propeller";
 m3_motor = "Tarot 1900kV";
 m3_inv = "comercial";
 m3_comm = "6-Step";
@@ -63,7 +63,7 @@ m3_eff = m3_Thrust./m3_p;
 % | |_) | |____| |  | | |        |_|   | (_) |     ____) |  | |  | |____| |     
 % |____/|______|_|  |_|_|               \___/     |_____/   |_|  |______|_|     
                                                                            
-m4_prop = "6x4.5 triple";
+m4_prop = "6x4.5 triple propeller";
 m4_motor = "Tarot 1900kV";
 m4_inv = "uber";
 m4_comm = "6-Step";
@@ -79,7 +79,7 @@ m4_mot_temp = [76    76    98   116   126   142   141];
 m4_p = m4_I * m4_U;
 m4_eff = m4_Thrust./m4_p;
 
-m5_prop = "6x4.5 triple";
+m5_prop = "6x4.5 triple propeller";
 m5_motor = "Tarot 1900kV";
 m5_inv = "developed";
 m5_comm = "6-Step";
@@ -96,7 +96,7 @@ m5_mot_temp = [89    87   106   124   134   149   150];
 m5_p = m5_I * m5_U;
 m5_eff = m5_Thrust./m5_p;
 
-m6_prop = "7x6 duo";
+m6_prop = "7x6 duo propeller";
 m6_motor = "Tarot 1900kV";
 m6_inv = "developed";
 m6_comm = "6-Step";
@@ -112,7 +112,7 @@ m6_mot_temp = [92   110   149];
 m6_p = m6_I * m6_U;
 m6_eff = m6_Thrust./m6_p;
 
-m7_prop = "7x6 duo";
+m7_prop = "7x6 duo propeller";
 m7_motor = "Tarot 1900kV";
 m7_inv = "developed";
 m7_comm = "6-Step";
@@ -129,7 +129,7 @@ m7_mot_temp = [ 106   135   142   149];
 m7_p = m7_I * m7_U;
 m7_eff = m7_Thrust./m7_p;
 
-m8_prop = "8x4.5 duo";
+m8_prop = "8x4.5 duo propeller";
 m8_motor = "Tarot 1900kV";
 m8_inv = "developed";
 m8_comm = "6-Step";
@@ -145,7 +145,7 @@ m8_mot_temp = [97   128   150];
 m8_p = m8_I * m8_U;
 m8_eff = m8_Thrust./m8_p;
 
-m9_prop = "8x4.5 duo";
+m9_prop = "8x4.5 duo propeller";
 m9_motor = "Tarot 1900kV";
 m9_inv = "developed";
 m9_comm = "6-Step";
@@ -169,7 +169,7 @@ m9_eff = m9_Thrust./m9_p;
 %  |_|  |_/_/    \_\______|______|          \___/     |_____/   |_|  |______|_|     
                                                                                 
 
-m10_prop = "6x4.5 triple";
+m10_prop = "6x4.5 triple propeller";
 m10_motor = "Tarot 1900kV";
 m10_inv = "uber";
 m10_comm = "6-Step";
@@ -185,7 +185,7 @@ m10_mot_temp = [32    33    34    36    43    47    53    60    69    92   124  
 m10_p = m10_I * m10_U;
 m10_eff = m10_Thrust./m10_p;
 
-m11_prop = "6x4.5 triple";
+m11_prop = "6x4.5 triple propeller";
 m11_motor = "Tarot 1900kV";
 m11_inv = "developed";
 m11_comm = "6-Step";
@@ -202,7 +202,7 @@ m11_mot_temp = [29    32    26    40    44    49    55    61    70    97   115  
 m11_p = m11_I * m11_U;
 m11_eff = m11_Thrust./m11_p;
 
-m12_prop = "7x6 duo";
+m12_prop = "7x6 duo propeller";
 m12_motor = "Tarot 1900kV";
 m12_inv = "developed";
 m12_comm = "6-Step";
@@ -218,7 +218,7 @@ m12_mot_temp = [ 31    32    35    41    48    55    66    80   103   145];
 m12_p = m12_I * m12_U;
 m12_eff = m12_Thrust./m12_p;
 
-m13_prop = "7x6 duo";
+m13_prop = "7x6 duo propeller";
 m13_motor = "Tarot 1900kV";
 m13_inv = "developed";
 m13_comm = "6-Step";
@@ -235,7 +235,7 @@ m13_mot_temp = [34    34    37    44    51    59    69    87   104   141];
 m13_p = m13_I * m13_U;
 m13_eff = m13_Thrust./m13_p;
 
-m14_prop = "8x4.5 duo";
+m14_prop = "8x4.5 duo propeller";
 m14_motor = "Tarot 1900kV";
 m14_inv = "developed";
 m14_comm = "6-Step";
@@ -251,7 +251,7 @@ m14_mot_temp = [ 36    36    37    42    48    58    70    87   118   150];
 m14_p = m14_I * m14_U;
 m14_eff = m14_Thrust./m14_p;
 
-m15_prop = "8x4.5 duo";
+m15_prop = "8x4.5 duo propeller";
 m15_motor = "Tarot 1900kV";
 m15_inv = "developed";
 m15_comm = "6-Step";
@@ -274,7 +274,7 @@ m15_eff = m15_Thrust./m15_p;
 %  | |  | |/ ____ \| |____| |____    |_|    ____) |  \  /  | |  | |
 %  |_|  |_/_/    \_\______|______|         |_____/    \/   |_|  |_|
 
-m16_prop = "6x4.5 triple";
+m16_prop = "6x4.5 triple propeller";
 m16_motor = "Tarot 1900kV";
 m16_inv = "uber";
 m16_comm = "6-Step";
@@ -290,7 +290,7 @@ m16_mot_temp = [36	35	34	35	37	41	49	56	69	78	91	112	138	150];
 m16_p = m16_I * m16_U;
 m16_eff = m16_Thrust./m16_p;
 
-m17_prop = "6x4.5 triple";
+m17_prop = "6x4.5 triple propeller";
 m17_motor = "Tarot 1900kV";
 m17_inv = "developed";
 m17_comm = "svm";
@@ -307,7 +307,7 @@ m17_mot_temp = [34	35	35	35	38	41	45	52	58	67	80	94	115	137	150];
 m17_p = m17_I * m17_U;
 m17_eff = m17_Thrust./m17_p;
 
-m18_prop = "7x6 duo";
+m18_prop = "7x6 duo propeller";
 m18_motor = "Tarot 1900kV";
 m18_inv = "developed";
 m18_comm = "svm";
@@ -323,7 +323,7 @@ m18_mot_temp = [29	30	32	35	40	48	58	76	96	123	150];
 m18_p = m18_I * m18_U;
 m18_eff = m18_Thrust./m18_p;
 
-m19_prop = "7x6 duo";
+m19_prop = "7x6 duo propeller";
 m19_motor = "Tarot 1900kV";
 m19_inv = "developed";
 m19_comm = "svm";
@@ -340,7 +340,7 @@ m19_mot_temp = [28	30	32	35	40	47	55	66	80	98	120	145];
 m19_p = m19_I * m19_U;
 m19_eff = m19_Thrust./m19_p;
 
-m20_prop = "8x4.5 duo";
+m20_prop = "8x4.5 duo propeller";
 m20_motor = "Tarot 1900kV";
 m20_inv = "developed";
 m20_comm = "svm";
@@ -356,7 +356,7 @@ m20_mot_temp = [29	30	32	35	42	50	62	80	102	132	150];
 m20_p = m20_I * m20_U;
 m20_eff = m20_Thrust./m20_p;
 
-m21_prop = "8x4.5 duo";
+m21_prop = "8x4.5 duo propeller";
 m21_motor = "Tarot 1900kV";
 m21_inv = "developed";
 m21_comm = "svm";

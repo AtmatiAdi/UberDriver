@@ -1,6 +1,130 @@
 close all;
 add = 500;
+small = -300;
+
+figure(13)
+subplot(1,3,1)
+hold on
+plot(m4_Thrust,m4_eff,'Color','#0072BD');
+plot(m11_Thrust,m11_eff,'Color','#D95319');
+plot(m17_Thrust,m17_eff,'Color','#EDB120');
+grid on
+ylim([0 8]);
+xlim([0 520]);
+title([m4_prop]);
+p = patch([m17_Thrust(4:11) fliplr(m11_Thrust(3:9))], [m17_eff(4:11)   fliplr(m11_eff(3:9))], 'g');
+p.FaceAlpha = 0.2;
+p.EdgeAlpha = 0;
+uistack(p,'bottom');
+legend(["","6-Step + BEMF","6-Step + Hall + 30°","SVM + Hall + 30°"])
+ylabel(["Efficiency [g/W]"])
+xlabel(["Thrust [g]"])
+
+subplot(1,3,2)
+hold on
+plot(m6_Thrust,m6_eff,'Color','#0072BD');
+plot(m13_Thrust,m13_eff,'Color','#D95319');
+plot(m19_Thrust,m19_eff,'Color','#EDB120');
+grid on
+ylim([0 8]);
+xlim([0 520]);
+title([m6_prop]);
+p = patch([m19_Thrust(3:12) fliplr(m13_Thrust(2:10))], [m19_eff(3:12)   fliplr(m13_eff(2:10))], 'g');
+p.FaceAlpha = 0.2;
+p.EdgeAlpha = 0;
+uistack(p,'bottom');
+legend(["","6-Step + BEMF","6-Step + Hall + 30°","SVM + Hall + 30°"])
+ylabel(["Efficiency [g/W]"])
+xlabel(["Thrust [g]"])
+
+subplot(1,3,3)
+hold on
+plot(m8_Thrust,m8_eff,'Color','#0072BD');
+plot(m15_Thrust,m15_eff,'Color','#D95319');
+plot(m21_Thrust,m21_eff,'Color','#EDB120');
+grid on
+ylim([0 8]);
+xlim([0 520]);
+title([m8_prop]);
+p = patch([m21_Thrust(2:11) fliplr(m15_Thrust(1:9))], [m21_eff(2:11)   fliplr(m15_eff(1:9))], 'g');
+p.FaceAlpha = 0.2;
+p.EdgeAlpha = 0;
+uistack(p,'bottom');
+legend(["","6-Step + BEMF","6-Step + Hall + 30°","SVM + Hall + 30°"]) 
+ylabel(["Efficiency [g/W]"])
+xlabel(["Thrust [g]"])
+
+%left-upper corner
+set(gcf, 'Position', [1.8000 885.8000-small 1444 760.8000+small]);
+saveas(gcf,'summary_1','epsc');
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+figure(12)
+subplot(1,3,1)
+hold on
+plot(m4_Thrust,m4_eff,'Color','#0072BD');
+plot(m5_Thrust,m5_eff,'Color','#D95319');
+grid on
+ylim([0 8]);
+xlim([200 520]);
+title([m4_prop]);
+p = patch([m4_Thrust(1:7) fliplr(m5_Thrust(1:7))], [m4_eff(1:7)   fliplr(m5_eff(1:7))], 'r');
+p.FaceAlpha = 0.2;
+p.EdgeAlpha = 0;
+uistack(p,'bottom');
+legend(["","6-Step + BEMF","6-Step + BEMF + 30°"])
+ylabel(["Efficiency [g/W]"])
+xlabel(["Thrust [g]"])
+
+subplot(1,3,2)
+hold on
+plot(m4_In,m4_p,'Color','#0072BD');
+plot(m5_In,m5_p,'Color','#D95319');
+grid on
+% ylim([0 8]);
+xlim([60 100]);
+title([m4_prop]);
+p1 = patch([m4_In(1:4) fliplr(m5_In(1:4))], [m4_p(1:4)   fliplr(m5_p(1:4))], 'r');
+p1.FaceAlpha = 0.2;
+p1.EdgeAlpha = 0;
+p2 = patch([m4_In(5:7) fliplr(m5_In(4:7))], [m4_p(5:7)   fliplr(m5_p(4:7))], 'r');
+p2.FaceAlpha = 0.2;
+p2.EdgeAlpha = 0;
+uistack(p,'bottom');
+legend(["6-Step + BEMF","6-Step + BEMF + 30°","",""],'Location','southeast')
+ylabel(["Input power [W]"]);
+xlabel(["Throttle [%]"]);
+
+subplot(1,3,3)
+hold on
+plot(m4_Thrust,m4_mot_temp,'Color','#0072BD');
+plot(m5_Thrust,m5_mot_temp,'Color','#D95319');
+grid on
+%ylim([0 8]);
+xlim([200 520]);
+title([m4_prop]);
+p = patch([m5_Thrust(1:7) fliplr(m4_Thrust(1:7))], [m5_mot_temp(1:7)   fliplr(m4_mot_temp(1:7))], 'r');
+p.FaceAlpha = 0.2;
+p.EdgeAlpha = 0;
+uistack(p,'bottom');
+legend(["","6-Step + BEMF","6-Step + BEMF + 30°"],'Location','southeast')
+ylabel(["Motor temperature [°C]"])
+xlabel(["Thrust [g]"])
+
+%left-upper corner
+set(gcf, 'Position', [1.8000 885.8000-small 1444 760.8000+small]);
+saveas(gcf,'summary_2','epsc');
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+return;
+
 figure(14)
+
 
 subplot(3,2,1)
 hold on;

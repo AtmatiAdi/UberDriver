@@ -340,17 +340,24 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
 
 	ADC_Ticks ++;
 }
+
 int16_t PWM_Value = 0;
 int16_t PWM_Value_irr = 0;
 __attribute__( ( section(".data") ) )
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc){
-	//BEMF_Observer_Block();
-	HALL_Observer_Block();
+	BEMF_Observer_Block();
+	//HALL_Observer_Block();
 	//FAST_HALL_Observer_Block();
+
+//
+//	SetPulse_CH(32);
+//	SetZero_B();
+//	SetFloating_A();
+//	ADC_Change_Order(ADC_CHANNEL_A);
 
 	//_Six_Step_Block(PWM_Value_irr);	// Bemf
 	//Six_Step_Block(PWM_Value_irr);// Hall
-	DPWMMIN_Block(PWM_Value_irr);
+	//DPWMMIN_Block(PWM_Value_irr);
 	// GOOD COMBO 	-> PWM(div 1) + FAST_HALL_Observer_Block(); + Six_Step_Block(PWM_Value);
 	//				-> PWM(div 4) + HALL_Observer_Block(); + DPWMMIN_Block(PWM_Value);
 	//				-> PWM(div 1) + BEMF_Observer_Block(); + Six_Step_Block(PWM_Value);
@@ -383,9 +390,9 @@ uint16_t BEMF_time_cnt = 1;
 uint16_t BEMF_Angle = 330;
 uint8_t Div = 16;
 uint16_t BEMF_Treshold = 0;
-
-//uint16_t BEMF_delay = 0;
 uint16_t Angle = 0;	// form 0 to 384 for fast calc
+//uint16_t BEMF_delay = 0;
+
 uint8_t Diode_Is_Conducting = 0 ;
 //uint16_t Ticks_Diff = 0;
 uint16_t V_DC = 0;
@@ -429,18 +436,21 @@ void BEMF_Observer_Block(){
 		// 300 deg
 		SetFloating_C();
 		SetZero_B();
-		SetPulse_AH(255);
+		SetPulse_AH(32);
 
 		BEMF_time_cnt ++ ;
-		if (BEMF_time_cnt > 64) {
+		if (BEMF_time_cnt > 2048) {
 			//Block = 1;
 			// 360/0 deg
-			SetPulse_CH(255);
-			SetZero_B();
+//			SetPulse_CH(255);
+//			SetZero_B();
+//			SetFloating_A();
 			SetFloating_A();
+			SetFloating_B();
+			SetFloating_C();
 
 			Old_Step = (Angle>>6)+1;
-			PWM_Value_irr = 255;
+			PWM_Value_irr = 0;
 
 			Bemf_Is_running = 1;
 			BEMF_time_cnt = 1;
@@ -510,6 +520,7 @@ void BEMF_Observer_Block(){
 	}
 
 	//GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
+//	_Six_Step_Block(PWM_Value_irr);	// Bemf
 }
 
 void Set_Observer_Div(uint8_t div){

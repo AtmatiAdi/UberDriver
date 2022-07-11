@@ -349,12 +349,6 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc){
 	//HALL_Observer_Block();
 	//FAST_HALL_Observer_Block();
 
-//
-//	SetPulse_CH(32);
-//	SetZero_B();
-//	SetFloating_A();
-//	ADC_Change_Order(ADC_CHANNEL_A);
-
 	//_Six_Step_Block(PWM_Value_irr);	// Bemf
 	//Six_Step_Block(PWM_Value_irr);// Hall
 	//DPWMMIN_Block(PWM_Value_irr);
@@ -418,9 +412,9 @@ void BEMF_Observer_Block(){
 	if(PWM_Value == 0){
 		Old_Cross = 0;
 		Cross = 0;
-		BEMF_cnt_sign = 0;
+		BEMF_cnt_sign = 1;
 		BEMF_time_cnt = 1;
-		BEMF_Angle = 330;
+		BEMF_Angle = 0;
 		V_Phase_Old = 0;
 		Bemf_Is_running = 0;
 		//Block = 0;
@@ -437,23 +431,12 @@ void BEMF_Observer_Block(){
 		SetFloating_C();
 		SetZero_B();
 		SetPulse_AH(32);
+		Hall_Change_Active(ADC_CHANNEL_B);
 
 		BEMF_time_cnt ++ ;
-		if (BEMF_time_cnt > 2048) {
-			//Block = 1;
-			// 360/0 deg
-//			SetPulse_CH(255);
-//			SetZero_B();
-//			SetFloating_A();
-			SetFloating_A();
-			SetFloating_B();
-			SetFloating_C();
-
-			Old_Step = (Angle>>6)+1;
-			PWM_Value_irr = 0;
-
+		if (BEMF_time_cnt == 0x7fff) {
 			Bemf_Is_running = 1;
-			BEMF_time_cnt = 1;
+			Step_Num = 0;
 		}
 		return;
 	}
@@ -503,10 +486,19 @@ void BEMF_Observer_Block(){
 		BEMF_time_cnt = 0;
 	}
 	// Counter buffer reset before overflow
-	if(BEMF_time_cnt >= 4096){
-		Angle += 64;
+	if(BEMF_time_cnt >= 0x7fff){
+		Old_Cross = 0;
+		Cross = 0;
 		BEMF_cnt_sign = 1;
-		BEMF_time_cnt = 0;
+		BEMF_time_cnt = 1;
+		BEMF_Angle = 0;
+		V_Phase_Old = 0;
+		Bemf_Is_running = 0;
+		//Block = 0;
+
+		SetFloating_A();
+		SetFloating_B();
+		SetFloating_C();
 	}
 	//Old_Step = Step_Num;
 	if (Angle >= 384) Angle = 0;
@@ -520,7 +512,7 @@ void BEMF_Observer_Block(){
 	}
 
 	//GPIOD->BSRR |= (1<<17);		// SET DEBUG_PIN LOW
-//	_Six_Step_Block(PWM_Value_irr);	// Bemf
+	_Six_Step_Block(PWM_Value_irr);	// Bemf
 }
 
 void Set_Observer_Div(uint8_t div){
@@ -765,7 +757,7 @@ inline void Six_Step_Block(uint16_t PWM_Value){
 		SetFloating_B();
 		SetFloating_C();
 		Step_Num = 0;
-		Old_Step = 0;
+		Old_Step = 255;
 		return;
 	}
 

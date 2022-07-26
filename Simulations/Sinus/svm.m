@@ -78,7 +78,7 @@ plot(sin_D);
 plot(sin_Q);
 grid on;
 legend(["D","Q"],'Location','east');
-ylim([-1,1]);
+ylim([-1.5,1.5]);
 xlabel("Commutation angle [deg°]");
 ylabel("Amplitude");
 title("D-Q currents");
@@ -181,7 +181,7 @@ plot(svm_D);
 plot(svm_Q);
 grid on;
 legend(["D","Q"],'Location','east');
-ylim([-1,1]);
+ylim([-1.5,1.5]);
 xlabel("Commutation angle [deg°]");
 ylabel("Amplitude");
 title("D-Q currents");
@@ -263,7 +263,7 @@ hold on;
 plot(st_D);
 plot(st_Q);
 legend(["D","Q"]);
-ylim([-1.1,1.1]);
+ylim([-1.5,1.5]);
 
 %right-upper corner
 set(gcf, 'Position', [1.4474e+03 41.8000 1.4448e+03 760.8000]);

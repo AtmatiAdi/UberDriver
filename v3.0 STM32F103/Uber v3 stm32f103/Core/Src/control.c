@@ -345,11 +345,35 @@ int16_t PWM_Value = 0;
 int16_t PWM_Value_irr = 0;
 __attribute__( ( section(".data") ) )
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc){
-	BEMF_Observer_Block();
+//	BEMF_Observer_Block();
 	//HALL_Observer_Block();
 	//FAST_HALL_Observer_Block();
 
-	//_Six_Step_Block(PWM_Value_irr);	// Bemf
+//	SetPulse_CH(PWM_Value);
+//	SetZero_B();
+//	SetFloating_A();
+//
+//	SetPulse_CH(PWM_Value);
+	SetFloating_B();
+//	SetZero_A();
+//
+	SetFloating_C();
+//	SetPulse_BH(PWM_Value);
+//	SetZero_A();
+//
+//	SetZero_C();
+//	SetPulse_BH(PWM_Value);
+//	SetFloating_A();
+//
+//	SetZero_C();
+//	SetFloating_B();
+	SetPulse_AH(PWM_Value);
+//
+//	SetFloating_C();
+//	SetZero_B();
+//	SetPulse_AH(PWM_Value);
+
+//	_Six_Step_Block(PWM_Value_irr);	// Bemf
 	//Six_Step_Block(PWM_Value_irr);// Hall
 	//DPWMMIN_Block(PWM_Value_irr);
 	// GOOD COMBO 	-> PWM(div 1) + FAST_HALL_Observer_Block(); + Six_Step_Block(PWM_Value);
